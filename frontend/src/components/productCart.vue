@@ -13,29 +13,13 @@
 <script lang="ts">
 import Vue, {PropType} from 'vue'
 import {mapMutations} from 'vuex'
-import {Product} from '~/types';
+import {Product} from '@/types';
 import Stars from '@/components/Stars.vue';
 
 export default Vue.extend({
   components: {
     Stars
   },
-  // data: () => ({
-  //   product: {
-  //     "id": 1135341,
-  //     "name": "Noutbook",
-  //     "description": "nice",
-  //     "price": 20000,
-  //     "img": "/API_data/imgs/nout1.jpeg",
-  //     "starsCount": 4,
-  //     "specification": {
-  //       "guarantee": 12,
-  //       "release": 2005,
-  //       "color": "желтый",
-  //       "screenDiagonal": 27
-  //     }
-  //   }
-  // }),
   props: {
     product: {
       type: Object as PropType<Product>,
