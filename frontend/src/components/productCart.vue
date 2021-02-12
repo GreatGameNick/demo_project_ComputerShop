@@ -2,9 +2,8 @@
   <div class="cart">
     <div class="cart__img" :style="{backgroundImage: `url(${product.img})`}"></div>
     <div class="cart__name">{{product.name}}</div>
-    <div class="cart__description">{{product.description}}</div>
-    <div class="cart__description">{{product.description}}</div>
     <stars :starsCount="product.starsCount"/>
+    <div class="cart__description">{{product.description}}</div>
     <div class="cart__price">{{product.price | splitPrice}} <span>₽</span></div>
     <div @click.stop="onPutProductToBasket(product.id)" class="cart__btn">Купить</div>
   </div>
@@ -37,7 +36,10 @@ export default Vue.extend({
       'PUT_PRODUCT_TO_BASKET'
     ]),
     onPutProductToBasket(id: number): void {
-      this.PUT_PRODUCT_TO_BASKET(id)
+      let shelf = this.$route.path       // "/laptops"
+      console.log('==== this.$route.path', this.$route.path)
+
+      this.PUT_PRODUCT_TO_BASKET({shelf, id})
       this.$router.push('/Basket')
     }
   }
@@ -47,15 +49,20 @@ export default Vue.extend({
 
 <style scoped lang="scss">
 .cart {
-  width: rem(270);
-  height: fit-content;
+  display: grid;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
   padding: rem(20);
   background: $white;
+  grid-auto-rows: rem(20);
+  grid-template-columns: 4fr 1fr;
 
   &__img {
     width: 100%;
     height: rem(200);
+    grid-area: 1/1/span 11/span 2;
+    grid-auto-flow: row;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -68,22 +75,23 @@ export default Vue.extend({
 
   }
 
-  &__name {
-    margin-top: rem(20);
+  &__description {
+    grid-column: span 2;
+    grid-row: span 2;
   }
 
   &__price {
     @extend .price;
-    margin-top: rem(10);
+    grid-column: span 2;
   }
 
   &__btn {
     width: 100%;
-    margin: 0 auto;
+    grid-column: span 2;
+    grid-row: span 3;
+    margin: rem(20) auto 0;
     @extend .btn_common;
-    margin-top: rem(20);
   }
-
 }
 
 

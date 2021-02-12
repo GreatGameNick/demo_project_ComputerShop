@@ -1,12 +1,28 @@
 export interface Product {
-  shelf: string,
-  id: number,
-  name: string,
-  description: string,
-  price: number,
-  img: string,
-  starsCount: number
-  specification: Specification
+    "shelf": string,
+    "code": number,
+    "name": string,
+    "description": string,
+    "price": number,
+    "img": string,
+    "starsCount": number,
+    "manufactureNotes": {
+      "sectionName": string,
+      "country": string,
+      "release": string,
+      "warranty": string
+    },
+    "specification": {
+      "sectionName": string,
+      "screenSize": string,
+      "color": string,
+      "processor":string,
+      "mass": string,
+    },
+    "additionalInformation": {
+      "sectionName": string,
+      "delay": string
+    }
 }
 
 interface Specification {

@@ -1,0 +1,39 @@
+// Main color
+$black_extra: #000000;
+$black: #474646;
+$grey: #898787;
+$liteGrey: rgba(222, 222, 222, 0.2);
+$green: #2bbb07;
+$green-light: #0ff103;
+$orange: #f19340;
+$yellow: #F2C94C;
+$white: #ffffff;
+$purple: #8854d0;
+
+$error: #ff0000;
+$valid: #008000;
+
+
+// Media queries
+$maxDesktopWidth: 1280px;
+$desktop: 800px;
+$tablet: 600px;
+$mobile: 480px;
+
+
+// Font
+$mainFontColor           : #333333;
+$mainFontSize            : 16px;
+$mainFontSizeNumber      : 16;
+$mainFontWeight          : 400;
+$mainLineHeight          : 1.4;
+
+
+@function rem($n) {
+  @return #{($n / $mainFontSizeNumber)}rem;
+}
+
+
+
+
+

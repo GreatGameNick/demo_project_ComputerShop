@@ -1,0 +1,92 @@
+
+@import "dounCSS";
+@import "constants";
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.font_16_height {
+  font-size: rem(16);
+  font-weight: 400;
+  line-height: rem(27);
+}
+
+.font_16_bold {
+  font-size: rem(16);
+  font-weight: bold;
+  line-height: rem(20);
+}
+
+.font_8-bold {
+  font-weight: bold;
+  font-size: rem(10);
+  line-height: rem(13);
+}
+
+
+h1 {
+  font-size: rem(16);
+  line-height: rem(40);
+  text-transform: uppercase;
+}
+
+h2 {
+  font-size: rem(14);
+  line-height: rem(40);
+  text-transform: uppercase;
+}
+
+h3 {
+  font-size: rem(16);
+  font-weight: 700;
+  line-height: rem(40);
+}
+
+.btn_common {
+  max-width: rem(180);
+  height: rem(40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: $grey 1px solid;
+  cursor: pointer;
+
+  &:hover {
+    color: $grey;
+  }
+}
+
+.price {
+  font-size: rem(20);
+  font-weight: 700;
+  line-height: rem(20);
+
+  & :last-child {
+    color: $grey;
+    font-weight: 400;
+  }
+}
+
+.information-place {
+  display: grid;
+  grid-template-columns: rem(260) 1fr;
+  grid-column-gap: rem(60);
+  grid-auto-rows: rem(20);
+
+  box-sizing: border-box;
+  padding: rem(10) rem(10) rem(10) rem(40);
+
+  background: $white;
+  background-origin: padding-box;
+}
+
+
+
+
+
+
+
