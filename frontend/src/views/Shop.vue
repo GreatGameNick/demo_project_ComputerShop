@@ -1,7 +1,7 @@
 <template>
   <div class="bundle">
     <div class="shelf">
-      <div v-for="(product, ind) in products"
+      <div v-for="(product, ind) in GET_PRODUCTS($route.path)"
            :key="ind"
            @click="productDeclaration(product.code)"
       >
@@ -13,28 +13,31 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import axios from "axios";
-import test from "@/components/test.vue";
 import ProductCart from "@/components/productCart.vue";
+import {mapActions, mapGetters} from "vuex";
 
 export default Vue.extend({
   components: {
-    ProductCart,
-    test
+    ProductCart
   },
   data: () => ({
     products: []
   }),
+  computed: {
+    ...mapGetters([
+      'GET_PRODUCTS'
+    ])
+  },
   methods: {
+    ...mapActions([
+      'FETCH_PRODUCTS'
+    ]),
     productDeclaration(code: any) {
       this.$router.push(`${this.$route.path}/${code}`)
     }
   },
   created() {
-    axios.get('/api/shop/laptops')
-        .then(response => {
-          this.products = response.data
-        })
+    this.FETCH_PRODUCTS(this.$route.path)
   }
 
 });
