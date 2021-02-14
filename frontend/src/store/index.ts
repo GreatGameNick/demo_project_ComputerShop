@@ -20,13 +20,14 @@ const getters = {
         // @ts-ignore
         return state[clearShelfName]
     },
+    // GET_PRODUCT_FROM_STORE
     GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product => {
         // @ts-ignore
-        let product = state[shelf].find(item => item._id === _id)
-        if (product)
-            return product
-        // // @ts-ignore
-        // this.$store.dispatch('FETCH_PRODUCT', {shelf, _id})
+        return state[shelf].find(item => item._id === _id)
+        // if (product)
+        //     return product
+        // @ts-ignore
+        // this.store.dispatch('FETCH_PRODUCT', {shelf, _id})
         //     .then((pr: Product): Product => product = pr)
         // return product
     },
