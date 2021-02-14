@@ -3,7 +3,7 @@
     <div class="shelf">
       <div v-for="(product, ind) in GET_PRODUCTS($route.path)"
            :key="ind"
-           @click="productDeclaration(product.code)"
+           @click="productDescription(product.code)"
       >
         <product-cart :product="product" class="shelf__cart"/>
       </div>
@@ -20,9 +20,6 @@ export default Vue.extend({
   components: {
     ProductCart
   },
-  data: () => ({
-    products: []
-  }),
   computed: {
     ...mapGetters([
       'GET_PRODUCTS'
@@ -32,12 +29,12 @@ export default Vue.extend({
     ...mapActions([
       'FETCH_PRODUCTS'
     ]),
-    productDeclaration(code: any) {
-      this.$router.push(`${this.$route.path}/${code}`)
+    productDescription(_id: any) {
+      this.$router.push(`/${this.$route.params.shelf}/${_id}`)
     }
   },
   created() {
-    this.FETCH_PRODUCTS(this.$route.path)
+    this.FETCH_PRODUCTS(this.$route.params.shelf)
   }
 
 });

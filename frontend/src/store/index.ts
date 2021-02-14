@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {MutationTree, ActionTree, GetterTree} from 'vuex'
-import {RootState, Product} from '@/types';
+import {RootState, Product, ProductPoint} from '@/types';
 
 import axios from "axios";
 
@@ -20,17 +20,22 @@ const getters = {
         // @ts-ignore
         return state[clearShelfName]
     },
-
-
-    GET_PRODUCT: (state: RootState) => (id: number): Product => {
-        let productIndex = state.laptops.findIndex(item => item._id === id)
-        return state.laptops[productIndex]
+    GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product => {
+        // @ts-ignore
+        let product = state[shelf].find(item => item._id === _id)
+        return product
+        // if (product)
+        //     return product
+        // // @ts-ignore
+        // this.$store.dispatch('FETCH_PRODUCT', {shelf, _id})
+        //     .then((pr: Product): Product => product = pr)
+        // return product
     },
 } as GetterTree<RootState, {}>
 
 const mutations = {
     // @ts-ignore
-    SET_PRODUCTS: (state, {shelf, products}) => state[shelf] = products,
+    SET_PRODUCTS: (state, {shelf, products}) => state[shelf].push(...products),
 
 
     CHANGE_NAME: (state, newDescription: string) => state.laptops[0].description = newDescription,
@@ -46,13 +51,24 @@ const mutations = {
 
 const actions = {
     FETCH_PRODUCTS({state, commit}, shelf): void {
-        let clearShelfName = shelf.replace("/", "")
-
         // @ts-ignore
-        if (state[clearShelfName].length === 0)
-            axios.get(`/api/shop/${clearShelfName}`)
-                .then(data => commit('SET_PRODUCTS', {shelf: clearShelfName, products: data.data}))
+        if (state[shelf].length === 0)
+            axios.get(`/api/shop/${shelf}`)
+                .then(data => commit('SET_PRODUCTS', {shelf, products: data.data}))
     },
+
+
+    FETCH_PRODUCT({state, commit}, {shelf, _id}: ProductPoint): void {
+        console.log('============== FETCH_PRODUCT')
+
+        axios.get(`/api/shop/${shelf}/${_id}`)
+            .then(data => {
+                commit('SET_PRODUCTS', {shelf, products: [data.data]})
+                return data.data
+            })
+    },
+
+
     add({commit, state}, text: string): void {
         commit('add', text)
     }

@@ -1,6 +1,6 @@
 export interface Product {
     "shelf": string,
-    "_id"?: any,
+    "_id": any,
     "name": string,
     "description": string,
     "price": number,
@@ -21,24 +21,30 @@ interface ManufactureNotes {
 interface Specification {
     "sectionName": string,
     "color": string,
-    "mass": string,
-    "processor"?:string,
+    "mass"?: string,
+    "processor"?: string,
     "screenSize"?: string,
 }
+
 interface AdditionalInformation {
     "sectionName": string,
     "delay": string
 }
 
 export interface Shelf {
-  shelf: string,
-  shelfName: string
+    shelf: string,
+    shelfName: string
+}
+
+export interface ProductPoint {
+    shelf: string,
+    _id: any
 }
 
 export interface RootState {
-  laptops: Product[],
-  mouses: Product[],
-  accessories: Product[],
-  clientBasket: number[]
+    laptops: Product[],
+    mouses: Product[],
+    accessories: Product[],
+    clientBasket: number[]
 }
 

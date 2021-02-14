@@ -4,7 +4,7 @@
     <div class="anons">
       <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
       <div class="anons__price">{{product.price | splitPrice}} <span>₽</span></div>
-      <div @click="onPutProductToBasket(product.id)" class="anons__btn">Купить</div>
+      <div @click="onPutProductToBasket(product._id)" class="anons__btn">Купить</div>
     </div>
     
     <h3>Характеристики</h3>
@@ -27,42 +27,40 @@
 <script lang="ts">
 import Vue from "vue";
 import {mapGetters, mapMutations} from "vuex";
-import any = jasmine.any;
-import {Product} from '@/types'
 
 export default Vue.extend({
   data: () => ({
-    // product: {} as Product
-    product: {
-      "shelf": "laptops",
-      "code": 1135341,
-      "name": "Noutbook-7",
-      "description": "nice staff",
-      "price": 20000,
-      "img": "/api/imgs/laptops/nout1.jpeg",
-      "starsCount": 5,
-      "manufactureNotes": {
-        "sectionName": "Информация производителя",
-        "country": "Страна производитель=China",
-        "release": "Год выпуска=2005",
-        "warranty": "Гарантия=12 мес"
-      },
-      "specification": {
-        "sectionName": "Описание продукта",
-        "screenSize": "Диагональ экрана=27'",
-        "color": "Цвет=желтый",
-        "processor": "Тип процессора=Pentium II",
-        "mass": "Масса=5кг",
-      },
-      "additionalInformation": {
-        "sectionName": "Дополнительная информация",
-        "delay": "Срок поставки=в течении 3 недель"
+    product:
+      {
+        "shelf": "laptops",
+        "code": 1135341,
+        "name": "Noutbook-7",
+        "description": "nice",
+        "price": 20000,
+        "img": "/api/imgs/laptops/nout1.jpeg",
+        "starsCount": 5,
+        "manufactureNotes": {
+          "sectionName": "Информация производителя",
+          "country": "Страна производитель=China",
+          "release": "Год выпуска=2005",
+          "warranty": "Гарантия=12 мес"
+        },
+        "specification": {
+          "sectionName": "Описание продукта",
+          "screenSize": "Диагональ экрана=27'",
+          "color": "Цвет=желтый",
+          "processor": "Тип процессора=Pentium II",
+          "mass": "Масса=5кг",
+        },
+        "additionalInformation": {
+          "sectionName": "Дополнительная информация",
+          "delay": "Срок поставки=в течении 3 недель"
+        }
       }
-    },
   }),
   computed: {
     ...mapGetters([
-      // 'GET_PRODUCT'
+      'GET_PRODUCT'
     ]),
     featuresGroups() {
       let featuresGroup = []
@@ -94,13 +92,14 @@ export default Vue.extend({
     ...mapMutations([
       // 'PUT_PRODUCT_TO_BASKET'
     ]),
-    onPutProductToBasket(id: number): void {
-      // this.PUT_PRODUCT_TO_BASKET(id)
-      // this.$router.push('/Basket')cc
+    onPutProductToBasket(_id: number): void {
+      // this.PUT_PRODUCT_TO_BASKET(_id)
+      // this.$router.push('/Basket')
     }
   },
   created() {
-    // this.product = this.GET_PRODUCT(+this.$route.params.shelf, +this.$route.params.productId)
+    let duct = this.GET_PRODUCT({shelf: this.$route.params.shelf, _id: +this.$route.params.productId})
+    console.log('======== duct', duct)
   }
 })
 </script>
