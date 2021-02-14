@@ -58,7 +58,7 @@ export default Vue.extend({
         "sectionName": "Дополнительная информация",
         "delay": "Срок поставки=в течении 3 недель"
       }
-    } as Product,
+    },
   }),
   computed: {
     ...mapGetters([

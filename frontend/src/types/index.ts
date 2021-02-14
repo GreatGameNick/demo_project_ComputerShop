@@ -1,35 +1,33 @@
 export interface Product {
     "shelf": string,
-    "code": number,
+    "_id"?: any,
     "name": string,
     "description": string,
     "price": number,
     "img": string,
     "starsCount": number,
-    "manufactureNotes": {
-      "sectionName": string,
-      "country": string,
-      "release": string,
-      "warranty": string
-    },
-    "specification": {
-      "sectionName": string,
-      "screenSize": string,
-      "color": string,
-      "processor":string,
-      "mass": string,
-    },
-    "additionalInformation": {
-      "sectionName": string,
-      "delay": string
-    }
+    "manufactureNotes": ManufactureNotes,
+    "specification": Specification,
+    "additionalInformation": AdditionalInformation
+}
+
+interface ManufactureNotes {
+    "sectionName": string,
+    "country": string,
+    "release": string,
+    "warranty": string,
 }
 
 interface Specification {
-  guarantee: number
-  release?: number
-  color: string
-  screenDiagonal?: number
+    "sectionName": string,
+    "color": string,
+    "mass": string,
+    "processor"?:string,
+    "screenSize"?: string,
+}
+interface AdditionalInformation {
+    "sectionName": string,
+    "delay": string
 }
 
 export interface Shelf {

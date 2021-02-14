@@ -17,7 +17,7 @@ const routes: Array<RouteConfig> = [
   {
     path: '/:shelf/:productId',
     name: 'Product',
-    component: () => import(/* webpackChunkName: "about" */ '../views/Product.vue')
+    component: () => import('../views/Product.vue')
   },
 ]
 
