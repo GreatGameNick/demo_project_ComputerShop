@@ -3,7 +3,7 @@
     <div class="shelf">
       <div v-for="(product, ind) in GET_PRODUCTS($route.path)"
            :key="ind"
-           @click="productDescription(product.code)"
+           @click="productDescription(product._id)"
       >
         <product-cart :product="product" class="shelf__cart"/>
       </div>

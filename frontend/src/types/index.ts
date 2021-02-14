@@ -1,6 +1,6 @@
 export interface Product {
     "shelf": string,
-    "_id": any,
+    "_id": string,
     "name": string,
     "description": string,
     "price": number,
@@ -13,6 +13,7 @@ export interface Product {
 
 interface ManufactureNotes {
     "sectionName": string,
+    "_id": string,
     "country": string,
     "release": string,
     "warranty": string,
@@ -20,6 +21,7 @@ interface ManufactureNotes {
 
 interface Specification {
     "sectionName": string,
+    "_id": string,
     "color": string,
     "mass"?: string,
     "processor"?: string,
@@ -28,6 +30,7 @@ interface Specification {
 
 interface AdditionalInformation {
     "sectionName": string,
+    "_id": string,
     "delay": string
 }
 
@@ -38,7 +41,7 @@ export interface Shelf {
 
 export interface ProductPoint {
     shelf: string,
-    _id: any
+    _id: string
 }
 
 export interface RootState {
