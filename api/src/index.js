@@ -24,8 +24,6 @@ const {initialLaptopData} = require('../initialData/laptopData')
 const app = express();
 
 app.use(bodyParser.json())
-app.use(methodOverride('_method'));  //что бы <form> могла поддерживать PUT и DELETE тоже, а не только POST и GET. Для меня не актуально.
-
 
 
 //session
@@ -49,35 +47,15 @@ app.use(session({
 app.get("/getsession", getSession)
 
 
-//текстовые роуты для MongoDb.
+//Текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
-
 app.get("/shop/:shelf", findAllOnTheShelf)   //use it
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 
 
 
-//Загружаем файлы в gridStorage ИЛИ в diskStorage.
-//В обоих случаях мы это делаем через multer.
-//Необходимо переключать вид используемого хранилища в "let upload = multer({storage: ...})"
-// multer
-//a) Декларируем хранилище GridFsStorage.
-const gridStorage = new GridFsStorage({
-  url: MONGO_URL,               //url = "mongodb://api_db:27017/api"
-  file: (req, file) => {        //генерация описания сохраняемого файла, в т.ч. его обновленное имя.
-    return new Promise(
-      (resolve, reject) => {
-        const fileInfo = {
-          filename: file.originalname,
-          // bucketName: 'uploads'   //важно будет знать для удаления файлов, если заявляем gfs.collection('uploads')
-        };
-        resolve(fileInfo)
-      }
-    )
-  }
-});
-
-//b) Декларируем хранилище diskStorage.              //use it
+//Загружаем файлы в diskStorage.
+//a) Декларируем хранилище diskStorage.            //not using yet. Использую diskStorage сразу для считки. Загрузка не востребована.
 var diskStorage = multer.diskStorage({
   destination: ROOT_PATH + 'initialData/imgs/',   //ROOT_PATH = "/usr/src/app/"
   filename: (req, file, cb) => {
@@ -85,28 +63,16 @@ var diskStorage = multer.diskStorage({
   }
 });
 
+//b) заявляем multer, ЛОКАЛЬНО.                    //not using yet
+let upload = multer({storage: diskStorage})
 
-//c) заявляем multer, ЛОКАЛЬНО.
-let upload = multer({storage: gridStorage})        //<< прописываем используемое хранилище: gridStorage or diskStorage.
-
-
-//d) роут для upload file to db.
-// Мультер сразу через upload сохраняет файл в прописанное в upload'e хранилище.
+//c) роут для upload file to db.                    //not using yet
 app.post('/upload_file', upload.single('file'), (req, res) => {
   res.send(`uploadFile ==> ${req.file.originalname}`);
 });
 
-
-
-
-//Изображение для <img> from gridStorage
-app.get("/grigImage/:imgname", getOneImgFromGridStorageForPicture)
-
-
-
-
-//Изображение для <img> from diskStorage
-app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it
+//d)Изображение для <img> from diskStorage
+app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it (!)
 
 
 //not using yet

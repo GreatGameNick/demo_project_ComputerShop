@@ -62,7 +62,7 @@ export default Vue.extend({
     ]),
     onThrowToShop(): void {
       if(this.$route.query.startPath) {
-        this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision place back.
+        this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
       } else {
         let pathChunks = this.$route.path.split('/')
         if (pathChunks.length > 2)
@@ -70,7 +70,8 @@ export default Vue.extend({
       }
     },
     onThrowToBasket(): void {
-      this.$router.push({path: '/basket', query: {startPath: this.$route.path}})
+      let startPath = this.$route.path.split('/')[1]
+      this.$router.push({path: '/basket', query: {startPath}})
     },
   },
 })
