@@ -43,11 +43,16 @@ export interface ProductPoint {
     shelf: string,
     _id: string
 }
+export interface BasketShift {
+    shelf: string,
+    _id: string,
+    vector: number
+}
 
 export interface RootState {
     laptops: Product[],
     mouses: Product[],
     accessories: Product[],
-    clientBasket: number[]
+    clientBasket: string[]
 }
 

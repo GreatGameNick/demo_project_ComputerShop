@@ -33,6 +33,7 @@ app.use(methodOverride('_method'));  //что бы <form> могла подде�
 const MongoSessionStore = require('connect-mongo')(session)
 
 const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
+
 app.use(session({
   // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
   cookie: {
@@ -76,7 +77,7 @@ const gridStorage = new GridFsStorage({
   }
 });
 
-//b) Декларируем хранилище diskStorage.
+//b) Декларируем хранилище diskStorage.              //use it
 var diskStorage = multer.diskStorage({
   destination: ROOT_PATH + 'initialData/imgs/',   //ROOT_PATH = "/usr/src/app/"
   filename: (req, file, cb) => {

@@ -5,13 +5,13 @@
     <stars :starsCount="product.starsCount"/>
     <div class="cart__description">{{product.description}}</div>
     <div class="cart__price">{{product.price | splitPrice}} <span>₽</span></div>
-    <div @click.stop="onPutProductToBasket(product.id)" class="cart__btn">Купить</div>
+    <div @click.stop="PUT_PRODUCT_TO_BASKET($route.params.shelf, product._id, 1)" class="cart__btn">Купить</div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue, {PropType} from 'vue'
-import {mapMutations} from 'vuex'
+import {mapActions} from 'vuex'
 import {Product} from '@/types';
 import Stars from '@/components/stars.vue';
 
@@ -32,18 +32,10 @@ export default Vue.extend({
     }
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'PUT_PRODUCT_TO_BASKET'
     ]),
-    onPutProductToBasket(id: number): void {
-      let shelf = this.$route.path       // "/laptops"
-      console.log('==== this.$route.path', this.$route.path)
-
-      this.PUT_PRODUCT_TO_BASKET({shelf, id})
-      this.$router.push('/Basket')
-    }
   }
-
 })
 </script>
 

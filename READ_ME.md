@@ -4,19 +4,39 @@ nginx
 express
 mongoDb
 mongoose
-session
-multer.GridFsStorage - db for files
-multer.diskStorage - db for files too, second variant.
+multer.diskStorage - for images
+session (via express-session)
 
 Vue-CLI_project (vuex, routing as well)
   grid, flexbox
   SCSS (class inheritance, variables, mixins, functions)
   TypeScript
-  validation
-  authorization
-  jwt token
-  localStorage
+  //validation
+  //authorization
+  //jwt token
+  cooke for sessionId
   Jest
+
+
+
+# Архитектура проекта
+- База данных хранится в mongoDb(via mongoose) в api_db-сервисе докера.
+- При инициации проекта в mongoDb загружаются демонстрационные данные из папки initialData.  
+- Файлы изображений хранятся в diskStorage в api-сервисе докера. При DEV-работе изображения синхронизированы с папкой проекта посредством volumes api-сервиса ./api/initialData:/usr/src/app/initialData
+  (надо проверить, не исчезают ли картинки при prodaction-запуске !!!)
+
+- При первом обращении пользователя к сайту - на бакенде генерируется sessionId via express-session.
+  sessionId далее сохраняется via connect-mongo && mongoose в mongoDb api_db-сервиса,
+  а так же на пользователе в cookie броузера.
+  Запись cookie на пользователе происходит через respons первого request'a от пользователя.
+
+- В течении всего времени, пока пользователь находится на сайте, корзина сохраняется во Vuex.
+  Одновременно, что бы пользователь мог возвратиться к своей корзине при повторных посещениях сайта даже после перезапуска броузера, корзина сохраняется на backend'e в mongoDb(via mongoose).
+- Привязка пользователя к его корзине, сохраняющейся на бакенде, происходит через sessionId.
+  В результате этого пользователь способен вернуться к своей прежней корзине даже после перезапуска броузера.
+
+
+
 
 
 # Перед запуском
@@ -29,6 +49,7 @@ Vue-CLI_project (vuex, routing as well)
 
 
 
+
 # Запуск проекта для DEV-разработки.
 На компьютере должен быть установлен docker и docker-compose.
 
@@ -36,6 +57,7 @@ Vue-CLI_project (vuex, routing as well)
 >sudo docker-compose -f docker-compose.yml -f docker-compose.development.yml up --build
 
 В броузере проект открывается на localhost:80 или localhost.
+
 
 
 # Запуск проекта для PRODUCTION_mode.
@@ -47,8 +69,11 @@ Vue-CLI_project (vuex, routing as well)
 В броузере проект открывается на localhost:80 или localhost.
 
 
+
 # Остановка докера
 >Ctrl + C
+
+
 
 # Удаление всех образов и контейнеров.
 >sudo docker-compose down   //Остановить и УДАЛИТЬ контейнеры, сети, изображения и тома

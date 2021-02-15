@@ -1,10 +1,10 @@
 <template>
   <div class="wrapper">
     <header>
-      <h1 @click="$router.push('/')" class="logo">
+      <h1 @click="onThrowToShop" class="logo">
         Computer shop
       </h1>
-      <div @click="onBasketAppear" class="basket">
+      <div @click="onThrowToBasket" class="basket">
         <div>
           7
           <!--          {{ GET_PRODUCTS_FROM_BASKET.length }}-->
@@ -22,8 +22,8 @@
       </aside>
       <router-view/>
     </main>
-
-
+  
+  
   </div>
 </template>
 
@@ -33,7 +33,7 @@ import {mapActions, mapMutations, mapGetters} from 'vuex';
 
 export default Vue.extend({
   data: () => ({
-    shelves: [
+    shelves: [         //сделать из запроса о количестве библиотек
       {
         shelf: 'laptops',
         shelfName: 'Ноутбуки'
@@ -46,8 +46,7 @@ export default Vue.extend({
         shelf: 'accessories',
         shelfName: 'Аксессуары'
       },
-    ],
-    isBasketAppear: false
+    ]
   }),
   computed: {
     ...mapGetters([
@@ -61,8 +60,17 @@ export default Vue.extend({
     ...mapMutations([
       // 'REBUILD_THE_BASKET_FROM_LOCALSTORAGE'
     ]),
-    onBasketAppear() {
-      this.isBasketAppear = true
+    onThrowToShop(): void {
+      if(this.$route.query.startPath) {
+        this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision place back.
+      } else {
+        let pathChunks = this.$route.path.split('/')
+        if (pathChunks.length > 2)
+          this.$router.push('/' + pathChunks[1])   //переход на корень того shelf'a, где клиент до того находился.
+      }
+    },
+    onThrowToBasket(): void {
+      this.$router.push({path: '/basket', query: {startPath: this.$route.path}})
     },
   },
 })
@@ -72,45 +80,47 @@ export default Vue.extend({
 body {
   background: $liteGrey;
 }
+
 .text_current-page {
   text-decoration: underline;
 }
+
 .wrapper {
   max-width: $maxDesktopWidth;
   margin: rem(10) auto;
-
+  
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
+    
     height: rem(40);
     border-top: $black 1px solid;
     border-bottom: $black 1px solid;
-
+    
     h1 {
       cursor: pointer;
-
+      
       &:hover {
         color: $grey;
       }
     }
-
+    
     .basket {
       position: relative;
       width: rem(34);
       height: rem(34);
       margin-right: rem(20);
-
+      
       background: url('assets/imgs/basket.jpg') center center no-repeat;
       background-size: rem(24) rem(26);
       cursor: pointer;
-
+      
       &:hover {
         background: url('assets/imgs/basket_grey.jpg') center center no-repeat;
         background-size: rem(24) rem(26);
       }
-
+      
       & :first-child {
         position: absolute;
         right: 0;
@@ -125,27 +135,27 @@ body {
       }
     }
   }
-
+  
   main {
     display: flex;
     margin-top: rem(10);
-
+    
     aside {
       min-width: rem(160);
       padding-right: rem(20);
       border-right: $black 1px solid;
-
+      
       & div {
         @extend .font_16_height;
         color: $black;
         cursor: pointer;
-
+        
         &:hover {
           color: $grey;
         }
       }
     }
-
+    
   }
 }
 </style>
