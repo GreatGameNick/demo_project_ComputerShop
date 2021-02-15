@@ -15,22 +15,10 @@ const state = () => ({
 }) as RootState
 
 const getters = {
-    GET_PRODUCTS: (state: RootState) => (shelf: string): Product [] => {
-        let clearShelfName = shelf.replace("/", "")
-        // @ts-ignore
-        return state[clearShelfName]
-    },
-    // GET_PRODUCT_FROM_STORE
-    GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product => {
-        // @ts-ignore
-        return state[shelf].find(item => item._id === _id)
-        // if (product)
-        //     return product
-        // @ts-ignore
-        // this.store.dispatch('FETCH_PRODUCT', {shelf, _id})
-        //     .then((pr: Product): Product => product = pr)
-        // return product
-    },
+    // @ts-ignore
+    GET_PRODUCTS: (state: RootState) => (shelf: string): Product [] => state[shelf],
+    // @ts-ignore
+    GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product | undefined => state[shelf].find(item => item._id === _id),
 } as GetterTree<RootState, {}>
 
 const mutations = {
@@ -38,7 +26,6 @@ const mutations = {
     SET_PRODUCTS: (state, {shelf, products}) => state[shelf].push(...products),
 
 
-    CHANGE_NAME: (state, newDescription: string) => state.laptops[0].description = newDescription,
     PUT_PRODUCT_TO_BASKET(state: RootState, id: number) {
         if (id > 0)   // добавляем
             state.clientBasket.push(id)
@@ -50,28 +37,23 @@ const mutations = {
 } as MutationTree<RootState>
 
 const actions = {
-    FETCH_PRODUCTS({state, commit}, shelf): void {
+    async FETCH_PRODUCTS({state, commit}, shelf): Promise<void> {
         // @ts-ignore
-        if (state[shelf].length === 0)
-            axios.get(`/api/shop/${shelf}`)
+        if (state[shelf].length < 2)
+            await axios.get(`/api/shop/${shelf}`)
                 .then(data => commit('SET_PRODUCTS', {shelf, products: data.data}))
     },
+    async PRODUCT_REQUEST({state, commit, getters}, {shelf, _id}: ProductPoint): Promise<Product> {
+        let product = getters.GET_PRODUCT({shelf, _id})
 
-
-    FETCH_PRODUCT({state, commit}, {shelf, _id}: ProductPoint): void {
-        console.log('============== FETCH_PRODUCT')
-
-        axios.get(`/api/shop/${shelf}/${_id}`)
-            .then(data => {
-                commit('SET_PRODUCTS', {shelf, products: [data.data]})
-                return data.data
-            })
+        if (!product)
+            await axios.get(`/api/shop/${shelf}/${_id}`)
+                .then(data => {
+                    commit('SET_PRODUCTS', {shelf, products: [data.data]})
+                    product = data.data
+                })
+        return product
     },
-
-
-    add({commit, state}, text: string): void {
-        commit('add', text)
-    }
 } as ActionTree<RootState, {}>
 
 export default new Vuex.Store<RootState>({

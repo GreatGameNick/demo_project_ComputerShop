@@ -15,7 +15,7 @@ const {delOneDiskFile, delOneGridFile,
   getOneDiskFile, getOneGridFile,
   getAllDiskFilesName, getAllGridFiles,
   getOneImgFromDiskStorageForPicture, getOneImgFromGridStorageForPicture,
-  findAllOnTheShelf,
+  findAllOnTheShelf, findOneOnTheShelf,
   getSession} = require("./mongooseHelpers/controllers/shop")
 const {laptops} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
@@ -51,7 +51,8 @@ app.get("/getsession", getSession)
 //текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
 
-app.get("/shop/:shelf", findAllOnTheShelf)
+app.get("/shop/:shelf", findAllOnTheShelf)   //use it
+app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 
 
 
@@ -104,8 +105,10 @@ app.get("/grigImage/:imgname", getOneImgFromGridStorageForPicture)
 
 
 //Изображение для <img> from diskStorage
-app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< us it
+app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it
 
+
+//not using yet
 app.get("/getAllGridFiles", getAllGridFiles)
 app.get("/getAllDiskFilesName", getAllDiskFilesName)
 app.get("/gridImgs/:name", getOneGridFile)

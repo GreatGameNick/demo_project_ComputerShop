@@ -1,7 +1,7 @@
 <template>
   <div class="bundle">
     <div class="shelf">
-      <div v-for="(product, ind) in GET_PRODUCTS($route.path)"
+      <div v-for="(product, ind) in GET_PRODUCTS($route.params.shelf)"
            :key="ind"
            @click="productDescription(product._id)"
       >

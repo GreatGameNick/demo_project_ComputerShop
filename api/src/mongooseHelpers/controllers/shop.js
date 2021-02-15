@@ -8,25 +8,23 @@ const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configurat
 
 
 //Текстовые роуты для MongoDb.
-module.exports.findAllOnTheShelf = async (req, res) => {    // us it
-  let shelf = req.params.shelf
-  
+function choseTheShelf(req) {
+  switch (req.params.shelf) {
+    case "laptops":
+      return  laptops
+    case "mouses":
+      return mouses
+    case "accessories":
+      return accessories
+  }
+}
+
+module.exports.findAllOnTheShelf = async (req, res) => {    // use it
   if (!req.session.i)
     req.session.i = 0;
   ++req.session.i;
   
-  let exactShelf
-  switch (shelf) {
-    case "laptops":
-      exactShelf = laptops
-      break
-    case "mouses":
-      exactShelf = mouses
-      break
-    case "accessories":
-      exactShelf = accessories
-      break
-  }
+  let exactShelf = choseTheShelf(req)
   
   await exactShelf.find({}, function (err, products) {
     assert.equal(err, null);
@@ -35,6 +33,21 @@ module.exports.findAllOnTheShelf = async (req, res) => {    // us it
   .then(products => {
     res.send(products);
   })
+}
+
+module.exports.findOneOnTheShelf = async (req, res) => {    // use it
+  if (!req.session.i)
+    req.session.i = 0;
+  ++req.session.i;
+  
+  let exactShelf = choseTheShelf(req)
+  let convertedId = new mongoose.Types.ObjectId(req.params._id)
+  
+  await exactShelf.findOne({_id: convertedId}, function (err, product) {
+    assert.equal(err, null);
+    return product
+  })
+  .then(product => res.send(product))
 }
 
 

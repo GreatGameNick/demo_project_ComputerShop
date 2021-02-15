@@ -1,23 +1,32 @@
 <template>
   <div class="wrapper">
-    <h3>{{product.name}}</h3>
-    <div class="anons">
-      <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
-      <div class="anons__price">{{product.price | splitPrice}} <span>₽</span></div>
-      <div @click="onPutProductToBasket(product._id)" class="anons__btn">Купить</div>
-    </div>
-    
-    <h3>Характеристики</h3>
-    <div class="specification">
-      <div v-for="(group, ind) of featuresGroups"
-           :key="ind + 'group'"
-      >
-        <div v-for="(feature, ind) of product[group]"
-             :key="ind + 'feature'"
-             class="specification__feature"
+    <div v-if="!product._id" class="loading">LOADING...  wait pleas</div>
+    <div v-else>
+      <h3>{{product.name}}</h3>
+      <div class="anons">
+        <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
+        <div class="anons__price">{{product.price | splitPrice}} <span>₽</span></div>
+        <div @click="onPutProductToBasket(product._id)" class="anons__btn">Купить</div>
+      </div>
+      
+      <h3>Характеристики</h3>
+      <div class="specification">
+        <div v-for="(group, ind) of featuresGroups"
+             :key="ind + 'group'"
         >
-          <div :class="{'specification__feature-title': !feature.includes('=')}">{{feature | takeField(0)}}</div>
-          <div>{{feature | takeField(1)}}</div>
+          <div v-for="(feature, ind) of product[group]"
+               :key="ind + 'feature'"
+               class="specification__feature"
+          >
+            <div :class="{'specification__feature-title': !feature.includes('=')}"
+                 v-if="feature.includes(' ') || (!feature.includes(' ') && feature.length < 22)"
+            >
+              {{feature | takeField(0)}}
+            </div>
+            <div v-if="feature.includes(' ') || (!feature.includes(' ') && feature.length < 22)">
+              {{feature | takeField(1)}}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -26,16 +35,13 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {mapGetters, mapMutations} from "vuex";
+import {mapActions, mapMutations} from "vuex";
 
 export default Vue.extend({
   data: () => ({
     product: {}
   }),
   computed: {
-    ...mapGetters([
-      'GET_PRODUCT'
-    ]),
     featuresGroups() {
       let featuresGroup = []
       
@@ -60,6 +66,9 @@ export default Vue.extend({
     },
   },
   methods: {
+    ...mapActions([
+      'PRODUCT_REQUEST'
+    ]),
     ...mapMutations([
       // 'PUT_PRODUCT_TO_BASKET'
     ]),
@@ -68,8 +77,9 @@ export default Vue.extend({
       // this.$router.push('/Basket')
     }
   },
-  created() {
-    this.product = this.GET_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
+  async created() {
+    await this.PRODUCT_REQUEST({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
+      .then(product => this.product = product)
   }
 })
 </script>
@@ -79,6 +89,13 @@ export default Vue.extend({
   width: 100%;
   box-sizing: border-box;
   padding-left: rem(20);
+  
+  .loading {
+    width: 100%;
+    margin-top: rem(100);
+    text-align: center;
+    color: $valid;
+  }
   
   .anons {
     @extend .information-place;
@@ -122,7 +139,7 @@ export default Vue.extend({
   .specification {
     box-sizing: border-box;
     padding: rem(10) rem(10) rem(40) rem(40);
-  
+    
     background: $white;
     background-origin: padding-box;
     

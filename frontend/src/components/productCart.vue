@@ -13,7 +13,7 @@
 import Vue, {PropType} from 'vue'
 import {mapMutations} from 'vuex'
 import {Product} from '@/types';
-import Stars from '@/components/Stars.vue';
+import Stars from '@/components/stars.vue';
 
 export default Vue.extend({
   components: {
