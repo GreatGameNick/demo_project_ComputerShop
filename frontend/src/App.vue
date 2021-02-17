@@ -6,7 +6,7 @@
       </h1>
       <div @click="onThrowToBasket" class="basket">
         <div>
-          {{ GET_BASKET.length }}
+          {{ GET_BASKET_POINTS.length }}
         </div>
       </div>
     </header>
@@ -49,7 +49,7 @@ export default Vue.extend({
   }),
   computed: {
     ...mapGetters([
-      'GET_BASKET'
+      'GET_BASKET_POINTS'
     ]),
   },
   methods: {

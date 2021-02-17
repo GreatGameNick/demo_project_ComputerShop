@@ -1,25 +1,26 @@
 <template>
   <div class="counter">
-    <div @click="PUT_PRODUCT_TO_BASKET(-id)"> - </div>
-    <div>{{GET_PRODUCT_AMOUNT(id)}}</div>
-    <div @click="PUT_PRODUCT_TO_BASKET(id)"> + </div>
+    <div @click="PUT_PRODUCT_TO_BASKET({shelf: productPoint.shelf, _id: productPoint._id, vector: -1})"> - </div>
+    <div>{{GET_PRODUCT_BASKET_AMOUNT(productPoint._id)}}</div>
+    <div @click="PUT_PRODUCT_TO_BASKET({shelf: productPoint.shelf, _id: productPoint._id, vector: 1})"> + </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue, {PropType} from "vue";
 import {mapMutations, mapGetters} from "vuex";
+import {ProductPoint} from "@/types";
 
 export default Vue.extend({
   props: {
-    id: {
-      type: Number,
+    productPoint: {
+      type: Object as PropType<ProductPoint>,
       required: true
     }
   },
   computed: {
     ...mapGetters([
-      'GET_PRODUCT_AMOUNT'
+      'GET_PRODUCT_BASKET_AMOUNT'
     ])
   },
   methods: {

@@ -19,7 +19,15 @@ const getters = {
   GET_PRODUCTS: (state: RootState) => (shelf: string): Product [] => state[shelf],
   // @ts-ignore
   GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product | undefined => state[shelf].find(item => item._id === _id),
-  GET_BASKET: (state: RootState): ProductPoint[]  => state.clientBasket,
+  GET_BASKET_POINTS: ({clientBasket}) => clientBasket,
+  GET_PRODUCT_BASKET_AMOUNT: ({clientBasket}) => ({shelf, _id}: ProductPoint): number => {
+    let count = 0
+    for (let item of clientBasket) {
+      if(item._id === _id)
+        count += 1
+    }
+    return count
+  }
 } as GetterTree<RootState, {}>
 
 const mutations = {
@@ -54,7 +62,7 @@ const actions = {
     if (!product)
       await axios.get(`/api/shop/${shelf}/${_id}`)
         .then(data => {
-          commit('SET_PRODUCTS', {shelf, products: [data.data]})
+          // commit('SET_PRODUCTS', {shelf, products: [data.data]})    //не очень то и нужно. Иначе будет дублироваться.
           product = data.data
         })
     return product
@@ -70,7 +78,14 @@ const actions = {
         .then(data => console.log('success to delete product at basket'))
     }
   },
-  
+  async BASKET_PRODUCTS_REQUEST({state, dispatch}): Promise<Product[]>{
+    let basketProducts = [] as Product[]
+    for(let one of state.clientBasket) {
+      dispatch('PRODUCT_REQUEST', {shelf: one.shelf, _id: one._id})
+      .then(product => basketProducts.push(product))
+    }
+    return basketProducts
+  },
 } as ActionTree<RootState, {}>
 
 export default new Vuex.Store<RootState>({
