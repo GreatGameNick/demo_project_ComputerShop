@@ -24,6 +24,9 @@ module.exports.findAllOnTheShelf = async (req, res) => {    // use it
     req.session.i = 0;
   ++req.session.i;
   
+  console.log('======================1. req.sessionID = ', req.sessionID)
+  
+  
   let exactShelf = choseTheShelf(req)
   
   await exactShelf.find({}, function (err, products) {
@@ -40,6 +43,9 @@ module.exports.findOneOnTheShelf = async (req, res) => {    // use it
     req.session.i = 0;
   ++req.session.i;
   
+  
+  console.log('======================2. req.sessionID = ', req.sessionID)
+  
   let exactShelf = choseTheShelf(req)
   let convertedId = new mongoose.Types.ObjectId(req.params._id)
   
@@ -48,13 +54,6 @@ module.exports.findOneOnTheShelf = async (req, res) => {    // use it
     return product
   })
   .then(product => res.send(product))
-}
-
-
-//Запрос сессии (из своего же хедера).
-module.exports.getSession = async (req, res) => {
-  console.log("req.headers.cookie ==========", req.headers.cookie);
-  res.send(`req.headers.cookie =is= ${req.headers.cookie}`)
 }
 
 

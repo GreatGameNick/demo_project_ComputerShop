@@ -28,7 +28,7 @@ app.use(bodyParser.json())
 
 //session
 //это отдельная специализированный раздел в mongoDb для api-сервиса - заточенный для хранения сессий.
-const MongoSessionStore = require('connect-mongo')(session)
+const MongoSessionStore = require('connect-mongo')(session)    //посредник между блоком session и блоком mongoose
 
 const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
 
@@ -41,10 +41,10 @@ app.use(session({
   secret: 'kola',
   resave: false,
   saveUninitialized: false,
-  store: new MongoSessionStore({mongooseConnection: sessionConnection})
+  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60 })
 }))
 
-app.get("/getsession", getSession)
+
 
 
 //Текстовые роуты для MongoDb.

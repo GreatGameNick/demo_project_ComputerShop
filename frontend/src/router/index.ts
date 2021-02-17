@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
+import VueRouter, {RouteConfig} from 'vue-router'
 import Shop from '../views/Shop.vue'
-// import Basket from '../views/Basket.vue'
+import Basket from '../views/Basket.vue'
 
 Vue.use(VueRouter)
 
@@ -10,11 +10,11 @@ const routes: Array<RouteConfig> = [
     path: '/',
     redirect: '/laptops'
   },
-  // {
-  //   path: '/basket',
-  //   name: 'Basket',
-  //   component: Basket
-  // },
+  {
+    path: '/basket',
+    name: 'Basket',
+    component: Basket
+  },
   {
     path: '/:shelf',
     name: 'Shop',

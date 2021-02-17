@@ -27,7 +27,8 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'FETCH_PRODUCTS'
+      'FETCH_PRODUCTS',
+      'FETCH_BASKET'
     ]),
     productDescription(_id: any) {
       this.$router.push(`/${this.$route.params.shelf}/${_id}`)
@@ -35,6 +36,7 @@ export default Vue.extend({
   },
   created() {
     this.FETCH_PRODUCTS(this.$route.params.shelf)
+    this.FETCH_BASKET()
   }
 
 });

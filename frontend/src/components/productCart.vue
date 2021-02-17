@@ -5,7 +5,7 @@
     <stars :starsCount="product.starsCount"/>
     <div class="cart__description">{{product.description}}</div>
     <div class="cart__price">{{product.price | splitPrice}} <span>₽</span></div>
-    <div @click.stop="PUT_PRODUCT_TO_BASKET($route.params.shelf, product._id, 1)" class="cart__btn">Купить</div>
+    <div @click.stop="PUT_PRODUCT_TO_BASKET({shelf: $route.params.shelf, _id: product._id , vector: 1})" class="cart__btn">Купить</div>
   </div>
 </template>
 

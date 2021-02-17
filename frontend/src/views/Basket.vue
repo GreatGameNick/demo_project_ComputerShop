@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3>Корзина: <span>{{GET_BASKET_PRODUCTS.length | productCounterDeclension}}</span></h3>
-    <div v-if="GET_BASKET_PRODUCTS.length > 0" class="basket">
+    <h3>Корзина: <span>{{GET_BASKET.length | productCounterDeclension}}</span></h3>
+    <div v-if="GET_BASKET.length > 0" class="basket">
       <div class="basket__list">
         <basket-cart v-for="(product, ind) of noRedundantProduct"
                      :key="ind"
@@ -10,7 +10,7 @@
       </div>
       <div class="basket__underline">
         <div class="basket__outcome">
-          Итого: {{GET_BASKET_PRODUCTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽
+          Итого: {{GET_BASKET.length | productCounterDeclension}} на {{price | splitPrice}} ₽
         </div>
         <div @click="onByProduct" class="basket__btn_orange">Купить</div>
       </div>
@@ -32,14 +32,14 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters([
-      'GET_BASKET_PRODUCTS'
+      'GET_BASKET'
     ]),
     noRedundantProduct()  {
-      return [...new Set(this.GET_BASKET_PRODUCTS)]
+      return [...new Set(this.GET_BASKET)]
     },
     price(): number {
       let sum = null
-      for(let item of this.GET_BASKET_PRODUCTS) {
+      for(let item of this.GET_BASKET) {
         sum = sum + item.price
       }
       return sum

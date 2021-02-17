@@ -6,8 +6,7 @@
       </h1>
       <div @click="onThrowToBasket" class="basket">
         <div>
-          7
-          <!--          {{ GET_PRODUCTS_FROM_BASKET.length }}-->
+          {{ GET_BASKET.length }}
         </div>
       </div>
     </header>
@@ -28,8 +27,8 @@
 </template>
 
 <script lang="ts">
-import Vue, {PropType} from 'vue'
-import {mapActions, mapMutations, mapGetters} from 'vuex';
+import Vue from 'vue'
+import {mapGetters} from 'vuex';
 
 export default Vue.extend({
   data: () => ({
@@ -50,16 +49,10 @@ export default Vue.extend({
   }),
   computed: {
     ...mapGetters([
-      // 'GET_PRODUCTS_FROM_BASKET'
+      'GET_BASKET'
     ]),
   },
   methods: {
-    ...mapActions([
-      // 'FETCH_PRODUCTS'
-    ]),
-    ...mapMutations([
-      // 'REBUILD_THE_BASKET_FROM_LOCALSTORAGE'
-    ]),
     onThrowToShop(): void {
       if(this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.

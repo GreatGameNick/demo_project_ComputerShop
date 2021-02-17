@@ -11,7 +11,7 @@
 <script lang="ts">
 import Vue, {PropType} from 'vue'
 import {Product} from '@/types'
-import counter from '~/components/counter.vue'
+import counter from '@/components/counter.vue'
 
 export default Vue.extend({
   components: {
