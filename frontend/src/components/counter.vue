@@ -1,8 +1,8 @@
 <template>
   <div class="counter">
-    <div @click="PUT_PRODUCT_TO_BASKET({shelf: productPoint.shelf, _id: productPoint._id, vector: -1})"> - </div>
+    <div @click="MOVE_THE_BASKET_PRODUCT({shelf: productPoint.shelf, _id: productPoint._id, vector: -1})"> - </div>
     <div>{{GET_PRODUCT_BASKET_AMOUNT(productPoint)}}</div>
-    <div @click="PUT_PRODUCT_TO_BASKET({shelf: productPoint.shelf, _id: productPoint._id, vector: 1})"> + </div>
+    <div @click="MOVE_THE_BASKET_PRODUCT({shelf: productPoint.shelf, _id: productPoint._id, vector: 1})"> + </div>
   </div>
 </template>
 
@@ -25,7 +25,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'PUT_PRODUCT_TO_BASKET'
+      'MOVE_THE_BASKET_PRODUCT'
     ])
   },
 })

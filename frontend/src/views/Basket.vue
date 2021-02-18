@@ -22,16 +22,20 @@
 import Vue from "vue";
 import basketCart from "@/components/basketCart.vue";
 import {Product} from '@/types'
-import {mapActions, mapMutations} from "vuex";
+import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default Vue.extend({
   components: {
     basketCart
   },
   data: () => ({
+    isBasketProductsInTheStore: false,
     basketProducts: [] as Product[]
   }),
   computed: {
+    ...mapGetters([
+      'GET_IS_BASKET_PRODUCTS'
+    ]),
     noRedundantProduct(): Product[] {
       return [...new Set(this.basketProducts)]
     },
@@ -48,7 +52,7 @@ export default Vue.extend({
       'CLEAR_BASKET'
     ]),
     ...mapActions([
-      'BASKET_PRODUCTS_REQUEST'
+      'FETCH_BASKET_PRODUCTS'
     ]),
     onByProduct(this: any): void {
       this.CLEAR_BASKET()
@@ -71,8 +75,8 @@ export default Vue.extend({
     }
   },
   async created() {
-    this.BASKET_PRODUCTS_REQUEST()
-      .then(products => this.basketProducts = products)
+    if (this.GET_IS_BASKET_PRODUCTS)
+      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
   }
 })
 

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {MutationTree, ActionTree, GetterTree} from 'vuex'
-import {RootState, Product, ProductPoint, BasketShift} from '@/types';
+import {RootState, Product, ProductPoint, BasketMovement, ProductsPoolForShelf} from '@/types';
 
 import axios from "axios";
 
@@ -11,19 +11,21 @@ const state = () => ({
   laptops: [],
   mouses: [],
   accessories: [],
-  clientBasket: []
+  clientBasket: [],
+  isBasketProductsInTheStore: false
 }) as RootState
 
 const getters = {
   // @ts-ignore
   GET_PRODUCTS: (state: RootState) => (shelf: string): Product [] => state[shelf],
   // @ts-ignore
-  GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product | undefined => state[shelf].find(item => item._id === _id),
-  GET_BASKET_POINTS: ({clientBasket}) => clientBasket,
+  GET_PRODUCT: (state: RootState) => ({shelf,_id}: ProductPoint): Product => state[shelf].find(item => item._id === _id),  //| undefined
+  GET_BASKET_POINTS: ({clientBasket}): ProductPoint[] => clientBasket,
+  GET_IS_BASKET_PRODUCTS: ({isBasketProductsInTheStore}): boolean => isBasketProductsInTheStore,
   GET_PRODUCT_BASKET_AMOUNT: ({clientBasket}) => ({shelf, _id}: ProductPoint): number => {
     let count = 0
     for (let item of clientBasket) {
-      if(item._id === _id)
+      if (item._id === _id)
         count += 1
     }
     return count
@@ -32,60 +34,87 @@ const getters = {
 
 const mutations = {
   // @ts-ignore
-  SET_PRODUCTS: (state, {shelf, products}) => state[shelf].push(...products),
-  SET_BASKET: ({clientBasket}, recoveryBasket) => clientBasket = recoveryBasket,
-  SET_PRODUCT_TO_STORE_BASKET: ({clientBasket}, {shelf, _id, vector}) => {
-    if (vector > 0) {
-      clientBasket.push({shelf, _id})
-    } else {
-      let deletedProductIndex = clientBasket.findIndex(itemId => itemId._id === _id)
-      Vue.delete(clientBasket, deletedProductIndex)
-    }
-  },
-  
+  SET_PRODUCTS: (state, {shelf, products}: ProductsPoolForShelf) => state[shelf].push(...products),    //rown
+  SET_BASKET: ({clientBasket}, recoveryBasket: ProductPoint[]) => clientBasket = recoveryBasket,
+  SET_IS_BASKET_PRODUCTS: ({isBasketProductsInTheStore}, status: boolean) => isBasketProductsInTheStore = status,
+  ADD_PRODUCT_TO_BASKET: ({clientBasket}, {shelf, _id}: ProductPoint) => clientBasket.push({shelf, _id}),
+  DELETE_PRODUCT_AT_BASKET: ({clientBasket}, {shelf, _id}: ProductPoint) => {
+    let deletedProductIndex = clientBasket.findIndex(itemId => itemId._id === _id)
+    Vue.delete(clientBasket, deletedProductIndex)
+  }
 } as MutationTree<RootState>
 
 const actions = {
-  async FETCH_PRODUCTS({state, commit}, shelf: string): Promise<void> {
+  async FETCH_PRODUCTS({state, commit}, shelf: string): Promise<void> {  //грузим при посещении какой-либо полки Shop. Грузим сразу ВСЕ продукты.
+    let basketShelfCounter = 0   //количество товаров, присутствующих в корзине с данной полки. Они могут быть уже загружены во Vuex (при посещении корзины).
+    for (let product of state.clientBasket) {
+      if (product.shelf === shelf)
+        basketShelfCounter += 1
+    }
     // @ts-ignore
-    if (state[shelf].length < 2)
+    if (state[shelf].length <= basketShelfCounter)  //загружаем, если ранее - не загружали. Т.е. количество товаров на полке не больше, чем количество товаров, добавленных с данной полки в корзину.
       await axios.get(`/api/shop/${shelf}`)
         .then(data => commit('SET_PRODUCTS', {shelf, products: data.data}))
   },
-  async FETCH_BASKET({state, commit}): Promise<void> {
-    await axios.get(`/api/basket`)
-      .then(data => commit('SET_BASKET', data.data))
+  async FETCH_BASKET_POINTS({state, commit}): Promise<void> {     //грузим при загрузе App
+    axios.get(`/api/basket/points`)
+      .then(recoveryBasket => commit('SET_BASKET', recoveryBasket))
   },
-  async PRODUCT_REQUEST({state, commit, getters}, {shelf, _id}: ProductPoint): Promise<Product> {
-    let product = getters.GET_PRODUCT({shelf, _id})
-    
-    if (!product)
-      await axios.get(`/api/shop/${shelf}/${_id}`)
-        .then(data => {
-          // commit('SET_PRODUCTS', {shelf, products: [data.data]})    //не очень то и нужно. Иначе будет дублироваться.
-          product = data.data
-        })
-    return product
+  async FETCH_BASKET_PRODUCTS({state, commit}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
+    if (state.clientBasket.length > 0) {
+      //отбираем тот товар, который обозначен в корзине, но отсутствует во Vuex, (после перезагрузки сайта),
+      //сортируя его по принадлежности к полкам.
+      let upsetProducts = {} as any
+      
+      for (let productPoint of state.clientBasket) {
+        // @ts-ignore
+        let isThere = state[productPoint.shelf].some(i => i._id === productPoint._id)
+        if (!isThere) {
+          if (upsetProducts[productPoint.shelf])   //если поле отсутствует, то создаем его.
+            upsetProducts[productPoint.shelf] = []
+          upsetProducts[productPoint.shelf].push(productPoint)
+        }
+      }
+      
+      //дозагружаем недостающий товар
+      
+      // let shelves = Object.keys(upsetProducts)
+      //
+      // shelves.forEach(shelf => {
+      //   upsetProducts[shelf].forEach((productPoint: ProductPoint) => {
+      //     axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
+      //       .then((data) => {
+      //         commit('SET_PRODUCTS', [data.data])
+      //       })
+      //   })
+      // })
+      
+      let basketShelves = Object.keys(upsetProducts)
+      for (let shelf of basketShelves) {
+        let shelfResponses = upsetProducts[shelf].map((productPoint: ProductPoint) =>
+          axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
+        )
+        let responseData = await Promise.allSettled(shelfResponses)
+        commit('SET_PRODUCTS', {shelf, products: responseData})
+      }
+    }
+    commit('SET_IS_BASKET_PRODUCTS', true)
   },
-  async PUT_PRODUCT_TO_BASKET({state, commit}, {shelf, _id, vector}: BasketShift): Promise<any> {
-    commit('SET_PRODUCT_TO_STORE_BASKET', {shelf, _id, vector})
-    
+  async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement) {
     if (vector > 0) {
-      await axios.put(`/api/basket`, {shelf, _id})
-        .then(data => console.log('success to add product at basket'))
+     await axios.put(`/api/basket`, {shelf, _id})
+      .then(response => {
+        if(response.status === 200)
+          commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
+      })
     } else {
-      await axios.delete(`/api/basket`, {params: {shelf, _id}})
-        .then(data => console.log('success to delete product at basket'))
+      await axios.delete(`/api/basket`, {params: { productPoint: {shelf, _id}}})
+        .then(response => {
+          if(response.status === 200)
+            commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
+        })
     }
-  },
-  async BASKET_PRODUCTS_REQUEST({state, dispatch}): Promise<Product[]>{
-    let basketProducts = [] as Product[]
-    for(let one of state.clientBasket) {
-      dispatch('PRODUCT_REQUEST', {shelf: one.shelf, _id: one._id})
-      .then(product => basketProducts.push(product))
-    }
-    return basketProducts
-  },
+  }
 } as ActionTree<RootState, {}>
 
 export default new Vuex.Store<RootState>({

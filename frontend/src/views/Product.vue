@@ -1,12 +1,11 @@
 <template>
   <div class="wrapper">
-    <div v-if="!product._id" class="loading">LOADING...  wait pleas</div>
-    <div v-else>
+    <div>
       <h3>{{product.name}}</h3>
       <div class="anons">
         <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
         <div class="anons__price">{{product.price | splitPrice}} <span>₽</span></div>
-        <div @click="onPutProductToBasket(product._id)" class="anons__btn">Купить</div>
+        <div @click="MOVE_THE_BASKET_PRODUCT(BasketMovement)" class="anons__btn">Купить</div>
       </div>
       
       <h3>Характеристики</h3>
@@ -35,13 +34,20 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {mapActions, mapMutations} from "vuex";
+import {mapGetters, mapMutations} from "vuex";
+import {BasketMovement} from '@/types'
 
 export default Vue.extend({
   data: () => ({
     product: {}
   }),
   computed: {
+    ...mapGetters([
+      'GET_PRODUCT'
+    ]),
+    BasketMovement(): BasketMovement {
+      return {shelf: this.$route.params.shelf, _id: this.$route.params.productId, vector: 1}
+    },
     featuresGroups() {
       let featuresGroup = []
       
@@ -56,6 +62,11 @@ export default Vue.extend({
       return featuresGroup
     }
   },
+  methods: {
+    ...mapMutations([
+      'MOVE_THE_BASKET_PRODUCT'
+    ])
+  },
   filters: {
     splitPrice: function (val: number): string {
       let [a, b, c, ...rest] = val.toString().split('').reverse()
@@ -65,21 +76,8 @@ export default Vue.extend({
       return val.split('=')[position]
     },
   },
-  methods: {
-    ...mapActions([
-      'PRODUCT_REQUEST'
-    ]),
-    ...mapMutations([
-      // 'PUT_PRODUCT_TO_BASKET'
-    ]),
-    onPutProductToBasket(_id: number): void {
-      // this.PUT_PRODUCT_TO_BASKET(_id)
-      // this.$router.push('/Basket')
-    }
-  },
-  async created() {
-    await this.PRODUCT_REQUEST({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
-      .then(product => this.product = product)
+  created() {
+    this.product = this.GET_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
   }
 })
 </script>

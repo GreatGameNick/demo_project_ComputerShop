@@ -5,14 +5,14 @@
     <stars :starsCount="product.starsCount"/>
     <div class="cart__description">{{product.description}}</div>
     <div class="cart__price">{{product.price | splitPrice}} <span>₽</span></div>
-    <div @click.stop="PUT_PRODUCT_TO_BASKET({shelf: $route.params.shelf, _id: product._id , vector: 1})" class="cart__btn">Купить</div>
+    <div @click.stop="MOVE_THE_BASKET_PRODUCT(BasketMovement)" class="cart__btn">Купить</div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue, {PropType} from 'vue'
-import {mapActions} from 'vuex'
-import {Product} from '@/types';
+import {mapMutations} from 'vuex'
+import {Product, BasketMovement} from '@/types';
 import Stars from '@/components/stars.vue';
 
 export default Vue.extend({
@@ -25,17 +25,22 @@ export default Vue.extend({
       required: true
     }
   },
+  computed: {
+    BasketMovement() :BasketMovement {
+      return {shelf: this.$route.params.shelf, _id: this.$route.params.productId, vector: 1}
+    },
+  },
+  methods: {
+    ...mapMutations([
+      'MOVE_THE_BASKET_PRODUCT'
+    ])
+  },
   filters: {
     splitPrice: function (val: number): string {
       let [a, b, c, ...rest] = val.toString().split('').reverse()
       return [rest.reverse().join(''), ' ', c, b, a].join('')
     }
   },
-  methods: {
-    ...mapActions([
-      'PUT_PRODUCT_TO_BASKET'
-    ]),
-  }
 })
 </script>
 

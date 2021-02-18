@@ -14,6 +14,7 @@ Vue-CLI_project (vuex, routing as well)
   //validation
   //authorization
   //jwt token
+  //custom alert
   cooke for sessionId
   Jest
 

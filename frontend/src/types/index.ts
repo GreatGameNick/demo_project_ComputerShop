@@ -39,12 +39,17 @@ export interface Shelf {
   shelfName: string
 }
 
+export interface ProductsPoolForShelf {
+  shelf: string,
+  products: Product[]
+}
+
 export interface ProductPoint {
   shelf: string,
   _id: string
 }
 
-export interface BasketShift extends ProductPoint {
+export interface BasketMovement extends ProductPoint {
   vector: number
 }
 
@@ -52,6 +57,7 @@ export interface RootState {
   laptops: Product[],
   mouses: Product[],
   accessories: Product[],
-  clientBasket: ProductPoint[]
+  clientBasket: ProductPoint[],
+  isBasketProductsInTheStore: boolean
 }
 

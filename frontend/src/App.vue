@@ -28,7 +28,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapGetters} from 'vuex';
+import {mapActions, mapGetters} from 'vuex';
 
 export default Vue.extend({
   data: () => ({
@@ -53,6 +53,9 @@ export default Vue.extend({
     ]),
   },
   methods: {
+    ...mapActions([
+      'FETCH_BASKET_POINTS'
+    ]),
     onThrowToShop(): void {
       if(this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
@@ -67,6 +70,9 @@ export default Vue.extend({
       this.$router.push({path: '/basket', query: {startPath}})
     },
   },
+  async created() {
+    await this.FETCH_BASKET_POINTS()
+  }
 })
 </script>
 
