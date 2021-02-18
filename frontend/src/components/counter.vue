@@ -1,7 +1,7 @@
 <template>
   <div class="counter">
     <div @click="PUT_PRODUCT_TO_BASKET({shelf: productPoint.shelf, _id: productPoint._id, vector: -1})"> - </div>
-    <div>{{GET_PRODUCT_BASKET_AMOUNT(productPoint._id)}}</div>
+    <div>{{GET_PRODUCT_BASKET_AMOUNT(productPoint)}}</div>
     <div @click="PUT_PRODUCT_TO_BASKET({shelf: productPoint.shelf, _id: productPoint._id, vector: 1})"> + </div>
   </div>
 </template>

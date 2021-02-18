@@ -71,6 +71,8 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+$appMediaPoint_1: 530px;
+
 body {
   background: $liteGrey;
 }
@@ -148,8 +150,11 @@ body {
           color: $grey;
         }
       }
+      
+      @media (max-width: $appMediaPoint_1) {
+        display: none;                        //доделать @медиа надо на оч малых размерах
+      }
     }
-    
   }
 }
 </style>

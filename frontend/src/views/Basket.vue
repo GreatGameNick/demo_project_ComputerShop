@@ -79,6 +79,8 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
+$basketMediaPoint: 1200px;
+
 .wrapper {
   width: 100%;
   box-sizing: border-box;
@@ -92,11 +94,9 @@ export default Vue.extend({
     display: flex;
     justify-content: space-between;
     
-    @media (max-width: 1000px) {
+    @media (max-width: $basketMediaPoint) {
       flex-flow: wrap column;
-      
     }
-    
     
     .basket__list {
       display: block;
@@ -106,13 +106,13 @@ export default Vue.extend({
         margin-top: rem(20);
       }
       
-      @media (max-width: 1000px) {
+      @media (max-width: $basketMediaPoint) {
         width: 100%;
       }
     }
     
     &__underline {
-      margin-top: rem(20);
+      margin: rem(20) 0 0 rem(10);
       width: 300px;
       
       .basket__outcome {
