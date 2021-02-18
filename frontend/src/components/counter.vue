@@ -8,7 +8,7 @@
 
 <script lang="ts">
 import Vue, {PropType} from "vue";
-import {mapMutations, mapGetters} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 import {ProductPoint} from "@/types";
 
 export default Vue.extend({
@@ -24,7 +24,7 @@ export default Vue.extend({
     ])
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'PUT_PRODUCT_TO_BASKET'
     ])
   },
