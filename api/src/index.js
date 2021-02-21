@@ -46,16 +46,22 @@ app.use(session({
 }))
 
 
-
-
 //Текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
 app.get("/shop/:shelf", findAllOnTheShelf)   //use it
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 
+
+
+//basket
 app.put("/basket", putProductToBasket)        //use it
 // app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                //use it
+
+
+
+
+
 
 
 

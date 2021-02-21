@@ -78,6 +78,7 @@ export default Vue.extend({
   },
   created() {
     this.product = this.GET_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
+    //надо добавить загрузку с бака на случай перезагрузки страницы
   }
 })
 </script>

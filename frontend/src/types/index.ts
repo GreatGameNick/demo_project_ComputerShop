@@ -58,6 +58,7 @@ export interface RootState {
   mouses: Product[],
   accessories: Product[],
   clientBasket: ProductPoint[],
-  isBasketProductsInTheStore: boolean
+  isBasketProductsInTheStore: boolean,
+  isBasketPointsInTheStore: boolean
 }
 

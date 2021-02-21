@@ -18,57 +18,30 @@ module.exports.putProductToBasket = async (req, res) => {
       const basketInstance = new BasketModel({
         sessionID: req.sessionID,
         createdDate: Date.now(),
-        basket: {
+        basketPoints: [{
           shelf: req.body.shelf,
           _id: req.body._id
-        }
+        }]
       })
       await basketInstance.save()
     } else {
-      basket.basket.push({shelf: req.body.shelf, _id:  req.body._id})
-      await BasketModel.updateOne({sessionID: req.sessionID}, {basket: basket.basket}, function (err, res) {
+      basket.basketPoints.push({shelf: req.body.shelf, _id:  req.body._id})
+      await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
         console.log(err)
       })
     }
-  })
-  
-  await BasketModel.findOne({sessionID: req.sessionID}, function (err, product) {
-    console.log('>>>>> product_2 >>>>', product)
   })
   res.sendStatus(200)
 }
 
 
-
-
-
-
-
-
-
-// module.exports.putProductToBasket = async (req, res) => {
-//   const basketInstance = new BasketModel({
-//     sessionID: req.sessionID,
-//     createdDate: Date.now(),
-//     basket: {
-//       shelf: req.body.shelf,
-//       _id: req.body._id
-//     }
-//   })
-//
-//   await basketInstance.save()
-//   res.sendStatus(200)
-// }
-
 module.exports.getBasket = async (req, res) => {
-  await BasketModel.find({sessionID: req.sessionID}, function (err, basketPoints) {
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
     assert.equal(err, null);
-    return basketPoints
+    return basket
   })
-  .then(basketPoints => {
-    console.log('basketPoints ============= ', basketPoints)
-    res.send(basketPoints)
-  })
+  .then(basket =>
+    basket == null ? res.send('basket is empty') : res.send(basket))
 }
 
 

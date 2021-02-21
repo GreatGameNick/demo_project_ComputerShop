@@ -6,7 +6,7 @@
       </h1>
       <div @click="onThrowToBasket" class="basket">
         <div>
-          {{ GET_BASKET_POINTS.length }}
+          {{GET_BASKET_POINTS.length}}
         </div>
       </div>
     </header>
@@ -49,7 +49,8 @@ export default Vue.extend({
   }),
   computed: {
     ...mapGetters([
-      'GET_BASKET_POINTS'
+      'GET_BASKET_POINTS',
+      'GET_IS_BASKET_POINTS'
     ]),
   },
   methods: {
@@ -57,7 +58,7 @@ export default Vue.extend({
       'FETCH_BASKET_POINTS'
     ]),
     onThrowToShop(): void {
-      if(this.$route.query.startPath) {
+      if (this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
       } else {
         let pathChunks = this.$route.path.split('/')
@@ -71,7 +72,8 @@ export default Vue.extend({
     },
   },
   async created() {
-    await this.FETCH_BASKET_POINTS()
+    if (!this.GET_IS_BASKET_POINTS)
+      await this.FETCH_BASKET_POINTS()
   }
 })
 </script>
@@ -158,7 +160,7 @@ body {
       }
       
       @media (max-width: $appMediaPoint_1) {
-        display: none;                        //доделать @медиа надо на оч малых размерах
+        display: none; //доделать @медиа надо на оч малых размерах
       }
     }
   }

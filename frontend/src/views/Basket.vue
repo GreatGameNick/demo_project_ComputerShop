@@ -75,8 +75,13 @@ export default Vue.extend({
     }
   },
   async created() {
-    if (this.GET_IS_BASKET_PRODUCTS)
+    console.log('this.GET_IS_BASKET_PRODUCTS ==========', this.GET_IS_BASKET_PRODUCTS)
+    
+    if (!this.GET_IS_BASKET_PRODUCTS)
       await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
+    
+    
+    //надо исправить путь URL при перезагрузке страницы Корзина.
   }
 })
 
