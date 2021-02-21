@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const productPointSchema = new mongoose.Schema({
   shelf: String,
-  _id: mongoose.Schema.Types.ObjectId
+  _id: String
 });
 
 module.exports.basketSchema = new mongoose.Schema({
   sessionID: String,
   createdDate: Date,
-  baskettt: [productPointSchema]
+  basket: [productPointSchema]
 });
