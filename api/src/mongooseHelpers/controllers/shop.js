@@ -3,7 +3,7 @@ const Grid = require('gridfs-stream')
 const assert = require('assert');
 const fs = require('fs');
 
-var {laptops, mouses, accessories} = require('../models/shelves')
+const {laptops, mouses, accessories} = require('../models/shelves')
 const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configuration")
 
 

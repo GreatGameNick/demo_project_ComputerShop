@@ -57,13 +57,19 @@ const actions = {
         .then(data => commit('SET_PRODUCTS', {shelf, products: data.data}))
   },
   async FETCH_BASKET_POINTS({state, commit}): Promise<void> {     //грузим при загрузе App
-    axios.get(`/api/basket/points`)
-      .then(recoveryBasket => commit('SET_BASKET', recoveryBasket))
+    
+    
+    axios.get(`/api/basket`)
+      .then(recoveryBasket => {
+        console.log('recoveryBasket ============ ', recoveryBasket.data)
+        
+        commit('SET_BASKET', recoveryBasket)
+      })
   },
   async FETCH_BASKET_PRODUCTS({state, commit}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
     if (state.clientBasket.length > 0) {
       //отбираем тот товар, который обозначен в корзине, но отсутствует во Vuex, (после перезагрузки сайта),
-      //сортируя его по принадлежности к полкам.
+      //одновременно сортируя его по принадлежности к полкам.
       let upsetProducts = {} as any
       
       for (let productPoint of state.clientBasket) {
@@ -102,6 +108,9 @@ const actions = {
   },
   async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement) {
     if (vector > 0) {
+      
+     console.log('wait axios.put(`/api/basket`, {shelf, _id}) =====', {shelf, _id})
+      
      await axios.put(`/api/basket`, {shelf, _id})
       .then(response => {
         if(response.status === 200)

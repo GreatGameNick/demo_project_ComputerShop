@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {mapGetters, mapMutations} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import {BasketMovement} from '@/types'
 
 export default Vue.extend({
@@ -63,7 +63,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'MOVE_THE_BASKET_PRODUCT'
     ])
   },

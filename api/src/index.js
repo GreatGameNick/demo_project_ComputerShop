@@ -17,6 +17,7 @@ const {delOneDiskFile, delOneGridFile,
   getOneImgFromDiskStorageForPicture, getOneImgFromGridStorageForPicture,
   findAllOnTheShelf, findOneOnTheShelf,
   getSession} = require("./mongooseHelpers/controllers/shop")
+const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
 const {laptops} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
 
@@ -51,6 +52,10 @@ app.use(session({
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
 app.get("/shop/:shelf", findAllOnTheShelf)   //use it
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
+
+app.put("/basket", putProductToBasket)        //use it
+// app.delete("/basket", deleteProductAtBasket)   //use it
+app.get("/basket", getBasket)                //use it
 
 
 

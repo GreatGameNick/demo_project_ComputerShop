@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import Vue, {PropType} from 'vue'
-import {mapMutations} from 'vuex'
+import {mapActions} from 'vuex'
 import {Product, BasketMovement} from '@/types';
 import Stars from '@/components/stars.vue';
 
@@ -27,11 +27,11 @@ export default Vue.extend({
   },
   computed: {
     BasketMovement() :BasketMovement {
-      return {shelf: this.$route.params.shelf, _id: this.$route.params.productId, vector: 1}
+      return {shelf: this.$route.params.shelf, _id: this.product._id, vector: 1}
     },
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
       'MOVE_THE_BASKET_PRODUCT'
     ])
   },
