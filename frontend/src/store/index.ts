@@ -130,7 +130,7 @@ const actions = {
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
         })
     } else {
-      await axios.delete(`/api/basket`, {params: {productPoint: {shelf, _id}}})
+      await axios.delete(`/api/basket`, {params: {productPoint: {shelf, _id}}})  //productPoint мы получим как req.query.productPoint
         .then(response => {
           if (response.status === 200)
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
@@ -139,10 +139,6 @@ const actions = {
   }
 } as ActionTree<RootState, {}>
 
-
-query: {
-  productPoint: '{"shelf":"laptops","_id":"6033a55c21fd650037c12632"}'
-}
 
 export default new Vuex.Store<RootState>({
   state,
