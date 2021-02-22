@@ -18,13 +18,30 @@ const state = () => ({
 
 const getters = {
   // @ts-ignore
-  GET_PRODUCTS: (state: RootState) => (shelf: string): Product [] => state[shelf],
+  GET_PRODUCTS: (state: RootState) => (shelf: string): Product[] => state[shelf],
   // @ts-ignore
-  GET_PRODUCT: (state: RootState) => ({
-                                        shelf,
-                                        _id
-                                      }: ProductPoint): Product => state[shelf].find(item => item._id === _id),  //| undefined
+  GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product => state[shelf].find(item => item._id === _id),  //| undefined
   GET_BASKET_POINTS: ({clientBasket}): ProductPoint[] => clientBasket,
+  
+  GET_BASKET_PRODUCTS: (state: RootState,getters): Product[] => {
+    //устраняем в корзине повторы заказанных продуктов
+    let noRedundantBasketProductPoints = getters.GET_BASKET_POINTS.filter((item: Product, ind: number, arr: Product[]) => ind === arr.findIndex(i => i._id === item._id))
+    
+    console.log('noRedundantBasketProductPoints ====', noRedundantBasketProductPoints)
+    
+    let basketProducts = [] as Product[]
+    for (let productPoint of noRedundantBasketProductPoints) {
+      // @ts-ignore
+      let product = state[productPoint.shelf].find(item => item._id === productPoint._id)
+      basketProducts.push(product)
+    }
+    return basketProducts
+  },
+  
+  
+  
+  
+  
   GET_IS_BASKET_PRODUCTS: ({isBasketProductsInTheStore}): boolean => isBasketProductsInTheStore,
   GET_IS_BASKET_POINTS: ({isBasketPointsInTheStore}): boolean => isBasketPointsInTheStore,
   GET_PRODUCT_BASKET_AMOUNT: ({clientBasket}) => ({shelf, _id}: ProductPoint): number => {
@@ -39,14 +56,14 @@ const getters = {
 
 const mutations = {
   // @ts-ignore
-  SET_PRODUCTS: (state, {shelf, products}: ProductsPoolForShelf) => state[shelf].push(...products),    //rown
+  SET_PRODUCTS: (state, {shelf, products}: ProductsPoolForShelf) => state[shelf].push(...products),
   SET_BASKET: (state, recoveryBasket: ProductPoint[]) => state.clientBasket = recoveryBasket,
-  SET_IS_BASKET_PRODUCTS: ({isBasketProductsInTheStore}, status: boolean) => isBasketProductsInTheStore = status,
-  SET_IS_BASKET_POINTS: ({isBasketPointsInTheStore}, status: boolean) => isBasketPointsInTheStore = status,
-  ADD_PRODUCT_TO_BASKET: ({clientBasket}, {shelf, _id}: ProductPoint) => clientBasket.push({shelf, _id}),
-  DELETE_PRODUCT_AT_BASKET: ({clientBasket}, {shelf, _id}: ProductPoint) => {
-    let deletedProductIndex = clientBasket.findIndex(itemId => itemId._id === _id)
-    Vue.delete(clientBasket, deletedProductIndex)
+  SET_IS_BASKET_PRODUCTS: (state, status: boolean) => state.isBasketProductsInTheStore = status,
+  SET_IS_BASKET_POINTS: (state, status: boolean) => state.isBasketPointsInTheStore = status,
+  ADD_PRODUCT_TO_BASKET: (state, {shelf, _id}: ProductPoint) => state.clientBasket.push({shelf, _id}),
+  DELETE_PRODUCT_AT_BASKET: (state, {shelf, _id}: ProductPoint) => {
+    let deletedProductIndex = state.clientBasket.findIndex(itemId => itemId._id === _id)
+    Vue.delete(state.clientBasket, deletedProductIndex)
   }
 } as MutationTree<RootState>
 
@@ -73,10 +90,8 @@ const actions = {
   async FETCH_BASKET_PRODUCTS({state, commit, dispatch}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
     if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Требуется ждать обновления BasketPointsInTheStore.
       await dispatch('FETCH_BASKET_POINTS')
-    console.log('state.clientBasket.length =====2', state.clientBasket.length)
     
     if (state.clientBasket.length > 0) {
-      console.log('go in state.clientBasket.length > 0) ============')
       //отбираем тот товар, который обозначен в корзине, но отсутствует во Vuex, (после перезагрузки сайта),
       //одновременно сортируя его по принадлежности к полкам.
       let upsetProducts = {} as any
@@ -89,37 +104,23 @@ const actions = {
         console.log('isThere ===', isThere)
         
         if (!isThere) {   //корзиночный товар - в shop'e отсутствует.
-          if (!upsetProducts[productPoint.shelf])   //если поле полки в upsetProducts отсутствует, то создаем его.
+          if (!upsetProducts[productPoint.shelf])   //если поле для полки в upsetProducts отсутствует, то создаем его.
             upsetProducts[productPoint.shelf] = []
           upsetProducts[productPoint.shelf].push(productPoint)
         }
       }
       
-      console.log('upsetProducts ============ >>', upsetProducts)
-      
       //дозагружаем недостающий товар
-      
-      // let shelves = Object.keys(upsetProducts)
-      //
-      // shelves.forEach(shelf => {
-      //   upsetProducts[shelf].forEach((productPoint: ProductPoint) => {
-      //     axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
-      //       .then((data) => {
-      //         commit('SET_PRODUCTS', [data.data])
-      //       })
-      //   })
-      // })
-      
-      // let basketShelves = Object.keys(upsetProducts)
-      // for (let shelf of basketShelves) {
-      //   let shelfResponses = upsetProducts[shelf].map((productPoint: ProductPoint) =>
-      //     axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
-      //   )
-      //   let responseData = await Promise.allSettled(shelfResponses)
-      //   commit('SET_PRODUCTS', {shelf, products: responseData})
-      // }
+      let basketShelves = Object.keys(upsetProducts)
+      for (let shelf of basketShelves) {
+        let shelfResponses = upsetProducts[shelf].map((productPoint: ProductPoint) =>
+          axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
+        )
+        let responseData = await Promise.allSettled(shelfResponses)
+        commit('SET_PRODUCTS', {shelf, products: responseData})
+      }
     }
-    // commit('SET_IS_BASKET_PRODUCTS', true)
+    commit('SET_IS_BASKET_PRODUCTS', true)
   },
   async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement) {
     if (vector > 0) {

@@ -1,18 +1,18 @@
 <template>
   <div class="wrapper">
-    <h2>Корзина: <span>{{basketProducts.length | productCounterDeclension}}</span></h2>
-    <div v-if="basketProducts.length > 0" class="basket">
+    <h2>Корзина: <span>{{GET_BASKET_PRODUCTS.length | productCounterDeclension}}</span></h2>
+    <div v-if="GET_BASKET_PRODUCTS.length > 0" class="basket">
       <div class="basket__list">
-        <basket-cart v-for="(product, ind) of noRedundantProduct"
+        <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
                      :key="ind"
                      :product="product"
         />
       </div>
       <div class="basket__underline">
         <div class="basket__outcome">
-          Итого: <span> {{basketProducts.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
+          Итого: <span> {{GET_BASKET_PRODUCTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
         </div>
-        <div @click="onByProduct" class="basket__btn_orange">Купить</div>
+        <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
       </div>
     </div>
   </div>
@@ -21,27 +21,20 @@
 <script lang="ts">
 import Vue from "vue";
 import basketCart from "@/components/basketCart.vue";
-import {Product} from '@/types'
 import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default Vue.extend({
   components: {
     basketCart
   },
-  data: () => ({
-    isBasketProductsInTheStore: false,
-    basketProducts: [] as Product[]
-  }),
   computed: {
     ...mapGetters([
-      'GET_IS_BASKET_PRODUCTS'
+      'GET_IS_BASKET_PRODUCTS',
+      'GET_BASKET_PRODUCTS'
     ]),
-    noRedundantProduct(): Product[] {
-      return [...new Set(this.basketProducts)]
-    },
     price(): number {
       let sum: number = 0
-      for (let item of this.basketProducts) {
+      for (let item of this.GET_BASKET_PRODUCTS) {
         sum = sum + item.price
       }
       return sum
@@ -54,9 +47,10 @@ export default Vue.extend({
     ...mapActions([
       'FETCH_BASKET_PRODUCTS'
     ]),
-    onByProduct(this: any): void {
+    onBuyProducts(this: any): void {
       this.CLEAR_BASKET()
       this.$router.push('/')
+      //показать алерт
     }
   },
   filters: {
@@ -75,10 +69,10 @@ export default Vue.extend({
     }
   },
   async created() {
-    console.log('this.GET_IS_BASKET_PRODUCTS ==========', this.GET_IS_BASKET_PRODUCTS)
-    
     if (!this.GET_IS_BASKET_PRODUCTS)
       await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
+    
+    
     
     
     //надо исправить путь URL при перезагрузке страницы Корзина.
