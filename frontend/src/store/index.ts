@@ -71,32 +71,31 @@ const actions = {
       })
   },
   async FETCH_BASKET_PRODUCTS({state, commit, dispatch}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
-    console.log('FETCH_BASKET_PRODUCTS ============')
-    console.log('state.clientBasket.length =====1', state.clientBasket.length)
-    
-    if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Ждем обновления BasketPointsInTheStore.
+    if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Требуется ждать обновления BasketPointsInTheStore.
       await dispatch('FETCH_BASKET_POINTS')
-    
     console.log('state.clientBasket.length =====2', state.clientBasket.length)
     
     if (state.clientBasket.length > 0) {
-      console.log('if (state.clientBasket.length > 0) ============')
-      
+      console.log('go in state.clientBasket.length > 0) ============')
       //отбираем тот товар, который обозначен в корзине, но отсутствует во Vuex, (после перезагрузки сайта),
       //одновременно сортируя его по принадлежности к полкам.
       let upsetProducts = {} as any
       
-      // for (let productPoint of state.clientBasket) {
-      //   // @ts-ignore
-      //   let isThere = state[productPoint.shelf].some(i => i._id === productPoint._id)
-      //   if (!isThere) {
-      //     if (upsetProducts[productPoint.shelf])   //если поле отсутствует, то создаем его.
-      //       upsetProducts[productPoint.shelf] = []
-      //     upsetProducts[productPoint.shelf].push(productPoint)
-      //   }
-      // }
+      for (let productPoint of state.clientBasket) {
+        console.log('productPoint ===', productPoint)
+        
+        // @ts-ignore
+        let isThere = state[productPoint.shelf].some(i => i._id === productPoint._id)  //присутствует ли корзиночный товар в shop'e.
+        console.log('isThere ===', isThere)
+        
+        if (!isThere) {   //корзиночный товар - в shop'e отсутствует.
+          if (!upsetProducts[productPoint.shelf])   //если поле полки в upsetProducts отсутствует, то создаем его.
+            upsetProducts[productPoint.shelf] = []
+          upsetProducts[productPoint.shelf].push(productPoint)
+        }
+      }
       
-      console.log('upsetProducts ============', upsetProducts)
+      console.log('upsetProducts ============ >>', upsetProducts)
       
       //дозагружаем недостающий товар
       
