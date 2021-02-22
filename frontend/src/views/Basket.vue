@@ -1,18 +1,20 @@
 <template>
   <div class="wrapper">
-    <h2>Корзина: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
-    <div  class="basket">
-      <div class="basket__list">
-        <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
-                     :key="ind"
-                     :product="product"
-        />
-      </div>
-      <div class="basket__underline">
-        <div class="basket__outcome">
-          Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
+    <div v-if="GET_BASKET_PRODUCTS[0] != null">
+      <h2>Корзина: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
+      <div  class="basket">
+        <div class="basket__list">
+          <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
+                       :key="ind"
+                       :product="product"
+          />
         </div>
-        <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
+        <div class="basket__underline">
+          <div class="basket__outcome">
+            Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
+          </div>
+          <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
+        </div>
       </div>
     </div>
   </div>

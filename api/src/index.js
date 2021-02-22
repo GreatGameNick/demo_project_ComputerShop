@@ -37,7 +37,7 @@ app.use(session({
   // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
   cookie: {
     httpOnly: false,  //на клиенте эта кука читаться не будет
-    maxAge: 1000 * 60
+    maxAge: 3600000
   },
   secret: 'kola',
   resave: false,
@@ -57,8 +57,6 @@ app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 app.put("/basket", putProductToBasket)        //use it
 app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use it
-
-
 
 
 

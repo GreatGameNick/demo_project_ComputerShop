@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <div>
+    <div v-if="product !=null">
       <h3>{{product.name}}</h3>
       <div class="anons">
         <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
@@ -35,11 +35,11 @@
 <script lang="ts">
 import Vue from "vue";
 import {mapActions, mapGetters} from "vuex";
-import {BasketMovement} from '@/types'
+import {BasketMovement, Product} from '@/types'
 
 export default Vue.extend({
   data: () => ({
-    product: {}
+    product: {} as Product
   }),
   computed: {
     ...mapGetters([
@@ -64,7 +64,8 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'MOVE_THE_BASKET_PRODUCT'
+      'MOVE_THE_BASKET_PRODUCT',
+      'FETCH_PRODUCT'
     ])
   },
   filters: {
@@ -78,7 +79,14 @@ export default Vue.extend({
   },
   created() {
     this.product = this.GET_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
-    //надо добавить загрузку с бака на случай перезагрузки страницы
+    
+    if (this.product == null) {
+      
+      this.FETCH_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
+      .then(product => {
+        this.product = product
+      })
+    }
   }
 })
 </script>

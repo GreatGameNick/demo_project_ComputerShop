@@ -68,6 +68,8 @@ export default Vue.extend({
     },
     onThrowToBasket(): void {
       let startPath = this.$route.path.split('/')[1]
+      if (startPath === 'basket')    //если мы уже находимся в Корзине, то пресекаем редирект на себя самого.
+        return
       this.$router.push({path: '/basket', query: {startPath}})
     },
   },

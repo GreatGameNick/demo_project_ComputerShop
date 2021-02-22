@@ -13,7 +13,7 @@ const state = () => ({
   accessories: [],
   clientBasket: [],
   isBasketProductsInTheStore: false,    //восстанавливались ли во Vuex после перезагрузки сайта описания продуктов, которые положены в корзину
-  isBasketPointsInTheStore: false       //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности.
+  isBasketPointsInTheStore: false       //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
 }) as RootState
 
 const getters = {
@@ -22,26 +22,18 @@ const getters = {
   // @ts-ignore
   GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product => state[shelf].find(item => item._id === _id),  //| undefined
   GET_BASKET_POINTS: ({clientBasket}): ProductPoint[] => clientBasket,
-  
   GET_BASKET_PRODUCTS: (state: RootState,getters): Product[] => {
     //устраняем в корзине повторы заказанных продуктов
     let noRedundantBasketProductPoints = getters.GET_BASKET_POINTS.filter((item: Product, ind: number, arr: Product[]) => ind === arr.findIndex(i => i._id === item._id))
     
-    console.log('noRedundantBasketProductPoints ====', noRedundantBasketProductPoints)
-    
     let basketProducts = [] as Product[]
     for (let productPoint of noRedundantBasketProductPoints) {
       // @ts-ignore
-      let product = state[productPoint.shelf].find(item => item._id === productPoint._id)   //<< опережает
+      let product = state[productPoint.shelf].find(item => item._id === productPoint._id)
       basketProducts.push(product)
     }
     return basketProducts
   },
-  
-  
-  
-  
-  
   GET_IS_BASKET_PRODUCTS: ({isBasketProductsInTheStore}): boolean => isBasketProductsInTheStore,
   GET_IS_BASKET_POINTS: ({isBasketPointsInTheStore}): boolean => isBasketPointsInTheStore,
   GET_PRODUCT_BASKET_AMOUNT: ({clientBasket}) => ({shelf, _id}: ProductPoint): number => {
@@ -69,15 +61,28 @@ const mutations = {
 
 const actions = {
   async FETCH_PRODUCTS({state, commit}, shelf: string): Promise<void> {  //грузим при посещении какой-либо полки Shop. Грузим сразу ВСЕ продукты.
-    let basketShelfCounter = 0   //количество товаров, присутствующих в корзине с данной полки. Они могут быть уже загружены во Vuex (при посещении корзины).
+    let basketShelfCounter = 1   //количество товаров, присутствующих в корзине на данной полке. Они могут быть уже загружены во Vuex (при посещении корзины) и поэтому не учитываться для оценки - "пустая ли" полка.
     for (let product of state.clientBasket) {
       if (product.shelf === shelf)
         basketShelfCounter += 1
     }
+  
+    // загружаем, если ранее - не загружали.
+    // Т.е. если количество товаров на полке недостаточно - не больше, чем количество товаров, добавленных с данной полки в корзину,
+    // или не больше 1шт, которая могла бы быть загружена при перезагрузке сайта, находясь на странице Отдельный продукт.
     // @ts-ignore
-    if (state[shelf].length <= basketShelfCounter)  //загружаем, если ранее - не загружали. Т.е. количество товаров на полке не больше, чем количество товаров, добавленных с данной полки в корзину.
+    if (state[shelf].length <= basketShelfCounter || state[shelf].length < 2)
       await axios.get(`/api/shop/${shelf}`)
         .then(data => commit('SET_PRODUCTS', {shelf, products: data.data}))
+  },
+  async FETCH_PRODUCT({state, commit}, {shelf, _id}: ProductPoint): Promise<Product> {
+    let product = {} as Product
+    await axios.get(`/api/shop/${shelf}/${_id}`)
+      .then(data => {
+        commit('SET_PRODUCTS', {shelf, products: [data.data]})
+        product = data.data
+      })
+    return product
   },
   async FETCH_BASKET_POINTS({state, commit}): Promise<void> {     //грузим при загрузе App
     await axios.get(`/api/basket`)
@@ -97,11 +102,8 @@ const actions = {
       let upsetProducts = {} as any
       
       for (let productPoint of state.clientBasket) {
-        console.log('productPoint ===', productPoint)
-        
         // @ts-ignore
         let isThere = state[productPoint.shelf].some(i => i._id === productPoint._id)  //присутствует ли корзиночный товар в shop'e.
-        console.log('isThere ===', isThere)
         
         if (!isThere) {   //корзиночный товар - в shop'e отсутствует.
           if (!upsetProducts[productPoint.shelf])   //если поле для полки в upsetProducts отсутствует, то создаем его.
@@ -116,7 +118,14 @@ const actions = {
         let shelfResponses = upsetProducts[shelf].map((productPoint: ProductPoint) =>
           axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
         )
-        let responseData = await Promise.allSettled(shelfResponses)
+        let responses = await Promise.allSettled(shelfResponses)    //не нужно ли здесь добавить .data ??   НАДО!!!
+        
+        //выбираем из каждого промиса только его .value.data
+        let responseData = [] as Product[]
+        // @ts-ignore
+        for (let {value} of responses) {
+          responseData.push(value.data)
+        }
         commit('SET_PRODUCTS', {shelf, products: responseData})
       }
     }
@@ -130,7 +139,7 @@ const actions = {
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
         })
     } else {
-      await axios.delete(`/api/basket`, {params: {productPoint: {shelf, _id}}})  //productPoint мы получим как req.query.productPoint
+      await axios.delete(`/api/basket`, {params: {productPoint: {shelf, _id}}})  //productPoint мы получаем как req.query.productPoint
         .then(response => {
           if (response.status === 200)
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
