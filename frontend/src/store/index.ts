@@ -32,7 +32,7 @@ const getters = {
     let basketProducts = [] as Product[]
     for (let productPoint of noRedundantBasketProductPoints) {
       // @ts-ignore
-      let product = state[productPoint.shelf].find(item => item._id === productPoint._id)
+      let product = state[productPoint.shelf].find(item => item._id === productPoint._id)   //<< опережает
       basketProducts.push(product)
     }
     return basketProducts
@@ -138,6 +138,11 @@ const actions = {
     }
   }
 } as ActionTree<RootState, {}>
+
+
+query: {
+  productPoint: '{"shelf":"laptops","_id":"6033a55c21fd650037c12632"}'
+}
 
 export default new Vuex.Store<RootState>({
   state,

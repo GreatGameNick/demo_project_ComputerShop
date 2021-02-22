@@ -55,8 +55,8 @@ app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 
 //basket
 app.put("/basket", putProductToBasket)        //use it
-// app.delete("/basket", deleteProductAtBasket)   //use it
-app.get("/basket", getBasket)                //use it
+app.delete("/basket", deleteProductAtBasket)   //use it
+app.get("/basket", getBasket)                  //use it
 
 
 

@@ -25,7 +25,7 @@ module.exports.putProductToBasket = async (req, res) => {
       })
       await basketInstance.save()
     } else {
-      basket.basketPoints.push({shelf: req.body.shelf, _id:  req.body._id})
+      basket.basketPoints.push({shelf: req.body.shelf, _id: req.body._id})
       await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
         console.log(err)
       })
@@ -45,11 +45,26 @@ module.exports.getBasket = async (req, res) => {
 }
 
 
+module.exports.deleteProductAtBasket = async (req, res) => {
+  let productPoint = req.query.productPoint
+  
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {  //находим корзину конкретного пользователя, по его sessionID.
+    assert.equal(err, null);
+    return basket
+  })
+  .then(async basket => {
+    let productPointIndex = basket.basketPoints.findIndex(item => item._id === productPoint._id)
+    delete basket.basketPoints[productPointIndex]
+    
+    await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+      console.log(err)
+    })
+  })
+  res.sendStatus(200)
+}
+
+
 // module.exports.findOneOnTheShelf = async (req, res) => {    // use it
-//   if (!req.session.i)
-//     req.session.i = 0;
-//   ++req.session.i;
-//
 //   let exactShelf = choseTheShelf(req)
 //   let convertedId = new mongoose.Types.ObjectId(req.params._id)
 //

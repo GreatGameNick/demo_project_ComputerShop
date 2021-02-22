@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
-    <h2>Корзина: <span>{{GET_BASKET_PRODUCTS.length | productCounterDeclension}}</span></h2>
-    <div v-if="GET_BASKET_PRODUCTS.length > 0" class="basket">
+    <h2>Корзина: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
+    <div  class="basket">
       <div class="basket__list">
         <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
                      :key="ind"
@@ -10,7 +10,7 @@
       </div>
       <div class="basket__underline">
         <div class="basket__outcome">
-          Итого: <span> {{GET_BASKET_PRODUCTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
+          Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
         </div>
         <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
       </div>
@@ -29,6 +29,7 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters([
+      'GET_BASKET_POINTS',
       'GET_IS_BASKET_PRODUCTS',
       'GET_BASKET_PRODUCTS'
     ]),
@@ -71,11 +72,6 @@ export default Vue.extend({
   async created() {
     if (!this.GET_IS_BASKET_PRODUCTS)
       await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
-    
-    
-    
-    
-    //надо исправить путь URL при перезагрузке страницы Корзина.
   }
 })
 
