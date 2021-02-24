@@ -51,6 +51,11 @@ Vue-CLI_project (vuex, routing as well)
 >sudo docker rm $(docker ps -a -q)
 
 
+Принудительно удалить все Docker-образы:
+> docker images             //Список локальных образов в системе.
+> docker rmi -f $(docker images -q)
+
+
 
 
 # Запуск проекта для DEV-разработки.

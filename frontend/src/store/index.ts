@@ -22,7 +22,10 @@ const getters = {
   // @ts-ignore
   GET_PRODUCT: (state: RootState) => ({shelf, _id}: ProductPoint): Product => state[shelf].find(item => item._id === _id),  //| undefined
   GET_BASKET_POINTS: ({clientBasket}): ProductPoint[] => clientBasket,
-  GET_BASKET_PRODUCTS: (state: RootState,getters): Product[] => {
+  GET_BASKET_PRODUCTS: (state: RootState, getters): Product[] => {
+    if(getters.GET_BASKET_POINTS.lengthb === 0)
+      return []
+    
     //устраняем в корзине повторы заказанных продуктов
     let noRedundantBasketProductPoints = getters.GET_BASKET_POINTS.filter((item: Product, ind: number, arr: Product[]) => ind === arr.findIndex(i => i._id === item._id))
     

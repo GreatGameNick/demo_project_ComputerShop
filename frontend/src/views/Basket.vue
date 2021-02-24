@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper">
-    <div v-if="GET_BASKET_PRODUCTS[0] != null">
+    <div>
       <h2>Корзина: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
-      <div  class="basket">
+      <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
         <div class="basket__list">
           <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
                        :key="ind"
