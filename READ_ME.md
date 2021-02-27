@@ -50,10 +50,12 @@ Vue-CLI_project (vuex, routing as well)
 >sudo docker stop $(docker ps -a -q)
 >sudo docker rm $(docker ps -a -q)
 
+>sudo - иногда важно даже при root-правах, когда без sudo удаление не срабатывает.
 
-Принудительно удалить все Docker-образы:
+Принудительно удалить все Docker-образы (ПОСЛЕ остановки и удаления контейнеров):
 > docker images             //Список локальных образов в системе.
 > docker rmi -f $(docker images -q)
+
 
 
 

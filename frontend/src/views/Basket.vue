@@ -1,20 +1,18 @@
 <template>
   <div class="wrapper">
-    <div>
-      <h2>Корзина: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
-      <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
-        <div class="basket__list">
-          <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
-                       :key="ind"
-                       :product="product"
-          />
+    <h2>В корзине: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
+    <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
+      <div class="basket__list">
+        <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
+                     :key="ind"
+                     :product="product"
+        />
+      </div>
+      <div class="basket__underline">
+        <div class="basket__outcome">
+          Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
         </div>
-        <div class="basket__underline">
-          <div class="basket__outcome">
-            Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
-          </div>
-          <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
-        </div>
+        <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
       </div>
     </div>
   </div>
@@ -72,7 +70,7 @@ export default Vue.extend({
     }
   },
   async created() {
-    if (!this.GET_IS_BASKET_PRODUCTS)
+    // if (!this.GET_IS_BASKET_PRODUCTS)
       await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
   }
 })
@@ -86,36 +84,37 @@ $basketMediaPoint: 1200px;
   width: 100%;
   box-sizing: border-box;
   padding: 0 rem(10);
-  
+
   h2 span {
     color: $grey;
+    margin-left: rem(5);
   }
-  
+
   .basket {
     display: flex;
     justify-content: space-between;
-    
+
     @media (max-width: $basketMediaPoint) {
       flex-flow: wrap column;
     }
-    
+
     .basket__list {
       display: block;
       width: calc(100% - 320px);
-      
+
       & * {
         margin-top: rem(20);
       }
-      
+
       @media (max-width: $basketMediaPoint) {
         width: 100%;
       }
     }
-    
+
     &__underline {
       margin: rem(20) 0 0 rem(10);
       width: 300px;
-      
+
       .basket__outcome {
         width: 100%;
         height: rem(60);
@@ -123,16 +122,16 @@ $basketMediaPoint: 1200px;
         align-items: center;
         box-sizing: border-box;
         padding-left: rem(20);
-        
+
         background: $white;
         font-weight: 700;
-        
+
         span {
           padding-left: rem(7);
           color: $grey;
         }
       }
-      
+
       .basket__btn_orange {
         width: 100%;
         max-width: 500px;

@@ -80,6 +80,9 @@ const actions = {
   },
   async FETCH_PRODUCT({state, commit}, {shelf, _id}: ProductPoint): Promise<Product> {
     let product = {} as Product
+    
+    console.log('FETCH_PRODUCT ===== ', shelf, _id)
+    
     await axios.get(`/api/shop/${shelf}/${_id}`)
       .then(data => {
         commit('SET_PRODUCTS', {shelf, products: [data.data]})
@@ -95,16 +98,17 @@ const actions = {
         commit('SET_IS_BASKET_POINTS', true)
       })
   },
-  async FETCH_BASKET_PRODUCTS({state, commit, dispatch}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
-    if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Требуется ждать обновления BasketPointsInTheStore.
+  async FETCH_BASKET_PRODUCTS({state, getters, commit, dispatch}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
+    if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Здесь требуется ждать обновления BasketPointsInTheStore.
       await dispatch('FETCH_BASKET_POINTS')
     
     if (state.clientBasket.length > 0) {
       //отбираем тот товар, который обозначен в корзине, но отсутствует во Vuex, (после перезагрузки сайта),
-      //одновременно сортируя его по принадлежности к полкам.
+      //одновременно сортируя его по принадлежности к полкам и устраняя повторы.
+      let unredundantedBasket = getters.GET_BASKET_POINTS.filter((item: ProductPoint, ind: number, arr: ProductPoint[]) => ind ==arr.findIndex(i => i._id === item._id))
       let upsetProducts = {} as any
       
-      for (let productPoint of state.clientBasket) {
+      for (let productPoint of unredundantedBasket) {
         // @ts-ignore
         let isThere = state[productPoint.shelf].some(i => i._id === productPoint._id)  //присутствует ли корзиночный товар в shop'e.
         
@@ -117,15 +121,17 @@ const actions = {
       
       //дозагружаем недостающий товар
       let basketShelves = Object.keys(upsetProducts)
-      for (let shelf of basketShelves) {
-        let shelfResponses = upsetProducts[shelf].map((productPoint: ProductPoint) =>
+      
+      for  (let shelf of basketShelves) {
+        let shelfResponses =  upsetProducts[shelf].map((productPoint: ProductPoint) =>
           axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
         )
-        let responses = await Promise.allSettled(shelfResponses)    //не нужно ли здесь добавить .data ??   НАДО!!!
+        
+        let responses = await Promise.allSettled(shelfResponses)
         
         //выбираем из каждого промиса только его .value.data
         let responseData = [] as Product[]
-        // @ts-ignore
+        //@ts-ignore
         for (let {value} of responses) {
           responseData.push(value.data)
         }

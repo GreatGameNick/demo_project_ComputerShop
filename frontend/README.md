@@ -1,24 +1,3 @@
-# blank
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# Проблемы
+при перезагрузке корзины мы получаем с сервера ПУСТЫЕ продукты, которые далее грузятся во Vuex.
+FETCH_BASKET_PRODUCTS - работает неверно.

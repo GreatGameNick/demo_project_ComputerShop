@@ -43,7 +43,6 @@ module.exports.findOneOnTheShelf = async (req, res) => {    // use it
     req.session.i = 0;
   ++req.session.i;
   
-  
   console.log('======================2. req.sessionID = ', req.sessionID)
   
   let exactShelf = choseTheShelf(req)
