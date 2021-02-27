@@ -81,7 +81,7 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-$appMediaPoint_1: 530px;
+$appMediaPoint_1: 560px;
 
 body {
   background: $liteGrey;

@@ -5,6 +5,16 @@ const fs = require('fs');
 const {BasketModel} = require('../models/baskets')
 const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configuration")
 
+
+module.exports.getBasket = async (req, res) => {
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+    assert.equal(err, null);
+    return basket
+  })
+  .then(basket =>
+    basket == null ? res.send('basket is empty') : res.send(basket))
+}
+
 module.exports.putProductToBasket = async (req, res) => {
   await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
     assert.equal(err, null);
@@ -31,18 +41,9 @@ module.exports.putProductToBasket = async (req, res) => {
   res.sendStatus(200)
 }
 
-
-module.exports.getBasket = async (req, res) => {
-  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
-    assert.equal(err, null);
-    return basket
-  })
-  .then(basket =>
-    basket == null ? res.send('basket is empty') : res.send(basket))
-}
-
-
 module.exports.deleteProductAtBasket = async (req, res) => {
+  console.log('==== deleteProductAtBasket')
+  
   let productPoint = req.query.productPoint
   let convertedId = new mongoose.Types.ObjectId(req.query.productPoint)
   // const newId = new mongoose.Types.ObjectId('56cb91bdc3464f14678934ca')

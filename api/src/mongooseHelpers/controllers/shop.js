@@ -5,13 +5,14 @@ const fs = require('fs');
 
 const {laptops, mouses, accessories} = require('../models/shelves')
 const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configuration")
+const {errorProduct} = require('../../../initialData/errorProduct')
 
 
 //Текстовые роуты для MongoDb.
 function choseTheShelf(req) {
   switch (req.params.shelf) {
     case "laptops":
-      return  laptops
+      return laptops
     case "mouses":
       return mouses
     case "accessories":
@@ -24,8 +25,7 @@ module.exports.findAllOnTheShelf = async (req, res) => {    // use it
     req.session.i = 0;
   ++req.session.i;
   
-  console.log('======================1. req.sessionID = ', req.sessionID)
-  
+  console.log('=====findAllOnTheShelf_1. req.sessionID = ', req.sessionID)
   
   let exactShelf = choseTheShelf(req)
   
@@ -39,11 +39,7 @@ module.exports.findAllOnTheShelf = async (req, res) => {    // use it
 }
 
 module.exports.findOneOnTheShelf = async (req, res) => {    // use it
-  if (!req.session.i)
-    req.session.i = 0;
-  ++req.session.i;
-  
-  console.log('======================2. req.sessionID = ', req.sessionID)
+  console.log('====findOneOnTheShelf_2. req.sessionID = ', req.sessionID)
   
   let exactShelf = choseTheShelf(req)
   let convertedId = new mongoose.Types.ObjectId(req.params._id)
@@ -52,16 +48,35 @@ module.exports.findOneOnTheShelf = async (req, res) => {    // use it
     assert.equal(err, null);
     return product
   })
-  .then(product => res.send(product))
+  .then(product => {
+    if (product) {
+      res.send(product)
+    } else {
+      //Этот код требуется согласно целям ДЕМОНСТРАЦИОННОГО проекта, причем он актуален только в режиме DEV-разаработки exactly.
+      //
+      // Когда мы перезагружаем броузер, находясь на странице Корзина,
+      // и при этом перезагружаем и сервер,
+      //причем не весь сервер, а только api-сервис docker'a,
+      //происходит перезагрузка initialData to mongoDb.
+      //
+      //По этой причине у всех продуктов в mongoDb изменяется их _id.
+      // Между тем ссылки Корзины в mongoDb остаются неизменными.
+      //
+      //В результате по запросу товара (со старым _id) никакого товара в mongoDb не находим.
+      //
+      //Требуется удалить из броузера сессионную cookie, перезагрузить в броузере домашнюю страницу сайта и сформировать корзину заново.
+      errorProduct._id = req.params._id
+      res.send(errorProduct)
+    }
+  })
 }
-
 
 
 // Запрос at gridMongoDb для ПЛУЧЕНИЯ и УДАЛЕНИЯ из gridMongoDb отдельных файлов/изображений.
 //A. Создаем stream to GridFsStorage at mongoDb.
 //А1. Создаем mongoose-connection с db.
 //mongoose.connect - используем старый.
-const gridConnect = mongoose.createConnection(MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });   //url = "mongodb://api_db:27017/api"
+const gridConnect = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true});   //url = "mongodb://api_db:27017/api"
 console.log(' ====== mongoose.connections.length = ', mongoose.connections.length)   //количество connection у connect'a.
 
 
@@ -107,7 +122,7 @@ module.exports.getAllGridFiles = async (req, res) => {
 module.exports.getOneGridFile = async (req, res) => {
   let name = req.params.name
   
-  gfs.files.findOne({filename: name},(err, file) => {
+  gfs.files.findOne({filename: name}, (err, file) => {
     if (!file) {
       return res.status(200).json({
         success: false,
@@ -125,17 +140,11 @@ module.exports.delOneGridFile = async (req, res) => {
   // gfs.remove({filename: imgName, root: 'uploads' }, (err, gridStore) => {  // root: 'uploads' - писать важно, если заявляем выше "gfs.collection('uploads')"(!).
   gfs.remove({filename: name}, (err, gridStore) => {  // root: 'uploads' - писать важно(!).
     if (err) {
-      return res.status(404).json({ err: err });
+      return res.status(404).json({err: err});
     }
     console.log(`============ delOneGridFile ${name} - successfully`)
   })
 }
-
-
-
-
-
-
 
 
 //Роуты для diskStorage

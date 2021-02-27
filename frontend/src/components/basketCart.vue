@@ -40,7 +40,7 @@ export default Vue.extend({
 
 <style scoped lang="scss">
 $basketCartMediaPoint_1: 850px;
-$basketCartMediaPoint_2: 680px;
+$basketCartMediaPoint_2: 720px;
 
 .cart {
   display: grid;

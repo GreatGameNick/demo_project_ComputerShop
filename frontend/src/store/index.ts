@@ -120,9 +120,7 @@ const actions = {
       }
       
       //дозагружаем недостающий товар
-      let basketShelves = Object.keys(upsetProducts)
-      
-      for  (let shelf of basketShelves) {
+      for  (let shelf of Object.keys(upsetProducts)) {
         let shelfResponses =  upsetProducts[shelf].map((productPoint: ProductPoint) =>
           axios.get(`/api/shop/${productPoint.shelf}/${productPoint._id}`)
         )
@@ -148,6 +146,7 @@ const actions = {
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
         })
     } else {
+      console.log('==== MOVE_THE_BASKET_PRODUCT')
       await axios.delete(`/api/basket`, {params: {productPoint: {shelf, _id}}})  //productPoint мы получаем как req.query.productPoint
         .then(response => {
           if (response.status === 200)
