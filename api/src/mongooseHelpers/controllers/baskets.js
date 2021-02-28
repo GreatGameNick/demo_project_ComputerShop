@@ -3,8 +3,6 @@ const assert = require('assert');
 const fs = require('fs');
 
 const {BasketModel} = require('../models/baskets')
-const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configuration")
-
 
 module.exports.getBasket = async (req, res) => {
   await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {

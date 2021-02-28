@@ -31,12 +31,13 @@ export default Vue.extend({
     ...mapGetters([
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_PRODUCTS',
-      'GET_BASKET_PRODUCTS'
+      'GET_BASKET_PRODUCTS',
+      'GET_PRODUCT_BASKET_AMOUNT'
     ]),
     price(): number {
       let sum: number = 0
-      for (let item of this.GET_BASKET_PRODUCTS) {
-        sum = sum + item.price
+      for (let product of this.GET_BASKET_PRODUCTS) {
+        sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
       }
       return sum
     }
@@ -70,8 +71,8 @@ export default Vue.extend({
     }
   },
   async created() {
-    // if (!this.GET_IS_BASKET_PRODUCTS)
-      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
+    if (!this.GET_IS_BASKET_PRODUCTS)
+      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при первом посещении корзины.
   }
 })
 
@@ -134,7 +135,7 @@ $basketMediaPoint: 1200px;
 
       .basket__btn_orange {
         width: 100%;
-        max-width: 500px;
+        max-width: rem(500);
         margin-top: rem(20);
         @extend .btn_common;
         background: $orange;
