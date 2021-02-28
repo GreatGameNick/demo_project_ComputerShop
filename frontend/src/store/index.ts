@@ -146,8 +146,7 @@ const actions = {
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
         })
     } else {
-      console.log('==== MOVE_THE_BASKET_PRODUCT')
-      await axios.delete(`/api/basket`, {params: {productPoint: {shelf, _id}}})  //productPoint мы получаем как req.query.productPoint
+      await axios.delete(`/api/basket`, {params: {_id: _id}})  //_id мы получаем как req.query._id
         .then(response => {
           if (response.status === 200)
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})

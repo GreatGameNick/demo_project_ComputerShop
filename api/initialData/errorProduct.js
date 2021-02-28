@@ -2,7 +2,7 @@ module.exports.errorProduct = {
   "_id": "",
   "shelf": "",
   "code": 1135341,
-  "name": "It is DEMO-project + on a DEV-mode!",
+  "name": "It's on a DEV-mode!",
   "description": "Объяснение смотри в api/src/mongooseHelpers/controllers/shop.js",
   "price": 0,
   "img": "/api/imgs/error/errorImage.jpeg",

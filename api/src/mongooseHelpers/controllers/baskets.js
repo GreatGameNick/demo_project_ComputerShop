@@ -42,46 +42,25 @@ module.exports.putProductToBasket = async (req, res) => {
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
-  console.log('==== deleteProductAtBasket')
-  
-  let productPoint = req.query.productPoint
-  let convertedId = new mongoose.Types.ObjectId(req.query.productPoint)
-  // const newId = new mongoose.Types.ObjectId('56cb91bdc3464f14678934ca')
-  
-  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {  //находим корзину конкретного пользователя, по его sessionID.
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
     assert.equal(err, null);
     return basket
   })
   .then(async basket => {
-    console.log('deleteProductAtBasket - basket = ', basket)
-    console.log('deleteProductAtBasket - productPoint = ', productPoint)
-  
-  
-    // let productPointIndex = basket.basketPoints.findIndex(item => item._id === convertedId)
-    // console.log('deleteProductAtBasket - productPointIndex = ', productPointIndex)
+    let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
+    if (productPointIndex > -1)
+      basket.basketPoints.splice(productPointIndex, 1)
     
-    // delete basket.basketPoints[productPointIndex]
-    // console.log('deleteProductAtBasket - delete = ', basket)
-    //
-    // await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
-    //   console.log(err)
-    // })
+    await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+      console.log(err)
+    })
   })
+  .catch(error => {
+    console.log('deleteProductAtBasket ====== ', error)
+  })
+  
   res.sendStatus(200)
 }
-
-
-// module.exports.findOneOnTheShelf = async (req, res) => {    // use it
-//   let exactShelf = choseTheShelf(req)
-//   let convertedId = new mongoose.Types.ObjectId(req.params._id)
-//
-//   await exactShelf.findOne({_id: convertedId}, function (err, product) {
-//     assert.equal(err, null);
-//     return product
-//   })
-//   .then(product => res.send(product))
-// }
-
 
 
 

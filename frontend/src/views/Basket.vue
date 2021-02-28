@@ -57,7 +57,7 @@ export default Vue.extend({
   filters: {
     productCounterDeclension(val: number): string {
       if (val === 0)
-        return 'пустая'
+        return 'товаров нет'
       if (val === 1)
         return '1 товар'
       if (val < 5)
