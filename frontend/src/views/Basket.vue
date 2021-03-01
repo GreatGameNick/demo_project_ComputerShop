@@ -12,21 +12,32 @@
         <div class="basket__outcome">
           Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
         </div>
-        <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
+        <div @click="onAlertRun" class="basket__btn_orange">Купить</div>
       </div>
     </div>
+  
+<!--    <tooltip :tooltip="tooltip"-->
+<!--           :thenFunction="onBuyProducts"-->
+<!--           v-if="alertUp"-->
+<!--           @alertDown="alertDown"-->
+<!--    />-->
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import basketCart from "@/components/basketCart.vue";
 import {mapActions, mapGetters, mapMutations} from "vuex";
+import BasketCart from "@/components/basketCart.vue";
+import Tooltip from "@/components/tooltip.vue";
 
 export default Vue.extend({
   components: {
-    basketCart,
+    BasketCart,
+    Tooltip
   },
+  data: () => ({
+    alertUp: false as boolean
+  }),
   computed: {
     ...mapGetters([
       'GET_BASKET_POINTS',
@@ -40,6 +51,9 @@ export default Vue.extend({
         sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
       }
       return sum
+    },
+    tooltip() {
+      return ``
     }
   },
   methods: {
@@ -53,7 +67,13 @@ export default Vue.extend({
       this.CLEAR_BASKET()
       this.$router.push('/')
       //показать алерт
-    }
+    },
+    onAlertRun(): void {
+      this.alertUp = true
+    },
+    alertDown() {
+      this.alertUp = false
+    },
   },
   filters: {
     productCounterDeclension(val: number): string {

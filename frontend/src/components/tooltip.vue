@@ -2,8 +2,8 @@
   <div class="alert-fon">
     <div v-click-outside="onClickOutside" class="alert">
       <div class="alert__title">
-        <div>{{slogan}}</div>
-        <div>{{suffix}} ?</div>
+        <div>ARE YOU SURE</div>
+        <div>{{slogan}} "{{item.name}}" ?</div>
       </div>
 
       <div class="alert__btns">
@@ -19,20 +19,12 @@ import vClickOutside from 'v-click-outside';
 
 export default {
   props: {
-    slogan: {
+    tooltip: {
       type: String,
       required: true
     },
-    suffix: {
-      type: String,
-      required: true
-    },
-    yesFunction: {
+    thenFunction: {
       type: Function,
-      required: true
-    },
-    functionArgument: {
-      type: Object,
       required: true
     }
   },
@@ -91,7 +83,6 @@ export default {
       :first-child {
         color: $valid;
         margin-bottom: 5px;
-        text-transform: uppercase;
       }
     }
 

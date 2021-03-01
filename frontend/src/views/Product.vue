@@ -30,9 +30,10 @@
       </div>
     </div>
 
-    <alert :item="product"
-           :slogan="'to buy'"
+    <alert :slogan="'are you sure'"
+           :suffix="alertSuffix"
            :yesFunction="MOVE_THE_BASKET_PRODUCT"
+           :functionArgument = "basketArgument"
            v-if="alertUp"
            @alertDown="alertDown"
     />
@@ -43,11 +44,11 @@
 import Vue from "vue";
 import {mapActions, mapGetters} from "vuex";
 import {BasketMovement, Product, ProductPoint} from '@/types'
-import alert from "@/components/alert.vue";
+import Alert from "@/components/alert.vue";
 
 export default Vue.extend({
   components: {
-    alert,
+    Alert,
   },
   data: () => ({
     product: {} as Product,
@@ -58,9 +59,6 @@ export default Vue.extend({
     ...mapGetters([
       'GET_PRODUCT'
     ]),
-    BasketMovement(): BasketMovement {
-      return {shelf: this.$route.params.shelf, _id: this.$route.params.productId, vector: 1}
-    },
     featuresGroups() {   //группы характеристик в описании продукта
       let featuresGroup = []
 
@@ -73,6 +71,12 @@ export default Vue.extend({
         }
       }
       return featuresGroup
+    },
+    alertSuffix(): string {
+      return `to buy ${this.product.name}`
+    },
+    basketArgument(): BasketMovement {
+      return {shelf: this.product.shelf, _id: this.product._id, vector: 1}
     }
   },
   methods: {
@@ -101,7 +105,8 @@ export default Vue.extend({
     this.product = this.GET_PRODUCT(this.productPoint)
 
     if (this.product == null)
-      this.FETCH_PRODUCT(this.productPoint)
+        // @ts-ignore
+      this.FETCH_PRODUCT(this.productPoint)   // Почему TS дает ошибку?? In Basket - work!!
           .then((product: Product) => {
             this.product = product
           })
