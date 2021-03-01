@@ -25,7 +25,7 @@ import {mapActions, mapGetters, mapMutations} from "vuex";
 
 export default Vue.extend({
   components: {
-    basketCart
+    basketCart,
   },
   computed: {
     ...mapGetters([

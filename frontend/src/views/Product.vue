@@ -5,9 +5,9 @@
       <div class="anons">
         <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
         <div class="anons__price">{{product.price | splitPrice}} <span>₽</span></div>
-        <div @click="MOVE_THE_BASKET_PRODUCT(BasketMovement)" class="anons__btn">Купить</div>
+        <div @click="onAlertRun(product)" class="anons__btn">Купить</div>
       </div>
-      
+
       <h3>Характеристики</h3>
       <div class="specification">
         <div v-for="(group, ind) of featuresGroups"
@@ -29,17 +29,30 @@
         </div>
       </div>
     </div>
+
+    <alert :item="product"
+           :slogan="'to buy'"
+           :yesFunction="MOVE_THE_BASKET_PRODUCT"
+           v-if="alertUp"
+           @alertDown="alertDown"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import {mapActions, mapGetters} from "vuex";
-import {BasketMovement, Product} from '@/types'
+import {BasketMovement, Product, ProductPoint} from '@/types'
+import alert from "@/components/alert.vue";
 
 export default Vue.extend({
+  components: {
+    alert,
+  },
   data: () => ({
-    product: {} as Product
+    product: {} as Product,
+    productPoint: {} as ProductPoint,
+    alertUp: false as boolean
   }),
   computed: {
     ...mapGetters([
@@ -48,9 +61,9 @@ export default Vue.extend({
     BasketMovement(): BasketMovement {
       return {shelf: this.$route.params.shelf, _id: this.$route.params.productId, vector: 1}
     },
-    featuresGroups() {
+    featuresGroups() {   //группы характеристик в описании продукта
       let featuresGroup = []
-      
+
       for (let field in this.product) {
         if (this.product.hasOwnProperty(field)) {
           // @ts-ignore
@@ -66,7 +79,13 @@ export default Vue.extend({
     ...mapActions([
       'MOVE_THE_BASKET_PRODUCT',
       'FETCH_PRODUCT'
-    ])
+    ]),
+    onAlertRun(): void {
+      this.alertUp = true
+    },
+    alertDown() {
+      this.alertUp = false
+    },
   },
   filters: {
     splitPrice: function (val: number): string {
@@ -78,15 +97,14 @@ export default Vue.extend({
     },
   },
   created() {
-    this.product = this.GET_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
-    
-    if (this.product == null) {
-      
-      this.FETCH_PRODUCT({shelf: this.$route.params.shelf, _id: this.$route.params.productId})
-      .then(product => {
-        this.product = product
-      })
-    }
+    this.productPoint = {shelf: this.$route.params.shelf, _id: this.$route.params.productId}
+    this.product = this.GET_PRODUCT(this.productPoint)
+
+    if (this.product == null)
+      this.FETCH_PRODUCT(this.productPoint)
+          .then((product: Product) => {
+            this.product = product
+          })
   }
 })
 </script>
@@ -96,19 +114,19 @@ export default Vue.extend({
   width: 100%;
   box-sizing: border-box;
   padding-left: rem(20);
-  
+
   .loading {
     width: 100%;
     margin-top: rem(100);
     text-align: center;
     color: $valid;
   }
-  
+
   .anons {
     @extend .information-place;
     width: 100%;
     height: rem(180);
-    
+
     &__img {
       width: 100%;
       height: rem(160);
@@ -117,20 +135,20 @@ export default Vue.extend({
       background-repeat: no-repeat;
       background-position: center;
     }
-    
+
     &__price {
       grid-area: 1 / 2 / span 4 / 3;
       align-self: center;
       font-size: rem(20);
       font-weight: 700;
       line-height: rem(30);
-      
+
       & :last-child {
         color: $grey;
         font-weight: 400;
       }
     }
-    
+
     &__btn {
       grid-area: 5 / 2 / span 4 / 3;
       align-self: start;
@@ -140,22 +158,22 @@ export default Vue.extend({
       border-color: $orange;
       color: $white;
     }
-    
+
   }
-  
+
   .specification {
     box-sizing: border-box;
     padding: rem(10) rem(10) rem(40) rem(40);
-    
+
     background: $white;
     background-origin: padding-box;
-    
+
     &__feature {
       display: grid;
       grid-template-columns: rem(260) 1fr;
       grid-column-gap: rem(60);
       grid-auto-rows: rem(20);
-      
+
       &-title {
         font-weight: 900;
         grid-row: span 3;
@@ -164,7 +182,7 @@ export default Vue.extend({
       }
     }
   }
-  
+
 }
 
 </style>
