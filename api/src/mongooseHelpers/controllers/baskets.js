@@ -45,9 +45,13 @@ module.exports.deleteProductAtBasket = async (req, res) => {
     return basket
   })
   .then(async basket => {
-    let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
-    if (productPointIndex > -1)
-      basket.basketPoints.splice(productPointIndex, 1)
+    if (req.query._id === 'all') {
+      basket.basketPoints = []
+    } else {
+      let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
+      if (productPointIndex > -1)
+        basket.basketPoints.splice(productPointIndex, 1)
+    }
     
     await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
       console.log(err)

@@ -59,7 +59,8 @@ const mutations = {
   DELETE_PRODUCT_AT_BASKET: (state, {shelf, _id}: ProductPoint) => {
     let deletedProductIndex = state.clientBasket.findIndex(itemId => itemId._id === _id)
     Vue.delete(state.clientBasket, deletedProductIndex)
-  }
+  },
+  DELETE_PRODUCTS_AT_BASKET: state => state.clientBasket = []
 } as MutationTree<RootState>
 
 const actions = {
@@ -138,7 +139,7 @@ const actions = {
     }
     commit('SET_IS_BASKET_PRODUCTS', true)
   },
-  async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement) {
+  async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement): Promise<void> {
     if (vector > 0) {
       await axios.put(`/api/basket`, {shelf, _id})
         .then(response => {
@@ -152,6 +153,13 @@ const actions = {
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
         })
     }
+  },
+  async CLEAR_BASKET({commit}): Promise<void> {
+    await axios.delete(`/api/basket`, {params: {_id: 'all'}})
+      .then(response => {
+        if (response.status === 200)
+          commit('DELETE_PRODUCTS_AT_BASKET')
+      })
   }
 } as ActionTree<RootState, {}>
 

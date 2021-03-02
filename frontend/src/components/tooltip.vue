@@ -1,22 +1,12 @@
 <template>
   <div class="alert-fon">
-    <div v-click-outside="onClickOutside" class="alert">
-      <div class="alert__title">
-        <div>ARE YOU SURE</div>
-        <div>{{slogan}} "{{item.name}}" ?</div>
-      </div>
-
-      <div class="alert__btns">
-        <button @mouseup="onChoice('yes')" class="alert__btn">YES</button>
-        <button @mouseup="onChoice('abort')" class="alert__btn">abort</button>
-      </div>
-    </div>
+    <h1 class="alert">
+        {{tooltip}}
+    </h1>
   </div>
 </template>
 
 <script>
-import vClickOutside from 'v-click-outside';
-
 export default {
   props: {
     tooltip: {
@@ -28,25 +18,15 @@ export default {
       required: true
     }
   },
-  data: () =>({
-    vcoConfig: {
-      events: ['mouseup'],
-      isActive: false
-    }
-  }),
   methods: {
-    onChoice(type) {
-      if (type === 'yes')
-        this.yesFunction(this.functionArgument)
+    throwAway() {
       this.$emit('alertDown')
-    },
-    onClickOutside () {
-      this.$emit('alertDown')
+      setTimeout(() => this.thenFunction(), 1000)
     }
   },
-  directives: {
-    clickOutside: vClickOutside.directive
-  },
+  mounted() {
+    setTimeout(() => this.throwAway(), 3000)
+  }
 }
 </script>
 
@@ -58,7 +38,7 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: transparent;
-
+  
   .alert {
     position: absolute;
     width: 50vw;
@@ -70,44 +50,11 @@ export default {
     padding: 8%;
     background-color: $white-opasity;
     border: $grey-opasity 1px solid;
-    opacity: 1;
-    transition: all 1s ease;
     margin-left: 0;
-
-    &__title {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      font-size: 18px;
-
-      :first-child {
-        color: $valid;
-        margin-bottom: 5px;
-      }
-    }
-
-    &__btns {
-      display: flex;
-      flex-flow: row wrap;
-      width: 100%;
-      align-self: flex-end;
-      justify-content: space-between;
-      margin: 60px 0 0;
-
-      .alert__btn {
-        width: 44%;
-        min-width: 70px;
-        min-height: 20px;
-        height: fit-content;
-      }
-
-      .alert__btn:hover {
-        background-color: $grey;
-        color: white;
-        transition: all ease .1s;
-        cursor: pointer;
-      }
-    }
+    
+    color: $valid;
+    text-align: center;
+    transition: all 1s ease;
   }
 }
 </style>
