@@ -13,16 +13,16 @@
     <main>
       <aside>
         <h2>Каталог</h2>
-        <div v-for="(shelf, ind) of shelves" :key="ind"
-             :class="{'text_current-page': shelf.shelf === $route.params.shelf}"
+        <router-link v-for="(shelf, ind) of shelves" :key="ind"
+                     :to="`/${shelf.shelf}`"
+                     exact
+                     active-class="text_current-page"
         >
           {{shelf.shelfName}}
-        </div>
+        </router-link>
       </aside>
       <router-view/>
     </main>
-  
-  
   </div>
 </template>
 
@@ -147,11 +147,13 @@ body {
     margin-top: rem(10);
     
     aside {
+      display: flex;
+      flex-flow: column;
       min-width: rem(160);
       padding-right: rem(20);
       border-right: $black 1px solid;
       
-      & div {
+      & :not(:first-child) {
         @extend .font_16_height;
         color: $black;
         cursor: pointer;
@@ -162,7 +164,7 @@ body {
       }
       
       @media (max-width: $appMediaPoint_1) {
-        display: none; //доделать @медиа надо на оч малых размерах
+        display: none;                          //надо доделать @media на оч малых размерах
       }
     }
   }

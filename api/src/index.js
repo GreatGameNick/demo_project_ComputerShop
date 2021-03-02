@@ -1,11 +1,11 @@
 const express = require("express")
 const mongoose = require("mongoose")
-const axios = require("axios")
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const methodOverride = require('method-override');
 const GridFsStorage = require('multer-gridfs-storage');
+const axios = require("axios")
 const crypto = require('crypto');
 const path = require('path');
 
@@ -18,8 +18,10 @@ const {delOneDiskFile, delOneGridFile,
   findAllOnTheShelf, findOneOnTheShelf,
   getSession} = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
-const {laptops} = require('./mongooseHelpers/models/shelves')
+const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
+const {initialMousesData} = require('../initialData/mouseData')
+const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 
 const app = express();
@@ -113,13 +115,27 @@ const startServer = async () => {
   //a. предварительно очищаем db, если осуществляем dev-перезапуск.
   if (mode === 'dev') {
     await laptops.deleteMany({}).exec()
+    await mouses.deleteMany({}).exec()
+    await accessories.deleteMany({}).exec()
     console.log('=============== Server stared on a DEV mode, Очищаем db =>')
   }
   
   //b. загружаем
   await laptops.insertMany(initialLaptopData)
   .then(function () {
-    console.log("=============== Initial data is inserted")
+    console.log("=============== initialLaptopData is inserted")
+  })
+  .catch(console.log)
+  
+  await mouses.insertMany(initialMousesData)
+  .then(function () {
+    console.log("=============== initialMousesData is inserted")
+  })
+  .catch(console.log)
+  
+  await accessories.insertMany(initialAccessoriesData)
+  .then(function () {
+    console.log("=============== initialAccessoriesData is inserted")
   })
   .catch(console.log)
   
