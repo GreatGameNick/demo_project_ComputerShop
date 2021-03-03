@@ -21,7 +21,7 @@
           {{shelf.shelfName}}
         </router-link>
       </aside>
-      <router-view/>
+      <router-view :key="$route.params.shelf"/>
     </main>
   </div>
 </template>

@@ -5,7 +5,7 @@ module.exports.initialMousesData = [
     "name": "Mouse-007",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/mouses/mouse_1.jpeg",
+    "img": "/api/imgs/mouses/mouse_1.jpg",
     "starsCount": 5,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -29,7 +29,7 @@ module.exports.initialMousesData = [
     "name": "Mouse-73",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/mouses/mouse_2.jpeg",
+    "img": "/api/imgs/mouses/mouse_2.jpg",
     "starsCount": 2,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -53,7 +53,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_hi",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/mouses/mouse_3.jpeg",
+    "img": "/api/imgs/mouses/mouse_3.jpg",
     "starsCount": 3,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -77,7 +77,7 @@ module.exports.initialMousesData = [
     "name": "Mouse",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/mouses/mouse_2.jpeg",
+    "img": "/api/imgs/mouses/mouse_2.jpg",
     "starsCount": 0,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -101,7 +101,7 @@ module.exports.initialMousesData = [
     "name": "Mouse simple",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/mouses/mouse_3.jpeg",
+    "img": "/api/imgs/mouses/mouse_3.jpg",
     "starsCount": 4,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -125,7 +125,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_33",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/mouses/mouse_1.jpeg",
+    "img": "/api/imgs/mouses/mouse_1.jpg",
     "starsCount": 2,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -149,7 +149,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_007",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/mouses/mouse_1.jpeg",
+    "img": "/api/imgs/mouses/mouse_1.jpg",
     "starsCount": 1,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -173,7 +173,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_00",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/mouses/mouse_3.jpeg",
+    "img": "/api/imgs/mouses/mouse_3.jpg",
     "starsCount": 5,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -197,7 +197,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_easy",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/mouses/mouse_2.jpeg",
+    "img": "/api/imgs/mouses/mouse_2.jpg",
     "starsCount": 3,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -221,7 +221,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_easy_2",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/mouses/mouse_2.jpeg",
+    "img": "/api/imgs/mouses/mouse_2.jpg",
     "starsCount": 0,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -245,7 +245,7 @@ module.exports.initialMousesData = [
     "name": "Mouse",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/mouses/mouse_1.jpeg",
+    "img": "/api/imgs/mouses/mouse_1.jpg",
     "starsCount": 5,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -269,7 +269,7 @@ module.exports.initialMousesData = [
     "name": "Mouse_55",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/mouses/mouse_1.jpeg",
+    "img": "/api/imgs/mouses/mouse_1.jpg",
     "starsCount": 2,
     "manufactureNotes": {
       "sectionName": "Информация производителя",

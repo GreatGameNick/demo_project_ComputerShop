@@ -5,7 +5,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories-7",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/accessories/nout1.jpeg",
+    "img": "/api/imgs/accessories/access_2.jpg",
     "starsCount": 5,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -29,7 +29,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories-25",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/accessories/nout2.jpeg",
+    "img": "/api/imgs/accessories/access_3.jpg",
     "starsCount": 2,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -53,7 +53,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_16",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/accessories/nout3.jpeg",
+    "img": "/api/imgs/accessories/access_3.jpg",
     "starsCount": 3,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -77,7 +77,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_b006",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/accessories/nout1.jpeg",
+    "img": "/api/imgs/accessories/access_2.jpg",
     "starsCount": 0,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -101,7 +101,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_07",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/accessories/nout3.jpeg",
+    "img": "/api/imgs/accessories/access_1.jpg",
     "starsCount": 4,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -125,7 +125,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_33",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/accessories/nout2.jpeg",
+    "img": "/api/imgs/accessories/access_3.jpg",
     "starsCount": 2,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -149,7 +149,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_g5",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/accessories/nout1.jpeg",
+    "img": "/api/imgs/accessories/access_1.jpg",
     "starsCount": 1,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -173,7 +173,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_f32",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/accessories/nout1.jpeg",
+    "img": "/api/imgs/accessories/access_1.jpg",
     "starsCount": 5,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -197,7 +197,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_77",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/accessories/nout2.jpeg",
+    "img": "/api/imgs/accessories/access_3.jpg",
     "starsCount": 3,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -221,7 +221,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_k8",
     "description": "nice",
     "price": 20000,
-    "img": "/api/imgs/accessories/nout3.jpeg",
+    "img": "/api/imgs/accessories/access_2.jpg",
     "starsCount": 0,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -245,7 +245,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_l776",
     "description": "fine",
     "price": 33000,
-    "img": "/api/imgs/accessories/nout2.jpeg",
+    "img": "/api/imgs/accessories/access_2.jpg",
     "starsCount": 5,
     "manufactureNotes": {
       "sectionName": "Информация производителя",
@@ -269,7 +269,7 @@ module.exports.initialAccessoriesData = [
     "name": "accessories_4",
     "description": "ugly",
     "price": 16000,
-    "img": "/api/imgs/accessories/nout1.jpeg",
+    "img": "/api/imgs/accessories/access_3.jpg",
     "starsCount": 2,
     "manufactureNotes": {
       "sectionName": "Информация производителя",

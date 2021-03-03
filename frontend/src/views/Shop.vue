@@ -3,7 +3,7 @@
     <div class="shelf">
       <div v-for="(product, ind) in GET_PRODUCTS($route.params.shelf)"
            :key="ind"
-           @click.exact="productDescription(product._id)"
+           @click.exact="onGoToProductDescription(product._id)"
       >
         <product-cart :product="product" class="shelf__cart"/>
       </div>
@@ -29,14 +29,13 @@ export default Vue.extend({
     ...mapActions([
       'FETCH_PRODUCTS'
     ]),
-    productDescription(_id: any) {
+    onGoToProductDescription(_id: any) {
       this.$router.push(`/${this.$route.params.shelf}/${_id}`)
     }
   },
   created() {
     this.FETCH_PRODUCTS(this.$route.params.shelf)
   }
-
 });
 </script>
 
