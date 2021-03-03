@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
-import Shop from '../views/Shop.vue'
 import Basket from '../views/Basket.vue'
+import Person from '../views/Person.vue'
 
 Vue.use(VueRouter)
 
@@ -16,9 +16,19 @@ const routes: Array<RouteConfig> = [
     component: Basket
   },
   {
+    path: '/login',
+    name: 'Person',
+    component: Person
+  },
+  {
+    path: '/person',
+    name: 'Person',
+    component: Person
+  },
+  {
     path: '/:shelf',
     name: 'Shop',
-    component: Shop
+    component:  () => import('../views/Shop.vue')
   },
   {
     path: '/:shelf/:productId',

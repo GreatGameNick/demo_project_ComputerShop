@@ -1,6 +1,10 @@
-
 @import "dounCSS";
 @import "constants";
+
+body {
+  color: $black_extra;
+  background: $liteGrey;
+}
 
 .flex-center {
   display: flex;
@@ -44,6 +48,10 @@ h3 {
   font-size: rem(16);
   font-weight: 700;
   line-height: rem(40);
+}
+
+a {
+  color: $black_extra;
 }
 
 .btn_common {

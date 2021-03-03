@@ -4,6 +4,11 @@
       <h1 @click="onThrowToShop" class="logo">
         Computer shop
       </h1>
+      
+      <router-link :to="$route.path === 'person' ? '/' : '/person'">
+        {{$route.path === 'person' ? 'logout' : 'login'}}
+      </router-link>
+      
       <div @click="onThrowToBasket" class="basket">
         <div>
           {{GET_BASKET_POINTS.length}}
@@ -83,9 +88,6 @@ export default Vue.extend({
 <style lang="scss">
 $appMediaPoint_1: 560px;
 
-body {
-  background: $liteGrey;
-}
 
 .text_current-page {
   text-decoration: underline;
@@ -110,6 +112,11 @@ body {
       &:hover {
         color: $grey;
       }
+    }
+    
+    a {
+      margin: 0 rem(60) 0 auto;
+      @extend h1;
     }
     
     .basket {
