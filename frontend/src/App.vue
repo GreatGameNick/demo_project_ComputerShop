@@ -5,12 +5,14 @@
         Computer shop
       </h1>
       
-      <router-link :to="$route.path === 'person' ? '/' : '/person'">
+      <router-link :to="'/auth'">
         {{$route.path === 'person' ? 'logout' : 'login'}}
       </router-link>
 <!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
 <!--      если авторизовались, но находимся не на странице кабинета, то здесь прописано myAccount, to='/person' (у которого прописан гвард).-->
 <!--      когда находимся в личном кабинете, то здесь прописано logout, to='/'-->
+
+<!--      и надо подправить кнопку onThrowToShop, когда находишься не в Shop.vue-->
       
       <div @click="onThrowToBasket" class="basket">
         <div>
