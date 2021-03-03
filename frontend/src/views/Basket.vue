@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="cover">
     <h2>В корзине: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
     <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
       <div class="basket__list">
@@ -98,10 +98,8 @@ export default Vue.extend({
 <style scoped lang="scss">
 $basketMediaPoint: 1200px;
 
-.wrapper {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 rem(10);
+.cover {
+  @extend .wrapper_common;
   
   h2 span {
     color: $grey;

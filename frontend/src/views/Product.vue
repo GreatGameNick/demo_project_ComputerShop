@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="cover">
     <div v-if="product !=null">
       <h3>{{product.name}}</h3>
       <div class="anons">
@@ -115,10 +115,8 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-.wrapper {
-  width: 100%;
-  box-sizing: border-box;
-  padding-left: rem(20);
+.cover {
+  @extend .wrapper_common;
 
   .loading {
     width: 100%;

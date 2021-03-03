@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrap">
     <header>
       <h1 @click="onThrowToShop" class="logo">
         Computer shop
@@ -8,6 +8,9 @@
       <router-link :to="$route.path === 'person' ? '/' : '/person'">
         {{$route.path === 'person' ? 'logout' : 'login'}}
       </router-link>
+<!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
+<!--      если авторизовались, но находимся не на странице кабинета, то здесь прописано myAccount, to='/person' (у которого прописан гвард).-->
+<!--      когда находимся в личном кабинете, то здесь прописано logout, to='/'-->
       
       <div @click="onThrowToBasket" class="basket">
         <div>
@@ -57,6 +60,7 @@ export default Vue.extend({
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_POINTS'
     ]),
+    
   },
   methods: {
     ...mapActions([
@@ -93,7 +97,7 @@ $appMediaPoint_1: 560px;
   text-decoration: underline;
 }
 
-.wrapper {
+.wrap {
   max-width: $maxDesktopWidth;
   margin: rem(10) auto;
   

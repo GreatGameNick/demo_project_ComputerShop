@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="cover">
     Person
   </div>
 </template>
@@ -15,4 +15,8 @@ export default Vue.extend({
 
 <style scoped lang="scss">
 
+.cover {
+  @extend .wrapper_common;
+  
+}
 </style>

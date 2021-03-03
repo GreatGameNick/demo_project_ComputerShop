@@ -6,12 +6,17 @@ body {
   background: $liteGrey;
 }
 
+.wrapper_common {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 rem(10);
+}
+
 .flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 
 .font_16_height {
   font-size: rem(16);

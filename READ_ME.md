@@ -29,6 +29,10 @@ Vue-CLI_project (vuex, routing as well)
 - личный кабинет
 - авторизация
 
+- устранить косяк в frontend/src/views/Product.vue
+  // @ts-ignore
+  this.FETCH_PRODUCT()
+
 
 
 # Архитектура проекта
