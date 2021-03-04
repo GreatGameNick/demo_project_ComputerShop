@@ -5,7 +5,7 @@
         Computer shop
       </h1>
       
-      <router-link :to="'/auth'">
+      <router-link :to="'/auth'" v-if="$route.path !== '/auth'">
         {{$route.path === 'person' ? 'logout' : 'login'}}
       </router-link>
 <!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
@@ -69,6 +69,9 @@ export default Vue.extend({
       'FETCH_BASKET_POINTS'
     ]),
     onThrowToShop(): void {
+      if(this.$route.path === '/auth' || this.$route.path === '/person')
+        this.$router.push('/')
+      
       if (this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
       } else {

@@ -3,7 +3,7 @@
 
 body {
   color: $black_extra;
-  background: $liteGrey;
+  background: $grey-light;
 }
 
 .wrapper_common {
@@ -61,11 +61,11 @@ a {
 
 .btn_common {
   max-width: rem(180);
-  height: rem(40);
+  height: rem(38);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: $grey 1px solid;
+  border: $grey-opasity 1px solid;
   cursor: pointer;
 
   &:hover {
