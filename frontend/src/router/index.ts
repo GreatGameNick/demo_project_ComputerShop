@@ -17,11 +17,6 @@ const routes: Array<RouteConfig> = [
     component: Basket
   },
   {
-    path: '/login',
-    name: 'Person',
-    component: Person
-  },
-  {
     path: '/auth',
     name: 'Auth',
     component: Auth

@@ -9,6 +9,7 @@
         <input type="text"
                v-model="field.value"
                :placeholder="field.placeholder"
+               v-mask="field.mask ? field.mask : ''"
         >
       </div>
       
@@ -31,7 +32,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from "vue"
+import {Login} from "@/types"
+// @ts-ignore
+import AwesomeMask from 'awesome-mask'
 
 export default Vue.extend({
   data: () => ({
@@ -47,7 +51,7 @@ export default Vue.extend({
         value: '',
         placeholder: 'hit your password'
       }
-    },
+    } as Login,
     registration: false as boolean
   }),
   methods: {
@@ -57,6 +61,9 @@ export default Vue.extend({
     onRegistrationIsDone(): void {
       this.registration = false
     }
+  },
+  directives: {
+    'mask': AwesomeMask
   }
 })
 </script>

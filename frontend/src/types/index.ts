@@ -62,3 +62,12 @@ export interface RootState {
   isBasketPointsInTheStore: boolean
 }
 
+export interface Login {
+  [key: string]: {
+    name: string,
+    value: string,
+    placeholder?: string,
+    mask?: string,
+    validator?: string
+  }
+}
