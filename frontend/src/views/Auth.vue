@@ -6,7 +6,7 @@
       
       <div v-for="(field, key, ind) in forms" :key="ind" class="forms__field">
         <h2 v-if="(field.name !== 'password confirm') || registration"
-            :class="{'error': $v.forms[key].value.$error || !forms[key].isDirty, 'valid': !$v.forms[key].value.$invalid && forms[key].value.length > 0}"
+            :class="{'error': $v.forms[key].value.$error || forms[key].isDirty, 'valid': !$v.forms[key].value.$invalid && forms[key].value.length > 0}"
         >
           {{field.name}}
         </h2>
@@ -48,7 +48,7 @@ import {Login} from "@/types"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
-import {isPhone, isPassword} from '@/utils/validation.js'
+import {isPhone, isPassword} from '@/utils/validation.ts'
 // import { validationMixin } from 'vuelidate';
 
 
@@ -61,19 +61,19 @@ export default Vue.extend({
         value: '',
         placeholder: '(906) 075-19-75',
         mask: '(999) 999-99-99',
-        isDirty: true
+        isDirty: false
       },
       password: {
         name: 'password',
         value: '',
         placeholder: 'at least 5 signs',
-        isDirty: true
+        isDirty: false
       },
       passwordConfirm: {
         name: 'password confirm',
         value: '',
         placeholder: 'it must be the same as the password',
-        isDirty: true
+        isDirty: false
       }
     } as Login,
     registration: false as boolean,
@@ -88,7 +88,9 @@ export default Vue.extend({
       },
       passwordConfirm: {
         value: {
-          sameAs: sameAs(function (dd) {
+          // @ts-ignore
+          sameAs: sameAs(function (): string {
+            // @ts-ignore
             return this.forms.password.value
           })
         }
@@ -97,36 +99,41 @@ export default Vue.extend({
   },
   methods: {
     onLogin(): void {
-      //пытаемся отправить, но поле - пустое. Отмечаем незаполненное поле красным.
+      //Если пытаемся отправить, но поле - пустое, то отмечаем незаполненное поле красным.
       for (let formValue of Object.values(this.forms)) {
         if (!formValue.value.length)
-          formValue.isDirty = false
+          formValue.isDirty = true
       }
       
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
+      // @ts-ignore
       let isNoError = !this.$v.forms.$anyError
       
       //посылаем запрос на аутентификацию
-      if (isNoError && this.forms.login.isDirty && this.forms.password.isDirty) {
-        this.AUTH({
-          login: this.forms.login.value,
-          password: this.forms.password.value,       //шифрование password'a для упрощения кода - опускаем.
-        })
-          .then(res => {
-            //действия после получения ответа с сервера
-            
-          })
+      if (isNoError && !this.forms.login.isDirty && !this.forms.password.isDirty) {
+        // this.AUTH({
+        //   login: this.forms.login.value,
+        //   password: this.forms.password.value,       //шифрование password'a для упрощения кода - опускаем.
+        // })
+        //   .then(res => {
+        //     //действия после получения ответа с сервера
+        //
+        //   })
       }
     },
     onPushToTheRegistration(): void {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
+      for (let formValue of Object.values(this.forms)) {
+        if (!formValue.value.length)
+          formValue.isDirty = false
+          formValue.value = ''
+      }
+      
+      // @ts-ignore
       this.$v.$reset()
-      this.forms.login.isDirty = true
-      this.forms.password.isDirty = true
-      this.forms.login.value = ''
-      this.forms.password.value = ''
-      this.forms.passwordConfirm.value = ''
+      this.forms.passwordConfirm.isDirty = false   //его надо присудить ПОСЛЕ this.$v.$reset(), т.к. после резета проходит сравнение, и passwordConfirm.isDirty становиться true вновь.
+      
       //включаем интерфейс для регистрации
       this.registration = true
     },
