@@ -68,6 +68,7 @@ export interface Login {
     value: string,
     placeholder?: string,
     mask?: string,
-    validator?: string
+    validator?: string,
+    isDirty: boolean
   }
 }

@@ -4,16 +4,27 @@
     <div class="forms">
       <h2 v-if="registration" class="forms__registration">Enter your registration data</h2>
       
-      <div v-for="(field, ind) in forms" :key="ind" class="forms__field">
-        <h2>{{field.name}}</h2>
+      <div v-for="(field, key, ind) in forms" :key="ind" class="forms__field">
+        <h2 v-if="(field.name !== 'password confirm') || registration"
+            :class="{'error': $v.forms[key].value.$error || !forms[key].isDirty, 'valid': !$v.forms[key].value.$invalid}"
+        >
+          {{field.name}}
+        </h2>
         <input type="text"
                v-model="field.value"
                :placeholder="field.placeholder"
                v-mask="field.mask ? field.mask : ''"
+               @blur="$v.forms[key].value.$touch()"
+               v-if="(field.name !== 'password confirm') || registration"
         >
       </div>
       
-      <div v-if="!registration" class="forms__btn_login">Take it</div>
+      <div v-if="!registration"
+           @click="onLogin"
+           class="forms__btn_login"
+      >
+        Take it
+      </div>
       
       <div v-if="!registration" class="forms__signature">
         If you are't resident take a
@@ -36,30 +47,89 @@ import Vue from "vue"
 import {Login} from "@/types"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
+import {minLength, required, sameAs} from 'vuelidate/lib/validators'
+import {isPhone, isPassword} from '@/utils/validation.js'
+// import { validationMixin } from 'vuelidate';
+
 
 export default Vue.extend({
+  // mixins: [validationMixin],
   data: () => ({
     forms: {
       login: {
         name: 'login',
         value: '',
-        placeholder: 'hit your phone',
-        mask: '(999) 999-99-99'
+        placeholder: '(906) 075-19-75',
+        mask: '(999) 999-99-99',
+        isDirty: true
       },
       password: {
         name: 'password',
         value: '',
-        placeholder: 'hit your password'
+        placeholder: 'at least 5 signs',
+        isDirty: true
+      },
+      passwordConfirm: {
+        name: 'password confirm',
+        value: ' ',
+        placeholder: 'it must be the same as the password',
+        isDirty: true
       }
     } as Login,
-    registration: false as boolean
+    registration: false as boolean,
   }),
+  validations: {
+    forms: {
+      login: {
+        value: {isPhone, required}
+      },
+      password: {
+        value: {minLength: minLength(5), required, isPassword}
+      },
+      passwordConfirm: {
+        value: {
+          sameAs: sameAs(function (dd) {
+            return this.forms.password.value
+          })
+        }
+      }
+    }
+  },
   methods: {
+    onLogin(): void {
+      //пытаемся отправить, но поле - пустое. Отмечаем незаполненное поле красным.
+      for (let formValue of Object.values(this.forms)) {
+        if (!formValue.value.length)
+          formValue.isDirty = false
+      }
+      
+      //посылаем запрос на аутентификацию
+      let isNoError = !this.$v.forms.$anyError
+      
+      if (isNoError && this.forms.login.isDirty && this.forms.password.isDirty) {
+        this.AUTH({
+          login: this.forms.login.value,
+          password: this.forms.password.value,
+        })  //шифрование password'a для упрощения кода - опускаем.
+          .then((res => {
+            //действия после получения ответа с сервера
+            
+          }))
+      }
+    },
     onPushToTheRegistration(): void {
+      //обнуляем результаты возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
+      this.$v.$reset()
+      this.forms.login.isDirty = true
+      this.forms.password.isDirty = true
+      this.forms.login.value = ''
+      this.forms.password.value = ''
+      //включаем интерфейс для регистрации
       this.registration = true
     },
     onRegistrationIsDone(): void {
-      this.registration = false
+    
+    
     }
   },
   directives: {
@@ -69,6 +139,14 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
+.error {
+  color: $error;
+}
+
+.valid {
+  color: $valid;
+}
+
 .cover {
   @extend .wrapper_common;
   
