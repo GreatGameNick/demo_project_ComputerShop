@@ -6,7 +6,7 @@
       
       <div v-for="(field, key, ind) in forms" :key="ind" class="forms__field">
         <h2 v-if="(field.name !== 'password confirm') || registration"
-            :class="{'error': $v.forms[key].value.$error || !forms[key].isDirty, 'valid': !$v.forms[key].value.$invalid}"
+            :class="{'error': $v.forms[key].value.$error || !forms[key].isDirty, 'valid': !$v.forms[key].value.$invalid && forms[key].value.length > 0}"
         >
           {{field.name}}
         </h2>
@@ -71,7 +71,7 @@ export default Vue.extend({
       },
       passwordConfirm: {
         name: 'password confirm',
-        value: ' ',
+        value: '',
         placeholder: 'it must be the same as the password',
         isDirty: true
       }
@@ -103,33 +103,39 @@ export default Vue.extend({
           formValue.isDirty = false
       }
       
-      //посылаем запрос на аутентификацию
+      //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
+      this.forms.passwordConfirm.value = this.forms.password.value
       let isNoError = !this.$v.forms.$anyError
       
+      //посылаем запрос на аутентификацию
       if (isNoError && this.forms.login.isDirty && this.forms.password.isDirty) {
         this.AUTH({
           login: this.forms.login.value,
-          password: this.forms.password.value,
-        })  //шифрование password'a для упрощения кода - опускаем.
-          .then((res => {
+          password: this.forms.password.value,       //шифрование password'a для упрощения кода - опускаем.
+        })
+          .then(res => {
             //действия после получения ответа с сервера
             
-          }))
+          })
       }
     },
     onPushToTheRegistration(): void {
-      //обнуляем результаты возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
+      //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
       this.$v.$reset()
       this.forms.login.isDirty = true
       this.forms.password.isDirty = true
       this.forms.login.value = ''
       this.forms.password.value = ''
+      this.forms.passwordConfirm.value = ''
       //включаем интерфейс для регистрации
       this.registration = true
     },
     onRegistrationIsDone(): void {
-    
-    
+      // let isNoError = !this.$v.forms.$anyError
+      // console.log('isNoError =====', isNoError)
+      //
+      // if (!isNoError && this.forms.passwordConfirm.value.length === 0) return
+      
     }
   },
   directives: {
