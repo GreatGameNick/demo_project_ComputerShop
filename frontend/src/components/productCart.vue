@@ -20,7 +20,7 @@
 <script lang="ts">
 import Vue, {PropType} from 'vue'
 import {mapActions} from 'vuex'
-import {Product, BasketMovement} from '@/types';
+import {Product, BasketMovement} from '@/types/shop';
 import Stars from '@/components/stars.vue';
 import Alert from "@/components/alert.vue";
 

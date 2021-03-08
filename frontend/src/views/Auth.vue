@@ -44,7 +44,7 @@
 
 <script lang="ts">
 import Vue from "vue"
-import {Login} from "@/types"
+import {LoginForms} from "@/types/auth"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
@@ -75,7 +75,7 @@ export default Vue.extend({
         placeholder: 'it must be the same as the password',
         isDirty: false
       }
-    } as Login,
+    } as LoginForms,
     registration: false as boolean,
   }),
   validations: {
