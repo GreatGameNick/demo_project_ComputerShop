@@ -28,7 +28,7 @@
       
       <div v-if="!registration" class="forms__signature">
         If you are't resident take a
-        <span @click="onPushToTheRegistration">
+        <span @click="onSwitchToTheRegistrationInterface">
           registration
         </span>
         !
@@ -88,9 +88,7 @@ export default Vue.extend({
       },
       passwordConfirm: {
         value: {
-          // @ts-ignore
           sameAs: sameAs(function (): string {
-            // @ts-ignore
             return this.forms.password.value
           })
         }
@@ -107,10 +105,9 @@ export default Vue.extend({
       
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
-      // @ts-ignore
-      let isNoError = !this.$v.forms.$anyError
       
       //посылаем запрос на аутентификацию
+      let isNoError = !this.$v.forms.$anyError
       if (isNoError && !this.forms.login.isDirty && !this.forms.password.isDirty) {
         // this.AUTH({
         //   login: this.forms.login.value,
@@ -122,7 +119,7 @@ export default Vue.extend({
         //   })
       }
     },
-    onPushToTheRegistration(): void {
+    onSwitchToTheRegistrationInterface(): void {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
       for (let formValue of Object.values(this.forms)) {
         if (!formValue.value.length)
@@ -138,10 +135,18 @@ export default Vue.extend({
       this.registration = true
     },
     onRegistrationIsDone(): void {
-      // let isNoError = !this.$v.forms.$anyError
-      // console.log('isNoError =====', isNoError)
-      //
-      // if (!isNoError && this.forms.passwordConfirm.value.length === 0) return
+      //Если пытаемся отправить, но поле - пустое, то отмечаем незаполненное поле красным.
+      for (let formValue of Object.values(this.forms)) {
+        if (!formValue.value.length)
+          formValue.isDirty = true
+      }
+      
+      //посылаем запрос на регистрацию
+      let isNoError = !this.$v.forms.$anyError
+      if (isNoError && this.forms.login.isDirty && this.forms.password.isDirty) {
+      
+      }
+    
       
     }
   },
