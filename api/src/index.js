@@ -62,6 +62,22 @@ app.get("/basket", getBasket)                  //use it
 
 
 
+//Auth - запросы на соседний сервис докера.
+app.get("/checkOutAuthData/:authData", async (req, res) => {
+  let authData = req.params.authData
+  
+  console.log('================== authData = ', authData)
+  console.log('================== authApiUrl = ', authApiUrl)
+  
+  // await axios.get(authApiUrl + "/" + authData)
+  // .then(responseFromAuth => {
+  //   res.json({
+  //     isCurrentLogin: responseFromAuth.data.isLogin,
+  //     isCurrentUser: responseFromAuth.data.isUser,
+  //     currentUserData: responseFromAuth.data.data
+  //   })
+  // })
+})
 
 
 
@@ -82,8 +98,10 @@ app.post('/upload_file', upload.single('file'), (req, res) => {
   res.send(`uploadFile ==> ${req.file.originalname}`);
 });
 
-//d)Изображение для <img> from diskStorage
+//d)Берем изображения для <img> from diskStorage
 app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it (!)
+
+
 
 
 //not using yet
@@ -95,18 +113,6 @@ app.delete("/gridImgs/:name", delOneGridFile)
 app.delete("/diskImgs/:name", delOneDiskFile)
 
 
-//запрос на соседний сервис докера.
-app.get("/currentUser/:userName", async (req, res) => {
-  let userName = req.params.userName
-  
-  await axios.get(authApiUrl + "/" + userName)
-  .then(responseFromAuth => {
-    res.json({
-      isCurrentUser: true,
-      currentUserFromAuth: responseFromAuth.data
-    })
-  })
-})
 
 
 //функция по старту сервера.

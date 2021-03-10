@@ -32,6 +32,12 @@ Vue-CLI_project (vuex, routing as well)
 - устранить косяк в frontend/src/views/Product.vue
   // @ts-ignore
   this.FETCH_PRODUCT()
+  
+
+# Что сделано
+валидация асинхронная
+позволение валидации по третьему условию
+дозволение сабмита
 
 
 

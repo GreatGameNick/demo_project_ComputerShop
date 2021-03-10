@@ -2,31 +2,34 @@
   <div class="cover">
     <h2>Entrance in to your privat space</h2>
     <div class="forms">
-      <h2 v-if="registration" class="forms__registration">Enter your registration data</h2>
+      <h2 v-if="isRegistrationInterface" class="forms__registration">Enter your registration data</h2>
       
       <div v-for="(field, key, ind) in forms" :key="ind" class="forms__field">
-        <h2 v-if="(field.name !== 'password confirm') || registration"
-            :class="{'error': $v.forms[key].value.$error || forms[key].isDirty, 'valid': !$v.forms[key].value.$invalid && forms[key].value.length > 0}"
+        <h2 v-if="(field.name !== 'password confirm') || isRegistrationInterface"
+            :class="{
+              'error': $v.forms[key].value.$error,
+              'valid': !$v.forms[key].value.$invalid && forms[key].value
+            }"
         >
           {{field.name}}
         </h2>
-        <input type="text"
+        <input :type="field.inputType"
                v-model="field.value"
                :placeholder="field.placeholder"
                v-mask="field.mask ? field.mask : ''"
                @blur="$v.forms[key].value.$touch()"
-               v-if="(field.name !== 'password confirm') || registration"
+               v-if="(field.name !== 'password confirm') || isRegistrationInterface"
         >
       </div>
       
-      <div v-if="!registration"
+      <div v-if="!isRegistrationInterface"
            @click="onLogin"
            class="forms__btn_login"
       >
         Take it
       </div>
       
-      <div v-if="!registration" class="forms__signature">
+      <div v-if="!isRegistrationInterface" class="forms__signature">
         If you are't resident take a
         <span @click="onSwitchToTheRegistrationInterface">
           registration
@@ -44,16 +47,15 @@
 
 <script lang="ts">
 import Vue from "vue"
-import {LoginForms} from "@/types/auth"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
+import axios from 'axios'
+import {LoginForms} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
 import {isPhone, isPassword} from '@/utils/validation.ts'
-// import { validationMixin } from 'vuelidate';
 
 
 export default Vue.extend({
-  // mixins: [validationMixin],
   data: () => ({
     forms: {
       login: {
@@ -61,34 +63,47 @@ export default Vue.extend({
         value: '',
         placeholder: '(906) 075-19-75',
         mask: '(999) 999-99-99',
-        isDirty: false
+        inputType: 'text'
       },
       password: {
         name: 'password',
         value: '',
         placeholder: 'at least 5 signs',
-        isDirty: false
+        inputType: 'password'
       },
       passwordConfirm: {
         name: 'password confirm',
         value: '',
         placeholder: 'it must be the same as the password',
-        isDirty: false
+        inputType: 'password'
       }
     } as LoginForms,
-    registration: false as boolean,
+    isRegistrationInterface: false as boolean,
   }),
   validations: {
     forms: {
       login: {
-        value: {isPhone, required}
+        value: {
+          required,
+          isPhone,
+          async isUnique(value: string): Promise<any> | boolean {
+            //заменитель директивы .lezy у v-modal
+            //...
+            
+            if (value === '' && !this.isRegistrationInterface)
+              return true
+            return axios.get(`api/checkOutAuthData/${value}`)
+          }
+        }
       },
       password: {
         value: {minLength: minLength(5), required, isPassword}
       },
       passwordConfirm: {
         value: {
+          // @ts-ignore
           sameAs: sameAs(function (): string {
+          // @ts-ignore
             return this.forms.password.value
           })
         }
@@ -97,56 +112,44 @@ export default Vue.extend({
   },
   methods: {
     onLogin(): void {
-      //Если пытаемся отправить, но поле - пустое, то отмечаем незаполненное поле красным.
-      for (let formValue of Object.values(this.forms)) {
-        if (!formValue.value.length)
-          formValue.isDirty = true
-      }
+      //Если пытаемся отправить, но поле - не заполнялось, то незаполненное поле отметится красным.
+      this.$v.$touch()
       
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
       
       //посылаем запрос на аутентификацию
-      let isNoError = !this.$v.forms.$anyError
-      if (isNoError && !this.forms.login.isDirty && !this.forms.password.isDirty) {
-        // this.AUTH({
-        //   login: this.forms.login.value,
-        //   password: this.forms.password.value,       //шифрование password'a для упрощения кода - опускаем.
-        // })
-        //   .then(res => {
-        //     //действия после получения ответа с сервера
-        //
-        //   })
+      if (!this.$v.forms.$anyError) {
+      
+      
       }
+      
+      
+      
+      
+      
+      
     },
     onSwitchToTheRegistrationInterface(): void {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
       for (let formValue of Object.values(this.forms)) {
-        if (!formValue.value.length)
-          formValue.isDirty = false
-          formValue.value = ''
+        formValue.value = ''
       }
-      
       // @ts-ignore
       this.$v.$reset()
-      this.forms.passwordConfirm.isDirty = false   //его надо присудить ПОСЛЕ this.$v.$reset(), т.к. после резета проходит сравнение, и passwordConfirm.isDirty становиться true вновь.
-      
       //включаем интерфейс для регистрации
-      this.registration = true
+      this.isRegistrationInterface = true
     },
     onRegistrationIsDone(): void {
+      console.log('onRegistrationIsDone ======')
       //Если пытаемся отправить, но поле - пустое, то отмечаем незаполненное поле красным.
-      for (let formValue of Object.values(this.forms)) {
-        if (!formValue.value.length)
-          formValue.isDirty = true
-      }
+      //...
       
       //посылаем запрос на регистрацию
-      let isNoError = !this.$v.forms.$anyError
-      if (isNoError && this.forms.login.isDirty && this.forms.password.isDirty) {
+      if (!this.$v.forms.$anyError) {
       
       }
-    
+      
       
     }
   },

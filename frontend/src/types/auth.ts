@@ -1,11 +1,10 @@
 export interface LoginForms {
   [key: string]: {
     name: string,
+    inputType: string,
     value: string,
     placeholder?: string,
     mask?: string,
-    validator?: string,
-    isDirty: boolean
   }
 }
 
