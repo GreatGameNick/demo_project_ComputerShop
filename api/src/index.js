@@ -67,7 +67,7 @@ app.get("/checkOutAuthData/:authData", async (req, res) => {
   let authData = req.params.authData
   
   console.log('================== authData = ', authData)
-  console.log('================== authApiUrl = ', authApiUrl)
+  console.log('================== authApiUrl = ', authApiUrl)   // http://auth:3002/api
   
   // await axios.get(authApiUrl + "/" + authData)
   // .then(responseFromAuth => {

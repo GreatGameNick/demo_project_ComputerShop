@@ -52,7 +52,7 @@ import AwesomeMask from 'awesome-mask'
 import axios from 'axios'
 import {LoginForms} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
-import {isPhone, isPassword} from '@/utils/validation.ts'
+import {isPhone, isPassword, isUnique} from '@/utils/validation.ts'
 
 
 export default Vue.extend({
@@ -86,14 +86,7 @@ export default Vue.extend({
         value: {
           required,
           isPhone,
-          async isUnique(value: string): Promise<any> | boolean {
-            //заменитель директивы .lezy у v-modal
-            //...
-            
-            if (value === '' && !this.isRegistrationInterface)
-              return true
-            return axios.get(`api/checkOutAuthData/${value}`)
-          }
+          isUnique: isUnique(this.isRegistrationInterface)
         }
       },
       password: {
