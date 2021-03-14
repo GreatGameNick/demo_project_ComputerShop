@@ -50,7 +50,7 @@ import Vue from "vue"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
 import axios from 'axios'
-import {LoginForms} from "@/types/auth"
+import {LoginForms, Auth} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
 import {isPhone, isPassword, isUnique} from '@/utils/validation.ts'
 
@@ -80,25 +80,36 @@ export default Vue.extend({
     } as LoginForms,
     isRegistrationInterface: false as boolean,
   }),
-  validations: {
-    forms: {
-      login: {
-        value: {
-          required,
-          isPhone,
-          isUnique: isUnique(this.isRegistrationInterface)
-        }
-      },
-      password: {
-        value: {minLength: minLength(5), required, isPassword}
-      },
-      passwordConfirm: {
-        value: {
-          // @ts-ignore
-          sameAs: sameAs(function (): string {
-          // @ts-ignore
-            return this.forms.password.value
-          })
+  validations() {
+    return {
+      forms: {
+        login: {
+          value: {
+            required,
+            isPhone,
+            // isUnique: isUnique(true)
+        
+        
+            async isUnique(value: string, isRegistrationInterface = this.isRegistrationInterface as boolean): Promise<Auth | boolean> {
+              //заменитель директивы .lezy у v-modal
+              if (value === '' && !isRegistrationInterface)
+                return Promise.resolve(true)
+
+              return await axios.get(`api/checkOutAuth/${value}`)
+            }
+          }
+        },
+        password: {
+          value: {minLength: minLength(5), required, isPassword}
+        },
+        passwordConfirm: {
+          value: {
+            // @ts-ignore
+            sameAs: sameAs(function (): string {
+              // @ts-ignore
+              return this.forms.password.value
+            })
+          }
         }
       }
     }
@@ -106,20 +117,18 @@ export default Vue.extend({
   methods: {
     onLogin(): void {
       //Если пытаемся отправить, но поле - не заполнялось, то незаполненное поле отметится красным.
+      // @ts-ignore
       this.$v.$touch()
       
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
       
       //посылаем запрос на аутентификацию
+      // @ts-ignore
       if (!this.$v.forms.$anyError) {
-      
+       console.log('jjj')
       
       }
-      
-      
-      
-      
       
       
     },
@@ -139,7 +148,9 @@ export default Vue.extend({
       //...
       
       //посылаем запрос на регистрацию
+      // @ts-ignore
       if (!this.$v.forms.$anyError) {
+        console.log('jjj')
       
       }
       

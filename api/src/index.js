@@ -63,7 +63,7 @@ app.get("/basket", getBasket)                  //use it
 
 
 //Auth - запросы на соседний сервис докера.
-app.get("/checkOutAuthData/:authData", async (req, res) => {
+app.get("/checkOutAuth/:authData", async (req, res) => {
   let authData = req.params.authData
   
   console.log('================== authData = ', authData)

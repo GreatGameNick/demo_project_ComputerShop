@@ -8,29 +8,29 @@ export interface LoginForms {
   }
 }
 
-export interface AuthData {
+export interface AuthData {  //запрос авторизации
   login: string,
   password: string
 }
 
-export interface UserData {
+export type Token = {
+  accessToken: string,
+  refreshToken: string
+}
+
+export interface AuthResponse extends Token{     //ответ авторизации
+  isLoginUnique: boolean,
+  password?: string,
+}
+
+export interface UserData {    //личные данные по кабинету пользователя
   userName: string,
   userStatus: string,
   userData: string
 }
 
-export type Token = string
+export interface AuthState extends Token, UserData{    //тип для Store вцелом.
 
-export interface AuthResponse {
-  login: boolean,
-  accessToken: Token,
-  refreshToken: Token,
-  userData: UserData
-}
-
-
-export interface AuthState {
-  token: string
 }
 
 
