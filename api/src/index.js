@@ -11,12 +11,14 @@ const path = require('path');
 
 const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("./configuration")
 const {connectDb} = require("./mongooseHelpers/db")
-const {delOneDiskFile, delOneGridFile,
+const {
+  delOneDiskFile, delOneGridFile,
   getOneDiskFile, getOneGridFile,
   getAllDiskFilesName, getAllGridFiles,
   getOneImgFromDiskStorageForPicture, getOneImgFromGridStorageForPicture,
   findAllOnTheShelf, findOneOnTheShelf,
-  getSession} = require("./mongooseHelpers/controllers/shop")
+  getSession
+} = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
@@ -44,40 +46,33 @@ app.use(session({
   secret: 'kola',
   resave: false,
   saveUninitialized: false,
-  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60 })
+  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
 }))
 
 
 //Текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
-app.get("/shop/:shelf", findAllOnTheShelf)   //use it
+app.get("/shop/:shelf", findAllOnTheShelf)        //use it
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 
 
-
 //basket
-app.put("/basket", putProductToBasket)        //use it
+app.put("/basket", putProductToBasket)         //use it
 app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use it
 
 
-
-//Auth - запросы на соседний сервис докера.
+//Auth (запросы на Auth-сервис докера).
 app.get("/checkOutAuth/:authData", async (req, res) => {
-  let authData = req.params.authData
+  let authData = req.params.authData    // "login;password"
   
-  console.log('================== authData = ', authData)
-  console.log('================== authApiUrl = ', authApiUrl)   // http://auth:3002/api
-  
-  // await axios.get(authApiUrl + "/" + authData)
-  // .then(responseFromAuth => {
-  //   res.json({
-  //     isCurrentLogin: responseFromAuth.data.isLogin,
-  //     isCurrentUser: responseFromAuth.data.isUser,
-  //     currentUserData: responseFromAuth.data.data
-  //   })
-  // })
+  await axios.get(authApiUrl + `/checkOutAuth/${authData}`)   // http://auth:3002/api + `/checkOutAuth/${authData}`
+  .then(({data}) => res.json(data))
 })
+
+
+
+
 
 
 
@@ -102,8 +97,6 @@ app.post('/upload_file', upload.single('file'), (req, res) => {
 app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it (!)
 
 
-
-
 //not using yet
 app.get("/getAllGridFiles", getAllGridFiles)
 app.get("/getAllDiskFilesName", getAllDiskFilesName)
@@ -111,8 +104,6 @@ app.get("/gridImgs/:name", getOneGridFile)
 app.get("/diskImgs/:name", getOneDiskFile)
 app.delete("/gridImgs/:name", delOneGridFile)
 app.delete("/diskImgs/:name", delOneDiskFile)
-
-
 
 
 //функция по старту сервера.

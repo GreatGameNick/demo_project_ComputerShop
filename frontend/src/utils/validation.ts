@@ -1,5 +1,5 @@
 import axios from "axios";
-import {Auth} from '@/types/auth'
+import {AuthResponse} from '@/types/auth'
 
 
 
@@ -16,7 +16,7 @@ export const isPassword = (v: string): boolean => {
 }
 
 
-// export const isUnique = async (isRegistrationInterface: boolean) => async (value: string): Promise<Auth | boolean> => {
+// export const isUnique = async (isRegistrationInterface: boolean) => async (value: string): Promise<AuthResponse | boolean> => {
 //   //директива .lezy у v-modal не требуется, ее роль играет маска.
 //   console.log('=========== isRegistrationInterface - value', value)
 //   console.log('=========== isRegistrationInterface', isRegistrationInterface)

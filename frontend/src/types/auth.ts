@@ -10,7 +10,7 @@ export interface LoginForms {
 
 export interface AuthData {  //запрос авторизации
   login: string,
-  password: string
+  password?: string
 }
 
 export type Token = {
@@ -19,8 +19,8 @@ export type Token = {
 }
 
 export interface AuthResponse extends Token{     //ответ авторизации
-  isLoginUnique: boolean,
-  password?: string,
+  isLogin: boolean,
+  isPassword?: boolean
 }
 
 export interface UserData {    //личные данные по кабинету пользователя
@@ -29,7 +29,7 @@ export interface UserData {    //личные данные по кабинету
   userData: string
 }
 
-export interface AuthState extends Token, UserData{    //тип для Store вцелом.
+export interface AuthState extends Token, UserData{    //тип для Store в целом.
 
 }
 

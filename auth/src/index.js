@@ -5,23 +5,24 @@ const { connectDb } = require("./helpers/db");
 
 const app = express();
 
-app.get("/test", (req, res) => {
-  res.send("Our AUTH-server is working");
-});
 
-app.get("/testwithapidata", (req, res) => {
-  axios.get(apiUrl + "/testapidata").then(response => {
-    res.json({
-      testapidata: response.data.testapidata
-    });
-  });
-})
-
-app.get("/api/kola", (req, res) => {
-  res.json({
-    auth: "kola is confirmed"
+app.get("/api/checkOutAuth/:authData", (req, res) => {
+  let [login, password] = req.params.authData.split(';')
+  
+  console.log('================== authData in Auth = ', login, ' ; ', password)
+  res.send({
+    isLogin: true,
+    isPassword: true,
+    accessToken: '016',
+    refreshToken: '025'
   });
 });
+
+
+
+
+
+
 
 const startServer = () => {
   app.listen(port, () => {

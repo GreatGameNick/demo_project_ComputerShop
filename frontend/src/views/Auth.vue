@@ -50,7 +50,7 @@ import Vue from "vue"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
 import axios from 'axios'
-import {LoginForms, Auth} from "@/types/auth"
+import {LoginForms, AuthData} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
 import {isPhone, isPassword, isUnique} from '@/utils/validation.ts'
 
@@ -88,14 +88,20 @@ export default Vue.extend({
             required,
             isPhone,
             // isUnique: isUnique(true)
-        
-        
-            async isUnique(value: string, isRegistrationInterface = this.isRegistrationInterface as boolean): Promise<Auth | boolean> {
-              //заменитель директивы .lezy у v-modal
-              if (value === '' && !isRegistrationInterface)
-                return Promise.resolve(true)
 
-              return await axios.get(`api/checkOutAuth/${value}`)
+
+            // @ts-ignore
+            async isUnique(value: string, isRegistrationInterface = this.isRegistrationInterface as boolean): Promise<boolean> {
+              //заменитель директивы .lezy у v-modal
+              let isLogin: boolean = false
+              if (value === '' && !isRegistrationInterface)
+                isLogin = true
+
+              await axios.get(`api/checkOutAuth/${value}`)
+              .then(({data}) => isLogin = data.isLogin)
+              
+              console.log('======== isUnique = ', isLogin)
+              return Promise.resolve(isLogin)
             }
           }
         },
