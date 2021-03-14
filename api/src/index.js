@@ -63,11 +63,11 @@ app.get("/basket", getBasket)                  //use it
 
 
 //Auth (запросы на Auth-сервис докера).
-app.get("/checkOutAuth/:authData", async (req, res) => {
-  let authData = req.params.authData    // "login;password"
+app.get("/identification/:login", async (req, res) => {
+  let login = req.params.login
   
-  await axios.get(authApiUrl + `/checkOutAuth/${authData}`)   // http://auth:3002/api + `/checkOutAuth/${authData}`
-  .then(({data}) => res.json(data))
+  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api + `/checkOutAuth/${login}`
+  .then(({data}) => res.send(data))
 })
 
 

@@ -1,6 +1,6 @@
 import {MutationTree, ActionTree, GetterTree} from 'vuex'
 import {RootState} from '@/types'
-import {AuthState, AuthData, Token} from "@/types/auth";
+import {AuthState, Authentication, Authorization} from "@/types/auth";
 import axios from "axios";
 
 export default {
@@ -13,20 +13,22 @@ export default {
   getters: {} as GetterTree<AuthState, RootState>,
   mutations: {},
   actions: {
-    async CREATE_AUTH({commit}, {login, password}: AuthData): Promise<Token> {
+    async CREATE_AUTH({commit}, {login, password}: Authentication): Promise<Authorization> {
       await axios.post('/auth', {login, password})
         .then((response) => {
         })
       return Promise.resolve({
+        isAuthorization: true,
         accessToken: 'eee',
         refreshToken: 'rrrr'
       })
     },
-    async EXPECTATION_AUTH({commit}, {login, password}: AuthData): Promise<Token> {
+    async EXPECTATION_AUTH({commit}, {login, password}: Authentication): Promise<Authorization> {
       await axios.get('/auth', {params: {login, password}})
         .then((response) => {
         })
       return Promise.resolve({
+        isAuthorization: true,
         accessToken: 'eee',
         refreshToken: 'rrrr'
       })

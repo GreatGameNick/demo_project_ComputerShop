@@ -8,20 +8,21 @@ export interface LoginForms {
   }
 }
 
-export interface AuthData {  //запрос авторизации
-  login: string,
-  password?: string
+export interface Identification {      //запрос Идентификации
+  login: string
 }
 
-export type Token = {
+export interface Authentication {    //запрос и ответ Аутентификации
+  login: string | boolean,
+  password: string | boolean
+}
+
+export type Authorization = {      //ответ Авторизации, запрос на продление Авторизации, запрос на получение данных.
+  isAuthorization: boolean,
   accessToken: string,
   refreshToken: string
 }
 
-export interface AuthResponse extends Token{     //ответ авторизации
-  isLogin: boolean,
-  isPassword?: boolean
-}
 
 export interface UserData {    //личные данные по кабинету пользователя
   userName: string,
@@ -29,7 +30,7 @@ export interface UserData {    //личные данные по кабинету
   userData: string
 }
 
-export interface AuthState extends Token, UserData{    //тип для Store в целом.
+export interface AuthState extends Authorization, UserData{    //тип для Store в целом.
 
 }
 

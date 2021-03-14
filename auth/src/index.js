@@ -1,27 +1,20 @@
 const express = require("express");
 const axios = require("axios");
-const { port, host, db, apiUrl } = require("./configuration");
-const { connectDb } = require("./helpers/db");
+const {port, host, db, apiUrl} = require("./configuration");
+const {connectDb} = require("./mongooseHelpers/db");
 
 const app = express();
 
 
-app.get("/api/checkOutAuth/:authData", (req, res) => {
-  let [login, password] = req.params.authData.split(';')
+app.get("/api/identification/:login", (req, res) => {
+  let login = req.params.login
+  console.log('================== authData in Auth = ', login)
   
-  console.log('================== authData in Auth = ', login, ' ; ', password)
-  res.send({
-    isLogin: true,
-    isPassword: true,
-    accessToken: '016',
-    refreshToken: '025'
-  });
+  //запрос на mongoDb и проверка наличия данного логина
+  
+  
+  res.json({isLogin: false});
 });
-
-
-
-
-
 
 
 const startServer = () => {
@@ -33,6 +26,6 @@ const startServer = () => {
 };
 
 connectDb()
-  .on("error", console.log)
-  .on("disconnected", connectDb)
-  .once("open", startServer);
+.on("error", console.log)
+.on("disconnected", connectDb)
+.once("open", startServer);
