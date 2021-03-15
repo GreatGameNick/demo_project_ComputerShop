@@ -36,10 +36,12 @@
         </span>
         !
       </div>
-      <div v-else @click="onRegistrationIsDone" class="forms__signature">
-        <span>
+      <div v-else
+           @click="onRegistrationIsDone"
+           class="forms__signature"
+           :class="{forms__signature_link: !$v.$invalid && forms.login.value && forms.passwordConfirm.value}"
+      >
            You are welcome!
-        </span>
       </div>
     </div>
   </div>
@@ -223,8 +225,8 @@ export default Vue.extend({
       margin-top: rem(40);
       text-align: left;
       color: $grey;
-      
-      span {
+
+      &_link, span {
         color: $valid;
         text-decoration: underline;
         
