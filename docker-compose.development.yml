@@ -25,6 +25,9 @@ services:
     command: npm run dev
     volumes:
       - ./auth/src:/usr/src/app/src
+      - ./auth/initialData:/usr/src/app/initialData
+    environment:
+      - MODE=dev
 
   nginx:
     volumes:

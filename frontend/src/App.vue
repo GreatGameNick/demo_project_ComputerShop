@@ -1,9 +1,19 @@
 <template>
-  <div class="wrapper">
+  <div class="wrap">
     <header>
       <h1 @click="onThrowToShop" class="logo">
         Computer shop
       </h1>
+      
+      <router-link :to="'/auth'" v-if="$route.path !== '/auth'">
+        {{$route.path === 'person' ? 'logout' : 'login'}}
+      </router-link>
+<!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
+<!--      если авторизовались, но находимся не на странице кабинета, то здесь прописано myAccount, to='/person' (у которого прописан гвард).-->
+<!--      когда находимся в личном кабинете, то здесь прописано logout, to='/'-->
+
+<!--      и надо подправить кнопку onThrowToShop, когда находишься не в Shop.vue-->
+      
       <div @click="onThrowToBasket" class="basket">
         <div>
           {{GET_BASKET_POINTS.length}}
@@ -13,16 +23,16 @@
     <main>
       <aside>
         <h2>Каталог</h2>
-        <div v-for="(shelf, ind) of shelves" :key="ind"
-             :class="{'text_current-page': shelf.shelf === $route.params.shelf}"
+        <router-link v-for="(shelf, ind) of shelves" :key="ind"
+                     :to="`/${shelf.shelf}`"
+                     exact
+                     active-class="text_current-page"
         >
           {{shelf.shelfName}}
-        </div>
+        </router-link>
       </aside>
-      <router-view/>
+      <router-view :key="$route.params.shelf"/>
     </main>
-  
-  
   </div>
 </template>
 
@@ -52,12 +62,16 @@ export default Vue.extend({
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_POINTS'
     ]),
+    
   },
   methods: {
     ...mapActions([
       'FETCH_BASKET_POINTS'
     ]),
     onThrowToShop(): void {
+      if(this.$route.path === '/auth' || this.$route.path === '/person')
+        this.$router.push('/')
+      
       if (this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
       } else {
@@ -68,6 +82,8 @@ export default Vue.extend({
     },
     onThrowToBasket(): void {
       let startPath = this.$route.path.split('/')[1]
+      if (startPath === 'basket')    //если мы уже находимся в Корзине, то пресекаем редирект на себя самого.
+        return
       this.$router.push({path: '/basket', query: {startPath}})
     },
   },
@@ -79,17 +95,14 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-$appMediaPoint_1: 530px;
+$appMediaPoint_1: 560px;
 
-body {
-  background: $liteGrey;
-}
 
 .text_current-page {
   text-decoration: underline;
 }
 
-.wrapper {
+.wrap {
   max-width: $maxDesktopWidth;
   margin: rem(10) auto;
   
@@ -108,6 +121,11 @@ body {
       &:hover {
         color: $grey;
       }
+    }
+    
+    a {
+      margin: 0 rem(60) 0 auto;
+      @extend h1;
     }
     
     .basket {
@@ -145,11 +163,13 @@ body {
     margin-top: rem(10);
     
     aside {
+      display: flex;
+      flex-flow: column;
       min-width: rem(160);
       padding-right: rem(20);
       border-right: $black 1px solid;
       
-      & div {
+      & :not(:first-child) {
         @extend .font_16_height;
         color: $black;
         cursor: pointer;
@@ -160,7 +180,7 @@ body {
       }
       
       @media (max-width: $appMediaPoint_1) {
-        display: none; //доделать @медиа надо на оч малых размерах
+        display: none;                          //надо доделать @media на оч малых размерах
       }
     }
   }

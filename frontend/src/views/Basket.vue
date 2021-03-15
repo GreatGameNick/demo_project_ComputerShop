@@ -1,7 +1,7 @@
 <template>
-  <div class="wrapper">
-    <h2>Корзина: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
-    <div  class="basket">
+  <div class="cover">
+    <h2>В корзине: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
+    <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
       <div class="basket__list">
         <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
                      :key="ind"
@@ -12,52 +12,70 @@
         <div class="basket__outcome">
           Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
         </div>
-        <div @click="onBuyProducts" class="basket__btn_orange">Купить</div>
+        <div @click="onAlertRun" class="basket__btn_orange">Купить</div>
       </div>
     </div>
+    
+    <tooltip :tooltip="tooltip"
+             :thenFunction="returnToShopping"
+             v-if="alertUp"
+             @alertDown="alertDown"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import basketCart from "@/components/basketCart.vue";
-import {mapActions, mapGetters, mapMutations} from "vuex";
+import {mapActions, mapGetters} from "vuex";
+import BasketCart from "@/components/basketCart.vue";
+import Tooltip from "@/components/tooltip.vue";
 
 export default Vue.extend({
   components: {
-    basketCart
+    BasketCart,
+    Tooltip
   },
+  data: () => ({
+    alertUp: false as boolean
+  }),
   computed: {
     ...mapGetters([
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_PRODUCTS',
-      'GET_BASKET_PRODUCTS'
+      'GET_BASKET_PRODUCTS',
+      'GET_PRODUCT_BASKET_AMOUNT'
     ]),
     price(): number {
       let sum: number = 0
-      for (let item of this.GET_BASKET_PRODUCTS) {
-        sum = sum + item.price
+      for (let product of this.GET_BASKET_PRODUCTS) {
+        sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
       }
       return sum
+    },
+    tooltip(): string {
+      return `You bought the ${this.GET_BASKET_POINTS.length} products successfully!`
     }
   },
   methods: {
-    ...mapMutations([
+    ...mapActions([
+      'FETCH_BASKET_PRODUCTS',
       'CLEAR_BASKET'
     ]),
-    ...mapActions([
-      'FETCH_BASKET_PRODUCTS'
-    ]),
-    onBuyProducts(this: any): void {
+    onAlertRun(): void {
+      this.alertUp = true
+    },
+    alertDown(): void {
+      this.alertUp = false
+    },
+    returnToShopping(): void {
       this.CLEAR_BASKET()
       this.$router.push('/')
-      //показать алерт
     }
   },
   filters: {
     productCounterDeclension(val: number): string {
       if (val === 0)
-        return 'пустая'
+        return 'товаров нет'
       if (val === 1)
         return '1 товар'
       if (val < 5)
@@ -71,7 +89,7 @@ export default Vue.extend({
   },
   async created() {
     if (!this.GET_IS_BASKET_PRODUCTS)
-      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно при первом посещении корзины.
+      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при первом посещении корзины.
   }
 })
 
@@ -80,13 +98,12 @@ export default Vue.extend({
 <style scoped lang="scss">
 $basketMediaPoint: 1200px;
 
-.wrapper {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 rem(10);
+.cover {
+  @extend .wrapper_common;
   
   h2 span {
     color: $grey;
+    margin-left: rem(5);
   }
   
   .basket {
@@ -133,7 +150,7 @@ $basketMediaPoint: 1200px;
       
       .basket__btn_orange {
         width: 100%;
-        max-width: 500px;
+        max-width: rem(500);
         margin-top: rem(20);
         @extend .btn_common;
         background: $orange;

@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue, {PropType} from 'vue'
-import {Product, ProductPoint} from '@/types'
+import {Product, ProductPoint} from '@/types/shop'
 import counter from '@/components/counter.vue'
 
 export default Vue.extend({
@@ -40,7 +40,7 @@ export default Vue.extend({
 
 <style scoped lang="scss">
 $basketCartMediaPoint_1: 850px;
-$basketCartMediaPoint_2: 680px;
+$basketCartMediaPoint_2: 720px;
 
 .cart {
   display: grid;

@@ -1,25 +1,29 @@
 const express = require("express")
 const mongoose = require("mongoose")
-const axios = require("axios")
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const methodOverride = require('method-override');
 const GridFsStorage = require('multer-gridfs-storage');
+const axios = require("axios")
 const crypto = require('crypto');
 const path = require('path');
 
 const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("./configuration")
 const {connectDb} = require("./mongooseHelpers/db")
-const {delOneDiskFile, delOneGridFile,
+const {
+  delOneDiskFile, delOneGridFile,
   getOneDiskFile, getOneGridFile,
   getAllDiskFilesName, getAllGridFiles,
   getOneImgFromDiskStorageForPicture, getOneImgFromGridStorageForPicture,
   findAllOnTheShelf, findOneOnTheShelf,
-  getSession} = require("./mongooseHelpers/controllers/shop")
+  getSession
+} = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
-const {laptops} = require('./mongooseHelpers/models/shelves')
+const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
+const {initialMousesData} = require('../initialData/mouseData')
+const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 
 const app = express();
@@ -37,27 +41,37 @@ app.use(session({
   // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
   cookie: {
     httpOnly: false,  //на клиенте эта кука читаться не будет
-    maxAge: 1000 * 60
+    maxAge: 3600000
   },
   secret: 'kola',
   resave: false,
   saveUninitialized: false,
-  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60 })
+  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
 }))
 
 
 //Текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
-app.get("/shop/:shelf", findAllOnTheShelf)   //use it
+app.get("/shop/:shelf", findAllOnTheShelf)        //use it
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 
 
-
 //basket
-app.put("/basket", putProductToBasket)        //use it
+app.put("/basket", putProductToBasket)         //use it
 app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use it
 
+
+//Auth (запросы на Auth-сервис докера).
+app.get("/identification/:login", async (req, res) => {     //это надо вынести в контроллеры
+  let login = req.params.login
+  
+  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api + `/checkOutAuth/${login}`
+  .then(({data}) => {
+    console.log('===============auth_data_in_api', data)
+    res.send(data)
+  })
+})
 
 
 
@@ -82,7 +96,7 @@ app.post('/upload_file', upload.single('file'), (req, res) => {
   res.send(`uploadFile ==> ${req.file.originalname}`);
 });
 
-//d)Изображение для <img> from diskStorage
+//d)Берем изображения для <img> from diskStorage
 app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it (!)
 
 
@@ -95,33 +109,33 @@ app.delete("/gridImgs/:name", delOneGridFile)
 app.delete("/diskImgs/:name", delOneDiskFile)
 
 
-//запрос на соседний сервис докера.
-app.get("/currentUser/:userName", async (req, res) => {
-  let userName = req.params.userName
-  
-  await axios.get(authApiUrl + "/" + userName)
-  .then(responseFromAuth => {
-    res.json({
-      isCurrentUser: true,
-      currentUserFromAuth: responseFromAuth.data
-    })
-  })
-})
-
-
 //функция по старту сервера.
 const startServer = async () => {
   //Загружаем в mongoDb начальные данные
   //a. предварительно очищаем db, если осуществляем dev-перезапуск.
   if (mode === 'dev') {
     await laptops.deleteMany({}).exec()
+    await mouses.deleteMany({}).exec()
+    await accessories.deleteMany({}).exec()
     console.log('=============== Server stared on a DEV mode, Очищаем db =>')
   }
   
   //b. загружаем
   await laptops.insertMany(initialLaptopData)
   .then(function () {
-    console.log("=============== Initial data is inserted")
+    console.log("=============== initialLaptopData is inserted")
+  })
+  .catch(console.log)
+  
+  await mouses.insertMany(initialMousesData)
+  .then(function () {
+    console.log("=============== initialMousesData is inserted")
+  })
+  .catch(console.log)
+  
+  await accessories.insertMany(initialAccessoriesData)
+  .then(function () {
+    console.log("=============== initialAccessoriesData is inserted")
   })
   .catch(console.log)
   

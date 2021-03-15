@@ -16,7 +16,9 @@
     "sourceMap": true,
     "types": [
       "webpack-env",
-      "jest"
+      "jest",
+      "vuelidate",
+      "vue"
     ],
     "paths": {
       "~/*": [

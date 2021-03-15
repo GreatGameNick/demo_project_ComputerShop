@@ -3,10 +3,15 @@ const assert = require('assert');
 const fs = require('fs');
 
 const {BasketModel} = require('../models/baskets')
-const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configuration")
 
-// putProductToBasket, deleteProductAtBasket, getBasket
-
+module.exports.getBasket = async (req, res) => {
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+    assert.equal(err, null);
+    return basket
+  })
+  .then(basket =>
+    basket == null ? res.send('basket is empty') : res.send(basket))
+}
 
 module.exports.putProductToBasket = async (req, res) => {
   await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
@@ -34,47 +39,30 @@ module.exports.putProductToBasket = async (req, res) => {
   res.sendStatus(200)
 }
 
-
-module.exports.getBasket = async (req, res) => {
+module.exports.deleteProductAtBasket = async (req, res) => {
   await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
     assert.equal(err, null);
     return basket
   })
-  .then(basket =>
-    basket == null ? res.send('basket is empty') : res.send(basket))
-}
-
-
-module.exports.deleteProductAtBasket = async (req, res) => {
-  let productPoint = req.query.productPoint
-  
-  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {  //находим корзину конкретного пользователя, по его sessionID.
-    assert.equal(err, null);
-    return basket
-  })
   .then(async basket => {
-    let productPointIndex = basket.basketPoints.findIndex(item => item._id === productPoint._id)
-    delete basket.basketPoints[productPointIndex]
+    if (req.query._id === 'all') {
+      basket.basketPoints = []
+    } else {
+      let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
+      if (productPointIndex > -1)
+        basket.basketPoints.splice(productPointIndex, 1)
+    }
     
     await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
       console.log(err)
     })
   })
+  .catch(error => {
+    console.log('deleteProductAtBasket ====== ', error)
+  })
+  
   res.sendStatus(200)
 }
-
-
-// module.exports.findOneOnTheShelf = async (req, res) => {    // use it
-//   let exactShelf = choseTheShelf(req)
-//   let convertedId = new mongoose.Types.ObjectId(req.params._id)
-//
-//   await exactShelf.findOne({_id: convertedId}, function (err, product) {
-//     assert.equal(err, null);
-//     return product
-//   })
-//   .then(product => res.send(product))
-// }
-
 
 
 

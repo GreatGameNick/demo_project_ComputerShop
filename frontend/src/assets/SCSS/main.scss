@@ -1,13 +1,22 @@
-
 @import "dounCSS";
 @import "constants";
+
+body {
+  color: $black_extra;
+  background: $grey-light;
+}
+
+.wrapper_common {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 rem(10);
+}
 
 .flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 
 .font_16_height {
   font-size: rem(16);
@@ -46,13 +55,17 @@ h3 {
   line-height: rem(40);
 }
 
+a {
+  color: $black_extra;
+}
+
 .btn_common {
   max-width: rem(180);
-  height: rem(40);
+  height: rem(38);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: $grey 1px solid;
+  border: $grey-opasity 1px solid;
   cursor: pointer;
 
   &:hover {

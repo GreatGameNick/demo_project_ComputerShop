@@ -1,12 +1,10 @@
 <template>
-  <div class="bundle">
-    <div class="shelf">
-      <div v-for="(product, ind) in GET_PRODUCTS($route.params.shelf)"
-           :key="ind"
-           @click="productDescription(product._id)"
-      >
-        <product-cart :product="product" class="shelf__cart"/>
-      </div>
+  <div class="wrapper">
+    <div v-for="(product, ind) in GET_PRODUCTS($route.params.shelf)"
+         :key="ind"
+         @click.exact="onGoToProductDescription(product._id)"
+    >
+      <product-cart :product="product" class="cart"/>
     </div>
   </div>
 </template>
@@ -29,40 +27,35 @@ export default Vue.extend({
     ...mapActions([
       'FETCH_PRODUCTS'
     ]),
-    productDescription(_id: any) {
+    onGoToProductDescription(_id: any) {
       this.$router.push(`/${this.$route.params.shelf}/${_id}`)
     }
   },
   created() {
     this.FETCH_PRODUCTS(this.$route.params.shelf)
   }
-
 });
 </script>
 
 <style lang="scss">
-.bundle {
+.wrapper {
+  @extend .wrapper_common;
+  
   width: 100%;
-
-  .shelf {
-    width: 100%;
-    display: flex;
-    box-sizing: border-box;
-    margin-top: rem(-10);
-    padding: 0 rem(10);
-    flex-flow: wrap row;
-    justify-content: space-between;
-
-    @media (max-width: 760px) {
-      justify-content: space-around;
-    }
-
-    &__cart {
-      width: rem(260);
-      height: rem(400);
-      margin: rem(10) rem(1) 0 rem(1);
-      cursor: pointer;
-    }
+  display: flex;
+  margin-top: rem(-10);
+  flex-flow: wrap row;
+  justify-content: space-between;
+  
+  @media (max-width: 760px) {
+    justify-content: space-around;
+  }
+  
+  .cart {
+    width: rem(260);
+    height: rem(400);
+    margin: rem(10) rem(1) 0 rem(1);
+    cursor: pointer;
   }
 }
 </style>

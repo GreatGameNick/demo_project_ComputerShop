@@ -72,7 +72,7 @@
 <script lang="ts">
 import axios from 'axios'
 import Vue from 'vue';
-import { Product } from '@/types'
+import { Product } from './frontend/src/types/shop'
 
 // @ts-ignore
 
