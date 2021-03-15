@@ -1,6 +1,6 @@
 <template>
   <div class="cover">
-    Person
+    Person {{GET_USER_DATA}}
   </div>
 </template>
 
@@ -9,7 +9,12 @@ import Vue from 'vue'
 import {mapActions, mapGetters} from 'vuex';
 
 export default Vue.extend({
-  name: "Person"
+  name: "Person",
+  computed: {
+    ...mapGetters([
+        'GET_USER_DATA'
+    ])
+  }
 })
 </script>
 

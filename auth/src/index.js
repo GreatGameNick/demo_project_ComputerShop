@@ -5,12 +5,13 @@ const {port, MONGO_URL, mode} = require("./configuration");
 const {connectDb} = require("./mongooseHelpers/db");
 const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
-const {identification} = require("./mongooseHelpers/controllers/auth")
+const {identification, createAccount} = require("./mongooseHelpers/controllers/auth")
 
 const app = express();
 
 
 app.get("/api/identification/:login", identification)
+app.post("/api/authentication/", createAccount)
 
 
 

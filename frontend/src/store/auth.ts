@@ -8,23 +8,31 @@ export default {
   state: {
     userName: 'Kola',
     userStatus: 'cool',
-    userData: '016'
+    userData: '016',
+    isAuthorization: false,
+    accessToken: '',
+    refreshToken: ''
   } as AuthState,
-  getters: {} as GetterTree<AuthState, RootState>,
-  mutations: {},
+  getters: {
+    GET_USER_DATA: store => store.isAuthorization
+  } as GetterTree<AuthState, RootState>,
+  mutations: {
+    SET_AUTHORISATION(state, authorization: Authorization) {
+      state.isAuthorization = authorization.isAuthorization
+      state.accessToken = authorization.accessToken
+      state.refreshToken = authorization.refreshToken
+    }
+  } as MutationTree<AuthState>,
   actions: {
-    async CREATE_AUTH({commit}, {login, password}: Authentication): Promise<Authorization> {
-      await axios.post('/auth', {login, password})
-        .then((response) => {
+    async CREATE_ACCOUNT({commit}, {login, password}: Authentication): Promise<Authorization> {
+      return await axios.post('api/authentication', {login, password})    //обращаемся к API-сервису докера.
+        .then(({data}) => {
+          commit('SET_AUTHORISATION', data)
+          return data
         })
-      return Promise.resolve({
-        isAuthorization: true,
-        accessToken: 'eee',
-        refreshToken: 'rrrr'
-      })
     },
-    async EXPECTATION_AUTH({commit}, {login, password}: Authentication): Promise<Authorization> {
-      await axios.get('/auth', {params: {login, password}})
+    async EXPECTATION_ACCOUNT({commit}, {login, password}: Authentication): Promise<Authorization> {
+      await axios.get('api/auth', {params: {login, password}})
         .then((response) => {
         })
       return Promise.resolve({

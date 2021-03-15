@@ -63,12 +63,20 @@ app.get("/basket", getBasket)                  //use it
 
 
 //Auth (запросы на Auth-сервис докера).
-app.get("/identification/:login", async (req, res) => {     //это надо вынести в контроллеры
+app.get("/identification/:login", async (req, res) => {          //checkIsLogin   //это надо вынести в контроллеры
   let login = req.params.login
   
-  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api + `/checkOutAuth/${login}`
+  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api/identification/${login}
   .then(({data}) => {
-    console.log('===============auth_data_in_api', data)
+    console.log('===============identification_in_api', data)
+    res.send(data)
+  })
+})
+
+app.post("/authentication", async (req, res) => {                 //createAccount    //это надо вынести в контроллеры
+  await axios.post(authApiUrl + `/authentication`, res.body)
+  .then(({data}) => {
+    console.log('===============authentication_in_api', data)
     res.send(data)
   })
 })

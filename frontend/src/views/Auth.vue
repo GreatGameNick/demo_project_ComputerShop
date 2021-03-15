@@ -3,7 +3,7 @@
     <h2>Entrance in to your privat space</h2>
     <div class="forms">
       <h2 v-if="isRegistrationInterface" class="forms__registration">Enter your registration data</h2>
-      
+
       <div v-for="(field, key, ind) in forms" :key="ind" class="forms__field">
         <h2 v-if="(field.name !== 'password confirm') || isRegistrationInterface"
             :class="{
@@ -21,14 +21,14 @@
                v-if="(field.name !== 'password confirm') || isRegistrationInterface"
         >
       </div>
-      
+
       <div v-if="!isRegistrationInterface"
            @click="onLogin"
            class="forms__btn_login"
       >
         Take it
       </div>
-      
+
       <div v-if="!isRegistrationInterface" class="forms__signature">
         If you are't resident take a
         <span @click="onSwitchToTheRegistrationInterface">
@@ -41,7 +41,7 @@
            class="forms__signature"
            :class="{forms__signature_link: !$v.$invalid && forms.login.value && forms.passwordConfirm.value}"
       >
-           You are welcome!
+        You are welcome!
       </div>
     </div>
   </div>
@@ -55,6 +55,7 @@ import axios from 'axios'
 import {LoginForms, Identification} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
 import {isPhone, isPassword, isUnique} from '@/utils/validation.ts'
+import {mapActions} from "vuex";
 
 
 export default Vue.extend({
@@ -98,7 +99,7 @@ export default Vue.extend({
         passwordConfirm: {
           value: {
             // @ts-ignore
-            sameAs: sameAs(function (): string {
+            sameAs: sameAs(function(): string {
               // @ts-ignore
               return this.forms.password.value
             })
@@ -108,50 +109,49 @@ export default Vue.extend({
     }
   },
   methods: {
+    ...mapActions([
+        'CREATE_ACCOUNT'
+    ]),
     onLogin(): void {
       //Если пытаемся отправить, но поле - не заполнялось, то незаполненное поле отметится красным.
       // @ts-ignore
       this.$v.$touch()
-      
+
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
-      
+
       //посылаем запрос на аутентификацию
       // @ts-ignore
-      if (!this.$v.forms.$anyError) {
+      if(!this.$v.forms.$anyError) {
         console.log('jjj')
-        
+
       }
-      
-      
+
+
     },
     onSwitchToTheRegistrationInterface(): void {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
-      for (let formValue of Object.values(this.forms)) {
+      for(let formValue of Object.values(this.forms)) {
         formValue.value = ''
       }
       // @ts-ignore
       this.$v.$reset()
-      //включаем интерфейс для регистрации
+      //включаем интерфейс регистрации
       this.isRegistrationInterface = true
     },
     onRegistrationIsDone(): void {
-      console.log('onRegistrationIsDone ======')
-      //Если пытаемся отправить, но поле - пустое, то отмечаем незаполненное поле красным.
-      //...
-      
-      //посылаем запрос на регистрацию
       // @ts-ignore
-      if (!this.$v.forms.$anyError) {
-        console.log('jjj')
-        
+      this.$v.$touch()
+      // @ts-ignore
+      if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
+        this.CREATE_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
+        .then(() => this.$router.push('/person'))
       }
-      
-      
     }
   },
   directives: {
-    'mask': AwesomeMask
+    'mask':
+    AwesomeMask
   }
 })
 </script>
@@ -167,18 +167,18 @@ export default Vue.extend({
 
 .cover {
   @extend .wrapper_common;
-  
+
   .forms {
     display: block;
     width: 100%;
-    
+
     > h2 {
       width: 50%;
       margin-right: auto;
       text-align: right;
       text-decoration: underline;
     }
-    
+
     &__field {
       width: 100%;
       height: fit-content;
@@ -187,7 +187,7 @@ export default Vue.extend({
       align-items: center;
       justify-content: flex-start;
       margin: rem(20) auto 0;
-      
+
       & h2 {
         display: flex;
         align-items: center;
@@ -195,14 +195,14 @@ export default Vue.extend({
         width: 50%;
         box-sizing: border-box;
         padding-right: rem(20);
-        
+
         background: $grey-light;
-        
+
         @media (max-width: 800px) {
           width: rem(300);
         }
       }
-      
+
       input {
         width: rem(300);
         height: rem(40);
@@ -212,13 +212,13 @@ export default Vue.extend({
         border-bottom: $grey-middle 1px solid;
       }
     }
-    
+
     &__btn_login {
       width: 100%;
       margin: rem(30) auto 0 50%;
       @extend .btn_common;
     }
-    
+
     &__signature {
       width: 50%;
       margin-left: auto;
@@ -229,7 +229,7 @@ export default Vue.extend({
       &_link, span {
         color: $valid;
         text-decoration: underline;
-        
+
         &:hover {
           color: $green;
           cursor: pointer;
@@ -237,8 +237,8 @@ export default Vue.extend({
       }
     }
   }
-  
-  
+
+
 }
 
 </style>
