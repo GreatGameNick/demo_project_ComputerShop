@@ -31,7 +31,7 @@ export interface UserData {    //личные данные по кабинету
 }
 
 export interface AuthState extends Authorization, UserData{    //тип для Store в целом.
-
+  userLogin: string,
 }
 
 

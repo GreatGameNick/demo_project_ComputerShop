@@ -1,19 +1,20 @@
 <template>
   <div class="wrap">
     <header>
-      <h1 @click="onThrowToShop" class="logo">
-        Computer shop
-      </h1>
+      <div @click="onThrowToShop" class="header-btn">
+        computer shop
+      </div>
 
-      <div @click="onSwitchAuth" v-if="$route.path !== '/auth'" class="auth-btn">
+      <div @click="$router.push('/person')"
+           v-if="$route.path !== '/person' && GET_IS_AUTHORIZATION"
+           class="header-btn"
+      >
+        your account
+      </div>
+
+      <div @click="onSwitchAuth" v-if="$route.path !== '/a11n'" class="header-btn">
         {{GET_IS_AUTHORIZATION ? 'logout' : 'login'}}
       </div>
-      <!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
-      <!--      если авторизовались, но находимся не на странице кабинета, то здесь прописано myAccount, to='/person' (у которого прописан гвард).-->
-      <!--      когда находимся в личном кабинете, то здесь прописано logout, to='/'-->
-
-      <!--      и надо подправить кнопку onThrowToShop, когда находишься не в Shop.vue-->
-
       <div @click="onThrowToBasket" class="basket">
         <div>
           {{GET_BASKET_POINTS.length}}
@@ -71,7 +72,7 @@ export default Vue.extend({
       'LOGOUT'
     ]),
     onThrowToShop(): void {
-      if(this.$route.path === '/auth' || this.$route.path === '/person')
+      if(this.$route.path === '/a11n' || this.$route.path === '/person')
         this.$router.push('/')
 
       if(this.$route.query.startPath) {
@@ -90,7 +91,7 @@ export default Vue.extend({
     },
     onSwitchAuth() {
       if(!this.GET_IS_AUTHORIZATION) {
-        this.$router.push('/auth')
+        this.$router.push('/a11n')
       } else {
         this.LOGOUT()
         if(this.$route.path === '/person')
@@ -126,17 +127,20 @@ $appMediaPoint_1: 560px;
     border-top: $black 1px solid;
     border-bottom: $black 1px solid;
 
-    h1 {
+    .header-btn {
+      margin-right: rem(40);
+      font-size: rem(16);
+      line-height: rem(40);
+      text-transform: uppercase;
       cursor: pointer;
+
+      &:first-child {
+        margin-right: auto;
+      }
 
       &:hover {
         color: $grey;
       }
-    }
-
-    .auth-btn {
-      margin: 0 rem(60) 0 auto;
-      @extend h1;
     }
 
     .basket {

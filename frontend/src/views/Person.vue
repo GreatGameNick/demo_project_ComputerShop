@@ -1,6 +1,11 @@
 <template>
   <div class="cover">
-    Person {{GET_USER_DATA}}
+    <div>
+      Person {{GET_USER_LOGIN}}
+    </div>
+    <div>
+      There is all stuff regarding exactly this person.
+    </div>
   </div>
 </template>
 
@@ -12,7 +17,7 @@ export default Vue.extend({
   name: "Person",
   computed: {
     ...mapGetters([
-      'GET_USER_DATA'
+      'GET_USER_LOGIN'
     ])
   }
 })
@@ -22,6 +27,8 @@ export default Vue.extend({
 
 .cover {
   @extend .wrapper_common;
-
+  & :not(:first-child) {
+    margin-top: rem(15);
+  }
 }
 </style>

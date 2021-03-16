@@ -25,7 +25,7 @@ module.exports.findAllOnTheShelf = async (req, res) => {    // use it
     req.session.i = 0;
   ++req.session.i;
   
-  console.log('=====findAllOnTheShelf_1. req.sessionID = ', req.sessionID)
+  console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
   
   let exactShelf = choseTheShelf(req)
   
@@ -39,7 +39,7 @@ module.exports.findAllOnTheShelf = async (req, res) => {    // use it
 }
 
 module.exports.findOneOnTheShelf = async (req, res) => {    // use it
-  console.log('====findOneOnTheShelf_2. req.sessionID = ', req.sessionID)
+  console.log('====findOne_OnTheShelf. req.sessionID = ', req.sessionID)
   
   let exactShelf = choseTheShelf(req)
   let convertedId = new mongoose.Types.ObjectId(req.params._id)

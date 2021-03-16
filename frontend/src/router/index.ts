@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 import Basket from '../views/Basket.vue'
-import Auth from '../views/Auth.vue'
+import A11n from '../views/A11n.vue'
 import Person from '../views/Person.vue'
 
 Vue.use(VueRouter)
@@ -17,9 +17,9 @@ const routes: Array<RouteConfig> = [
     component: Basket
   },
   {
-    path: '/auth',
-    name: 'Auth',
-    component: Auth
+    path: '/a11n',
+    name: 'a11n',
+    component: A11n
   },
   {
     path: '/person',

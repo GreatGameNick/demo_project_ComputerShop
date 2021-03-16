@@ -15,7 +15,7 @@ export const isPassword = (v: string): boolean => {
 
 export const isUnique = (isRegistrationInterface: boolean) => async (login: Identification): Promise<boolean> => {
   let isLogin: boolean = false
-  
+
   if(login) {     //при пустом поле login - запрос не отсылаем.
     await axios.get(`api/identification/${login}`)           //обращаемся к API-сервису докера, через Nginx (а не напрямую).
       .then(({data}) => {

@@ -6,6 +6,7 @@ import axios from "axios";
 export default {
   namespaced: false,
   state: {
+    userLogin: '',
     userName: 'Kola',
     userStatus: 'cool',
     userData: '016',
@@ -14,18 +15,25 @@ export default {
     refreshToken: ''
   } as AuthState,
   getters: {
+    GET_USER_LOGIN: store => store.userLogin,
     GET_IS_AUTHORIZATION:store => store.isAuthorization,
-    GET_USER_DATA: store => store.userData
   } as GetterTree<AuthState, RootState>,
   mutations: {
     SET_AUTHORISATION(state, authorization: Authorization) {
-      console.log('=========== SET_AUTHORISATION', authorization)
-      
       state.isAuthorization = authorization.isAuthorization
       state.accessToken = authorization.accessToken
       state.refreshToken = authorization.refreshToken
     },
-    LOGOUT: state => state.isAuthorization = false
+    SET_USER_LOGIN(state, login: string) {
+      state.userLogin = login
+    },
+    LOGOUT: state => {
+      state.userLogin = ''
+      state.userName = ''
+      state.userStatus = ''
+      state.userData = ''
+      state.isAuthorization = false
+    }
   } as MutationTree<AuthState>,
   actions: {
     async CREATE_ACCOUNT({commit}, {login, password}: Authentication): Promise<Authorization> {
@@ -40,6 +48,7 @@ export default {
       return await axios.get(`api/authentication/${login + ";" + password}`)
         .then(({data}) => {
           commit('SET_AUTHORISATION', data)
+          commit('SET_USER_LOGIN', login)
           return data
         })
     },

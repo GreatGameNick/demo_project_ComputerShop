@@ -20,15 +20,16 @@ const {
   getSession
 } = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
+const {checkIsLogin, createAccount, login} = require("./mongooseHelpers/controllers/a12n")
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
-const {initialMousesData} = require('../initialData/mouseData')
+const {initialMouseData} = require('../initialData/mouseData')
 const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 
 const app = express();
 
-app.use(bodyParser.json())      //(!) Обязателен для всех запросов, которые имеют pl.
+app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl.
 
 
 //session
@@ -62,33 +63,10 @@ app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use it
 
 
-//Auth (запросы на Auth-сервис докера).
-app.get("/identification/:login", async (req, res) => {     //checkIsLogin. Префикс роутера "/api" обрезан в nginx'e.     //это надо вынести в контроллеры
-  let login = req.params.login
-  
-  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api + /identification/${login}. Это запрос НЕ через Nginx, а напрямую по докер-сети(!).
-  .then(({data}) => {                                           //Поэтому роут в auth/src/index.js обозначен как "/api/identification/:login".
-    res.send(data)
-  })
-  .catch(console.log)
-})
-
-app.post("/authentication", async (req, res) => {                 //createAccount. Префикс роутера "/api" обрезан в nginx'e.    //это надо вынести в контроллеры
-  await axios.post(authApiUrl + `/authentication`, req.body)
-  .then(({data}) => {
-    res.send(data)
-  })
-  .catch(console.log)
-})
-
-app.get("/authentication/:auth", async (req, res) => {      //LOGIN.
-  let authData = req.params.auth
-  await axios.get(authApiUrl + `/authentication/${authData}`)
-  .then(({data}) => {
-    res.send(data)
-  })
-  .catch(console.log)
-})
+//a12n (Authentication_service).
+app.get("/identification/:login", checkIsLogin)       //Префикс роутера "/api" обрезан в nginx'e.
+app.post("/authentication", createAccount)
+app.get("/authentication/:auth", login)
 
 
 
@@ -140,9 +118,9 @@ const startServer = async () => {
   })
   .catch(console.log)
   
-  await mouses.insertMany(initialMousesData)
+  await mouses.insertMany(initialMouseData)
   .then(function () {
-    console.log("=============== initialMousesData is inserted")
+    console.log("=============== initialMouseData is inserted")
   })
   .catch(console.log)
   
