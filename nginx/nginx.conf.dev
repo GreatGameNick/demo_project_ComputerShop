@@ -22,8 +22,9 @@ server {
     rewrite ^/api/(.*) /$1 break;
   }
 
-  location /auth/api {
+  # обращаемся к auth из Vue-проекта, минуя api-сервис.
+  location /auth {
     proxy_pass http://auth:3002;
-    rewrite ^api/(.*) /$1 break;
+    rewrite ^/auth/(.*) /$1 break;
   }
 }

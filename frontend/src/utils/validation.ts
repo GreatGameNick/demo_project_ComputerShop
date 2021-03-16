@@ -17,7 +17,7 @@ export const isUnique = (isRegistrationInterface: boolean) => async (login: Iden
   let isLogin: boolean = false
   
   if(login) {     //при пустом поле login - запрос не отсылаем.
-    await axios.get(`api/identification/${login}`)
+    await axios.get(`api/identification/${login}`)           //обращаемся к API-сервису докера, через Nginx (а не напрямую).
       .then(({data}) => {
         isLogin = data.isLogin
       })

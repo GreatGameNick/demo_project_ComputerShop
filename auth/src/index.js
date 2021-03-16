@@ -10,8 +10,8 @@ const {identification, createAccount} = require("./mongooseHelpers/controllers/a
 const app = express();
 
 
-app.get("/api/identification/:login", identification)
-app.post("/api/authentication/", createAccount)
+app.get("/api/identification/:login", identification)   //префикс "/api" добавился из authApiUrl (http://auth:3002/api), и далее основное доменное имя http://auth:3002/ отброшено express'ом.
+app.post("/api/authentication/", createAccount)         //Поэтому в имени роутера должен фигурировать "/api".
 
 
 

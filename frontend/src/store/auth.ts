@@ -18,6 +18,8 @@ export default {
   } as GetterTree<AuthState, RootState>,
   mutations: {
     SET_AUTHORISATION(state, authorization: Authorization) {
+      console.log('=========== SET_AUTHORISATION', authorization)
+      
       state.isAuthorization = authorization.isAuthorization
       state.accessToken = authorization.accessToken
       state.refreshToken = authorization.refreshToken
@@ -25,8 +27,9 @@ export default {
   } as MutationTree<AuthState>,
   actions: {
     async CREATE_ACCOUNT({commit}, {login, password}: Authentication): Promise<Authorization> {
-      return await axios.post('api/authentication', {login, password})    //обращаемся к API-сервису докера.
+      return await axios.post('api/authentication', {login, password})    //обращаемся к API-сервису докера через Nginx (а не напрямую).
         .then(({data}) => {
+          console.log('DATA - CREATE_ACCOUNT ==============', data)
           commit('SET_AUTHORISATION', data)
           return data
         })

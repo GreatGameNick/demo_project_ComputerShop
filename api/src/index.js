@@ -63,20 +63,23 @@ app.get("/basket", getBasket)                  //use it
 
 
 //Auth (запросы на Auth-сервис докера).
-app.get("/identification/:login", async (req, res) => {          //checkIsLogin   //это надо вынести в контроллеры
+app.get("/identification/:login", async (req, res) => {     //checkIsLogin. Префикс роутера "/api" обрезан в nginx'e.     //это надо вынести в контроллеры
   let login = req.params.login
   
-  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api/identification/${login}
-  .then(({data}) => {
+  await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api + /identification/${login}. Это запрос НЕ через Nginx, а напрямую по докер-сети(!).
+  .then(({data}) => {                                           //Поэтому роут в auth/src/index.js обозначен как "/api/identification/:login".
     console.log('===============identification_in_api', data)
     res.send(data)
   })
 })
 
-app.post("/authentication", async (req, res) => {                 //createAccount    //это надо вынести в контроллеры
-  await axios.post(authApiUrl + `/authentication`, res.body)
+app.post("/authentication", async (req, res) => {                 //createAccount. Префикс роутера "/api" обрезан в nginx'e.    //это надо вынести в контроллеры
+  console.log(' ============== /authentication in api/src/index.js', req.body)     //+ req.body = { login: '(111) 111-11-11', password: '11111' }
+  
+  let pl = req.body
+  await axios.post(authApiUrl + `/authentication`, pl)
   .then(({data}) => {
-    console.log('===============authentication_in_api', data)
+    console.log('===============DATA - authentication_in_api', data)
     res.send(data)
   })
 })

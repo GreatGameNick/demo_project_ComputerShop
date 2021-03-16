@@ -18,19 +18,22 @@ module.exports.identification = async (req, res) => {
 }
 
 module.exports.createAccount = async (req, res) => {
-  const newAccount = new authModel({
-    login: req.body.login,
-    password: req.body.password,
-    isAuthorization: true,
-    accessToken: '',
-    refreshToken: ''
-  })
-  await newAccount.save()
-  res.send({
-    isAuthorization: true,
-    accessToken: 'accessToken=',
-    refreshToken: 'refreshToken='
-  })
+  console.log('============= createAccount in auth/src/mongooseHelpers/controllers/auth.js')     //+
+  console.log('===== req >>>>', req)
+  
+  // const newAccount = new authModel({
+  //   login: req.body.login,
+  //   password: req.body.password,
+  //   isAuthorization: true,
+  //   accessToken: '',
+  //   refreshToken: ''
+  // })
+  // await newAccount.save()
+  // res.send({
+  //   isAuthorization: true,
+  //   accessToken: 'accessToken=',
+  //   refreshToken: 'refreshToken='
+  // })
 }
 
 
