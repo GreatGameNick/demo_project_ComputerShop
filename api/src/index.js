@@ -68,22 +68,27 @@ app.get("/identification/:login", async (req, res) => {     //checkIsLogin. Пр
   
   await axios.get(authApiUrl + `/identification/${login}`)   // http://auth:3002/api + /identification/${login}. Это запрос НЕ через Nginx, а напрямую по докер-сети(!).
   .then(({data}) => {                                           //Поэтому роут в auth/src/index.js обозначен как "/api/identification/:login".
-    console.log('===============identification_in_api', data)
     res.send(data)
   })
+  .catch(console.log)
 })
 
 app.post("/authentication", async (req, res) => {                 //createAccount. Префикс роутера "/api" обрезан в nginx'e.    //это надо вынести в контроллеры
   await axios.post(authApiUrl + `/authentication`, req.body)
   .then(({data}) => {
-    console.log('===============DATA - authentication_in_api', data)
     res.send(data)
   })
+  .catch(console.log)
 })
 
-
-
-
+app.get("/authentication/:auth", async (req, res) => {      //LOGIN.
+  let authData = req.params.auth
+  await axios.get(authApiUrl + `/authentication/${authData}`)
+  .then(({data}) => {
+    res.send(data)
+  })
+  .catch(console.log)
+})
 
 
 

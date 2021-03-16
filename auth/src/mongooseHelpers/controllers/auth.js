@@ -18,8 +18,6 @@ module.exports.identification = async (req, res) => {
 }
 
 module.exports.createAccount = async (req, res) => {
-  console.log('===== req >>>>', req.body)
-  
   const newAccount = new authModel({
     login: req.body.login,
     password: req.body.password,
@@ -33,6 +31,21 @@ module.exports.createAccount = async (req, res) => {
     accessToken: 'accessToken=',
     refreshToken: 'refreshToken='
   })
+}
+
+module.exports.login = async (req, res) => {
+  let [login, password] = req.params.auth.split(';')
+  
+  await authModel.findOne({login, password}, function (err, authenticationData) {
+    assert.equal(err, null);
+    return authenticationData
+  })
+  .then(auth => res.send({
+    isAuthorization: true,
+    accessToken: 'accessToken=',
+    refreshToken: 'refreshToken='
+  }))
+  .catch(console.log)
 }
 
 

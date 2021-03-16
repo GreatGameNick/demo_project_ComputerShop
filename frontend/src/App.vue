@@ -4,16 +4,16 @@
       <h1 @click="onThrowToShop" class="logo">
         Computer shop
       </h1>
-      
-      <router-link :to="'/auth'" v-if="$route.path !== '/auth'">
-        {{$route.path === 'person' ? 'logout' : 'login'}}
-      </router-link>
-<!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
-<!--      если авторизовались, но находимся не на странице кабинета, то здесь прописано myAccount, to='/person' (у которого прописан гвард).-->
-<!--      когда находимся в личном кабинете, то здесь прописано logout, to='/'-->
 
-<!--      и надо подправить кнопку onThrowToShop, когда находишься не в Shop.vue-->
-      
+      <div @click="onSwitchAuth" v-if="$route.path !== '/auth'" class="auth-btn">
+        {{GET_IS_AUTHORIZATION ? 'logout' : 'login'}}
+      </div>
+      <!--      если не авторизовались, то здесь прописано login, to='/person', у которого прописан гвард-->
+      <!--      если авторизовались, но находимся не на странице кабинета, то здесь прописано myAccount, to='/person' (у которого прописан гвард).-->
+      <!--      когда находимся в личном кабинете, то здесь прописано logout, to='/'-->
+
+      <!--      и надо подправить кнопку onThrowToShop, когда находишься не в Shop.vue-->
+
       <div @click="onThrowToBasket" class="basket">
         <div>
           {{GET_BASKET_POINTS.length}}
@@ -60,35 +60,46 @@ export default Vue.extend({
   computed: {
     ...mapGetters([
       'GET_BASKET_POINTS',
-      'GET_IS_BASKET_POINTS'
+      'GET_IS_BASKET_POINTS',
+      'GET_IS_AUTHORIZATION'
     ]),
-    
+
   },
   methods: {
     ...mapActions([
-      'FETCH_BASKET_POINTS'
+      'FETCH_BASKET_POINTS',
+      'LOGOUT'
     ]),
     onThrowToShop(): void {
       if(this.$route.path === '/auth' || this.$route.path === '/person')
         this.$router.push('/')
-      
-      if (this.$route.query.startPath) {
+
+      if(this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
       } else {
         let pathChunks = this.$route.path.split('/')
-        if (pathChunks.length > 2)
+        if(pathChunks.length > 2)
           this.$router.push('/' + pathChunks[1])   //переход на корень того shelf'a, где клиент до того находился.
       }
     },
     onThrowToBasket(): void {
       let startPath = this.$route.path.split('/')[1]
-      if (startPath === 'basket')    //если мы уже находимся в Корзине, то пресекаем редирект на себя самого.
+      if(startPath === 'basket')    //если мы уже находимся в Корзине, то пресекаем редирект на себя самого.
         return
       this.$router.push({path: '/basket', query: {startPath}})
     },
+    onSwitchAuth() {
+      if(!this.GET_IS_AUTHORIZATION) {
+        this.$router.push('/auth')
+      } else {
+        this.LOGOUT()
+        if(this.$route.path === '/person')
+          this.$router.push('/')
+      }
+    }
   },
   async created() {
-    if (!this.GET_IS_BASKET_POINTS)
+    if(!this.GET_IS_BASKET_POINTS)
       await this.FETCH_BASKET_POINTS()
   }
 })
@@ -105,44 +116,44 @@ $appMediaPoint_1: 560px;
 .wrap {
   max-width: $maxDesktopWidth;
   margin: rem(10) auto;
-  
+
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
+
     height: rem(40);
     border-top: $black 1px solid;
     border-bottom: $black 1px solid;
-    
+
     h1 {
       cursor: pointer;
-      
+
       &:hover {
         color: $grey;
       }
     }
-    
-    a {
+
+    .auth-btn {
       margin: 0 rem(60) 0 auto;
       @extend h1;
     }
-    
+
     .basket {
       position: relative;
       width: rem(34);
       height: rem(34);
       margin-right: rem(20);
-      
+
       background: url('assets/imgs/basket.jpg') center center no-repeat;
       background-size: rem(24) rem(26);
       cursor: pointer;
-      
+
       &:hover {
         background: url('assets/imgs/basket_grey.jpg') center center no-repeat;
         background-size: rem(24) rem(26);
       }
-      
+
       & :first-child {
         position: absolute;
         right: 0;
@@ -157,30 +168,30 @@ $appMediaPoint_1: 560px;
       }
     }
   }
-  
+
   main {
     display: flex;
     margin-top: rem(10);
-    
+
     aside {
       display: flex;
       flex-flow: column;
       min-width: rem(160);
       padding-right: rem(20);
       border-right: $black 1px solid;
-      
+
       & :not(:first-child) {
         @extend .font_16_height;
         color: $black;
         cursor: pointer;
-        
+
         &:hover {
           color: $grey;
         }
       }
-      
+
       @media (max-width: $appMediaPoint_1) {
-        display: none;                          //надо доделать @media на оч малых размерах
+        display: none; //надо доделать @media на оч малых размерах
       }
     }
   }

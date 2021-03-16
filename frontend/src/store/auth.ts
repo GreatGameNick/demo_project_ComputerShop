@@ -14,7 +14,8 @@ export default {
     refreshToken: ''
   } as AuthState,
   getters: {
-    GET_USER_DATA: store => store.isAuthorization
+    GET_IS_AUTHORIZATION:store => store.isAuthorization,
+    GET_USER_DATA: store => store.userData
   } as GetterTree<AuthState, RootState>,
   mutations: {
     SET_AUTHORISATION(state, authorization: Authorization) {
@@ -23,7 +24,8 @@ export default {
       state.isAuthorization = authorization.isAuthorization
       state.accessToken = authorization.accessToken
       state.refreshToken = authorization.refreshToken
-    }
+    },
+    LOGOUT: state => state.isAuthorization = false
   } as MutationTree<AuthState>,
   actions: {
     async CREATE_ACCOUNT({commit}, {login, password}: Authentication): Promise<Authorization> {
@@ -34,17 +36,17 @@ export default {
           return data
         })
     },
-    async EXPECTATION_ACCOUNT({commit}, {login, password}: Authentication): Promise<Authorization> {
-      await axios.get('api/auth', {params: {login, password}})
-        .then((response) => {
+    async LOGIN({commit}, {login, password}: Authentication): Promise<Authorization> {
+      return await axios.get(`api/authentication/${login + ";" + password}`)
+        .then(({data}) => {
+          commit('SET_AUTHORISATION', data)
+          return data
         })
-      return Promise.resolve({
-        isAuthorization: true,
-        accessToken: 'eee',
-        refreshToken: 'rrrr'
-      })
+    },
+    LOGOUT({commit}) {
+      commit('LOGOUT')
+      //удаление токенов
     }
-    
   } as ActionTree<AuthState, RootState>
 }
 

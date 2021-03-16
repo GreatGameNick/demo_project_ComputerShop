@@ -109,24 +109,20 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'CREATE_ACCOUNT'
+      'CREATE_ACCOUNT',
+      'LOGIN'
     ]),
     onLogin(): void {
-      //Если пытаемся отправить, но поле - не заполнялось, то незаполненное поле отметится красным.
-      // @ts-ignore
-      this.$v.$touch()
-
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
-
-      //посылаем запрос на аутентификацию
       // @ts-ignore
-      if(!this.$v.forms.$anyError) {
-        console.log('jjj')
+      this.$v.$touch()
+      // @ts-ignore
+      if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
 
+        this.LOGIN({login: this.forms.login.value, password: this.forms.password.value})
+            .then(() => this.$router.push('/person'))
       }
-
-
     },
     onSwitchToTheRegistrationInterface(): void {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)

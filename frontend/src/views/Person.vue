@@ -12,7 +12,7 @@ export default Vue.extend({
   name: "Person",
   computed: {
     ...mapGetters([
-        'GET_USER_DATA'
+      'GET_USER_DATA'
     ])
   }
 })
@@ -22,6 +22,6 @@ export default Vue.extend({
 
 .cover {
   @extend .wrapper_common;
-  
+
 }
 </style>
