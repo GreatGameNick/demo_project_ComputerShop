@@ -28,7 +28,7 @@ const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 const app = express();
 
-app.use(bodyParser.json())
+app.use(bodyParser.json())      //(!) Обязателен для всех запросов, которые имеют pl.
 
 
 //session
@@ -74,10 +74,7 @@ app.get("/identification/:login", async (req, res) => {     //checkIsLogin. Пр
 })
 
 app.post("/authentication", async (req, res) => {                 //createAccount. Префикс роутера "/api" обрезан в nginx'e.    //это надо вынести в контроллеры
-  console.log(' ============== /authentication in api/src/index.js', req.body)     //+ req.body = { login: '(111) 111-11-11', password: '11111' }
-  
-  let pl = req.body
-  await axios.post(authApiUrl + `/authentication`, pl)
+  await axios.post(authApiUrl + `/authentication`, req.body)
   .then(({data}) => {
     console.log('===============DATA - authentication_in_api', data)
     res.send(data)

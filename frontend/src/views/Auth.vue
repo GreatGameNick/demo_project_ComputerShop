@@ -51,8 +51,7 @@
 import Vue from "vue"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
-import axios from 'axios'
-import {LoginForms, Identification} from "@/types/auth"
+import {LoginForms} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
 import {isPhone, isPassword, isUnique} from '@/utils/validation.ts'
 import {mapActions} from "vuex";
@@ -110,7 +109,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-        'CREATE_ACCOUNT'
+      'CREATE_ACCOUNT'
     ]),
     onLogin(): void {
       //Если пытаемся отправить, но поле - не заполнялось, то незаполненное поле отметится красным.
@@ -145,13 +144,12 @@ export default Vue.extend({
       // @ts-ignore
       if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
         this.CREATE_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
-        .then(() => this.$router.push('/person'))
+            .then(() => this.$router.push('/person'))
       }
     }
   },
   directives: {
-    'mask':
-    AwesomeMask
+    'mask': AwesomeMask
   }
 })
 </script>
