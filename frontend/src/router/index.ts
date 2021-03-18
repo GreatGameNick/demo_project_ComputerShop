@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
+import authStore from '../store/auth'
 import Basket from '../views/Basket.vue'
 import A11n from '../views/A11n.vue'
 import Person from '../views/Person.vue'
@@ -24,7 +25,13 @@ const routes: Array<RouteConfig> = [
   {
     path: '/person',
     name: 'Person',
-    component: Person
+    component: Person,
+    beforeEnter(to, from, next) {
+      if(authStore.state.isAuthorization)
+        next()
+      else
+        next('/a11n')
+    }
   },
   {
     path: '/:shelf',

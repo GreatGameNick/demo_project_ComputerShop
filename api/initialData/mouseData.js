@@ -1,4 +1,4 @@
-module.exports.initialMousesData = [
+module.exports.initialMouseData = [
   {
     "shelf": "mouses",
     "code": 1135341,

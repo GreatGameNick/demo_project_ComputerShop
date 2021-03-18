@@ -1,8 +1,8 @@
 <template>
   <div class="cover">
-    <div>
-      Person {{GET_USER_LOGIN}}
-    </div>
+    <h2>
+      Privat space <span>for</span> {{GET_USER_LOGIN}}
+    </h2>
     <div>
       There is all stuff regarding exactly this person.
     </div>
@@ -27,8 +27,10 @@ export default Vue.extend({
 
 .cover {
   @extend .wrapper_common;
-  & :not(:first-child) {
-    margin-top: rem(15);
+
+  h2 span {
+    text-transform: lowercase;
+    font-weight: 700;
   }
 }
 </style>
