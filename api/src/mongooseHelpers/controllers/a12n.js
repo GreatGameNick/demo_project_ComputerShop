@@ -14,10 +14,16 @@ module.exports.checkIsLogin = async (req, res) => {
 module.exports.touchAccount = async (req, res) => {
   await axios.post(authApiUrl + `/authentication`, req.body)
   .then(({data}) => {
-    console.log(' ============ api=createAccount data', data)
+    console.log(' ============ api=Account', data)
     
-    //генерируем куку из data.refreshToken
-    
+    //генерируем куку from data.refreshToken
+    res.cookie('refreshToken', data.refreshToken, {
+      maxAge: 3600 * 24,
+      secure: true,
+      HttpOnly: true,
+      SameSite: 'Strict',
+      path: '/api/authentication'     //or '/authentication' ???
+    })
     res.send({userLogin: data.userLogin, accessToken: data.accessToken})
   })
   .catch(console.log)

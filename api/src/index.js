@@ -2,6 +2,7 @@ const express = require("express")
 const mongoose = require("mongoose")
 const session = require('express-session')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const methodOverride = require('method-override');
 const GridFsStorage = require('multer-gridfs-storage');
@@ -9,7 +10,7 @@ const axios = require("axios")
 const crypto = require('crypto');
 const path = require('path');
 
-const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("./configuration")
+const {ROOT_PATH, port, MONGO_URL, mode} = require("./configuration")
 const {connectDb} = require("./mongooseHelpers/db")
 const {
   delOneDiskFile, delOneGridFile,
@@ -30,6 +31,7 @@ const {initialAccessoriesData} = require('../initialData/accessoriesData')
 const app = express();
 
 app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl.
+app.use(cookieParser('demoProject'))
 
 
 //session

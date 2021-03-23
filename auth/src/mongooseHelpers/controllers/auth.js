@@ -1,5 +1,6 @@
 const assert = require('assert');
-const {authModel} = require("../models/auth")
+const {authModel} = require('../models/auth')
+const {AuthService} = require('../../service/auth.service')
 
 module.exports.identification = async (req, res) => {
   let login = req.params.login
@@ -21,56 +22,35 @@ module.exports.touchAccount = async (req, res) => {
   let login = req.body.login
   let password = req.body.password
   
-  await authModel.findOne({login, password}, function (err, authData) {
+  await authModel.findOne({login, password}, function (err, account) {
     assert.equal(err, null);
-    console.log(' ================= authModel.findOne', authData)
-    
-    return authData
+    return account
   })
-  .then(async authData => {
-    if(authData == null) {       //если аккаунта нет, то создаем его.
+  .then(async account => {
+    let accessToken = AuthService.createAccessToken()
+    let refreshToken = AuthService.createRefreshToken()
+  
+    if(account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
       const newAccount = new authModel({
         login,
         password,
-        accessToken: '',
-        refreshToken: ''
+        accessToken,
+        refreshToken
       })
       await newAccount.save()
+    } else {                    //если аккаунт есть, то обновляем аккаунт, вписав в него токены.
+      account.accessToken = accessToken
+      account.refreshToken = refreshToken
+      
+      account.save(function (err, account) {
+        if (err) throw err;
+      })
     }
-    
-    //генерируем токены
-    
     res.send({
-      accessToken: 'accessToken=',
-      refreshToken: 'refreshToken=',
+      accessToken,
+      refreshToken,
       userLogin: login
     })
   })
-  
-  
-  
 }
-
-// module.exports.login = async (req, res) => {
-//   let [login, password] = req.params.auth.split(';')
-//
-//   await authModel.findOne({login, password}, function (err, authenticationData) {
-//     assert.equal(err, null);
-//     return authenticationData
-//   })
-//   .then(auth => res.send({
-//     isAuthorization: true,
-//     accessToken: 'accessToken=',
-//     refreshToken: 'refreshToken='
-//   }))
-//   .catch(console.log)
-// }
-
-
-
-
-
-
-
-
 

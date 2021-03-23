@@ -44,7 +44,6 @@ export default {
         password
       })                              //обращаемся к API-сервису докера через Nginx (а не напрямую).
         .then(({data}) => {
-          console.log('DATA - TOUCH_ACCOUNT ==============', data)
           commit('SET_AUTH', data)
           return data   //for stupid TS
         })
