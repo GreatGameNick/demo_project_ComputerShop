@@ -9,7 +9,7 @@ module.exports.identification = async (req, res) => {
     return login
   })
   .then(login => {
-    if(login != null)
+    if (login != null)
       res.send({isLogin: true})
     else
       res.send({isLogin: false})
@@ -21,15 +21,14 @@ module.exports.createAccount = async (req, res) => {
   const newAccount = new authModel({
     login: req.body.login,
     password: req.body.password,
-    isAuthorization: true,
     accessToken: '',
     refreshToken: ''
   })
   await newAccount.save()
   res.send({
-    isAuthorization: true,
     accessToken: 'accessToken=',
-    refreshToken: 'refreshToken='
+    refreshToken: 'refreshToken=',
+    userLogin: req.body.login
   })
 }
 

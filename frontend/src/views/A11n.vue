@@ -121,7 +121,11 @@ export default Vue.extend({
       if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
 
         this.LOGIN({login: this.forms.login.value, password: this.forms.password.value})
-            .then(() => this.$router.push('/person'))
+            .then(() => {
+              this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
+              this.forms.passwordConfirm.value = ''
+              this.$router.push('/person')
+            })
       }
     },
     onSwitchToTheRegistrationInterface(): void {
@@ -140,7 +144,11 @@ export default Vue.extend({
       // @ts-ignore
       if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
         this.CREATE_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
-            .then(() => this.$router.push('/person'))
+            .then(() => {
+              this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
+              this.forms.passwordConfirm.value = ''
+              this.$router.push('/person')
+            })
       }
     }
   },

@@ -16,6 +16,8 @@ app.get("/api/identification/:login", identification)   //префикс "/api" 
 app.post("/api/authentication", createAccount)         //Поэтому в имени роутера должен фигурировать "/api".
 app.get("/api/authentication/:auth", login)
 
+app.get("/api/:user")
+
 
 const startServer = async () => {
   //Загружаем в mongoDb начальные данные - тестовый аккаунт.

@@ -12,26 +12,20 @@ export interface Identification {      //запрос Идентификации
   login: string
 }
 
-export interface Authentication {    //запрос и ответ Аутентификации
+export interface Authentication {     //запрос и ответ Аутентификации
   login: string | boolean,
   password: string | boolean
 }
 
-export type Authorization = {      //ответ Авторизации, запрос на продление Авторизации, запрос на получение данных.
-  isAuthorization: boolean,
+export type AuthData = {       //для ответа сервера с допуском для авторизации. Формально требуется для типизации промиса у запроса CREATE_ACCOUNT и LOGIN.
   accessToken: string,
-  refreshToken: string
+  userLogin: string
 }
 
-
-export interface UserData {    //личные данные по кабинету пользователя
-  userName: string,
-  userStatus: string,
-  userData: string
-}
-
-export interface AuthState extends Authorization, UserData{    //тип для Store в целом.
-  userLogin: string,
+export interface AuthState {    //тип для Store в целом.
+  isAuthorization: boolean,
+  accessTokenClosure: Function | null
+  userLogin: string
 }
 
 

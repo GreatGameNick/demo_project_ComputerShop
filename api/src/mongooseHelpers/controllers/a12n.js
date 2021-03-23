@@ -14,7 +14,11 @@ module.exports.checkIsLogin = async (req, res) => {
 module.exports.createAccount = async (req, res) => {
   await axios.post(authApiUrl + `/authentication`, req.body)
   .then(({data}) => {
-    res.send(data)
+    console.log(' ============ api=createAccount data', data)
+    
+    //генерируем куку из data.refreshToken
+    
+    res.send({userLogin: data.userLogin, accessToken: data.accessToken})
   })
   .catch(console.log)
 }
