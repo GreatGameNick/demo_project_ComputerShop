@@ -20,7 +20,7 @@ const {
   getSession
 } = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
-const {checkIsLogin, createAccount, login} = require("./mongooseHelpers/controllers/a12n")
+const {checkIsLogin, touchAccount} = require("./mongooseHelpers/controllers/a12n")
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
 const {initialMouseData} = require('../initialData/mouseData')
@@ -65,8 +65,7 @@ app.get("/basket", getBasket)                  //use it
 
 //a12n (Authentication_service).
 app.get("/identification/:login", checkIsLogin)       //Префикс роутера "/api" обрезан в nginx'e.
-app.post("/authentication", createAccount)
-app.get("/authentication/:auth", login)
+app.post("/authentication", touchAccount)
 
 
 

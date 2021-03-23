@@ -109,8 +109,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
-      'CREATE_ACCOUNT',
-      'LOGIN'
+      'TOUCH_ACCOUNT'
     ]),
     onLogin(): void {
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
@@ -120,7 +119,7 @@ export default Vue.extend({
       // @ts-ignore
       if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
 
-        this.LOGIN({login: this.forms.login.value, password: this.forms.password.value})
+        this.TOUCH_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
             .then(() => {
               this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
               this.forms.passwordConfirm.value = ''
@@ -143,7 +142,7 @@ export default Vue.extend({
       this.$v.$touch()
       // @ts-ignore
       if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
-        this.CREATE_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
+        this.TOUCH_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
             .then(() => {
               this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
               this.forms.passwordConfirm.value = ''

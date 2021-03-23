@@ -38,23 +38,15 @@ export default {
     },
   } as MutationTree<AuthState>,
   actions: {
-    async CREATE_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {
+    async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {    //for LOGIN & create_account concurrently
       return await axios.post('api/authentication', {
         login,
         password
       })                              //обращаемся к API-сервису докера через Nginx (а не напрямую).
         .then(({data}) => {
-          console.log('DATA - CREATE_ACCOUNT ==============', data)
+          console.log('DATA - TOUCH_ACCOUNT ==============', data)
           commit('SET_AUTH', data)
           return data   //for stupid TS
-        })
-    },
-    async LOGIN({commit}, {login, password}: Authentication): Promise<AuthData> {
-      return await axios.get(`api/authentication/${login + ";" + password}`)
-        .then(({data}) => {
-          console.log('============ async LOGIN', data)
-          commit('SET_AUTH',data)
-          return data
         })
     },
     LOGOUT({commit}) {

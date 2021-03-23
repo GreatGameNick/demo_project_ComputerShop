@@ -6,15 +6,14 @@ const {port, MONGO_URL, mode} = require("./configuration");
 const {connectDb} = require("./mongooseHelpers/db");
 const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
-const {identification, createAccount, login} = require("./mongooseHelpers/controllers/auth")
+const {identification, touchAccount} = require("./mongooseHelpers/controllers/auth")
 
 const app = express();
 app.use(bodyParser.json())    //(!) Обязателен для всех запросов, которые имеют pl.
 
 
 app.get("/api/identification/:login", identification)   //префикс "/api" добавился из authApiUrl (http://auth:3002/api), и далее основное доменное имя http://auth:3002/ отброшено express'ом.
-app.post("/api/authentication", createAccount)         //Поэтому в имени роутера должен фигурировать "/api".
-app.get("/api/authentication/:auth", login)
+app.post("/api/authentication", touchAccount)         //Поэтому в имени роутера должен фигурировать "/api".
 
 app.get("/api/:user")
 

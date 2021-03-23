@@ -11,7 +11,7 @@ module.exports.checkIsLogin = async (req, res) => {
   .catch(console.log)
 }
 
-module.exports.createAccount = async (req, res) => {
+module.exports.touchAccount = async (req, res) => {
   await axios.post(authApiUrl + `/authentication`, req.body)
   .then(({data}) => {
     console.log(' ============ api=createAccount data', data)
@@ -22,21 +22,6 @@ module.exports.createAccount = async (req, res) => {
   })
   .catch(console.log)
 }
-
-module.exports.login = async (req, res) => {
-  let authData = req.params.auth
-  await axios.get(authApiUrl + `/authentication/${authData}`)
-  .then(({data}) => {
-    res.send(data)
-  })
-  .catch(console.log)
-}
-
-
-
-
-
-
 
 
 
