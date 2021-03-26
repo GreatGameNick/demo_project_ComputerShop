@@ -62,14 +62,15 @@ export default Vue.extend({
     ...mapGetters([
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_POINTS',
-      'GET_IS_AUTHORIZATION'
+      'GET_IS_AUTHORIZATION',
+      'GET_USER_LOGIN'
     ]),
 
   },
   methods: {
     ...mapActions([
       'FETCH_BASKET_POINTS',
-      'LOGOUT'
+      'TOUCH_ACCOUNT'
     ]),
     onThrowToShop(): void {
       if(this.$route.path === '/a11n' || this.$route.path === '/person')
@@ -93,9 +94,11 @@ export default Vue.extend({
       if(!this.GET_IS_AUTHORIZATION) {
         this.$router.push('/a11n')
       } else {
-        this.LOGOUT()
-        if(this.$route.path === '/person')
-          this.$router.push('/')
+        this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: false})
+        .then(() => {
+          if(this.$route.path === '/person')
+            this.$router.push('/')
+        })
       }
     }
   },

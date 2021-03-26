@@ -21,16 +21,20 @@ module.exports.identification = async (req, res) => {
 module.exports.touchAccount = async (req, res) => {
   let login = req.body.login
   let password = req.body.password
+  let filter = {login}
   
-  await authModel.findOne({login, password}, function (err, account) {
+  if (password)            //если password=false, то здесь имеет место LOGOUT, ищем аккаунт без проверки паспорта.
+    filter.password = req.body.password
+  
+  await authModel.findOne(filter, function (err, account) {
     assert.equal(err, null);
     return account
   })
   .then(async account => {
-    let accessToken = AuthService.createAccessToken(login)
-    let refreshToken = AuthService.createRefreshToken()
-  
-    if(account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
+    let accessToken = password ? AuthService.createAccessToken(login) : ''
+    let refreshToken = password ? AuthService.createRefreshToken() : ''
+    
+    if (account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
       const newAccount = new authModel({
         login,
         password,

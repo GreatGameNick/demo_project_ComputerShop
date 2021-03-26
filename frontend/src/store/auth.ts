@@ -21,38 +21,24 @@ export default {
   } as GetterTree<AuthState, RootState>,
   mutations: {
     SET_AUTH: (state, data: AuthData) => {
-      state.userLogin =  data.userLogin
-      state.isAuthorization = true
+      state.userLogin =  data.accessToken ?  data.userLogin : ''
+      state.isAuthorization = data.accessToken !== ''
       
-      console.log('SET_AUTH - accessToken ==================', data.accessToken)
-
       function closure(token: string) {     //сохраняем accessToken в замыкании
         return function() {
           return token
         }
       }
-      state.accessTokenClosure = closure(data.accessToken)
-    },
-    LOGOUT: state => {
-      state.userLogin = ''
-      state.isAuthorization = false
-      state.accessTokenClosure = null
-    },
+      state.accessTokenClosure = data.accessToken ?  closure(data.accessToken) : null
+    }
   } as MutationTree<AuthState>,
   actions: {
-    async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {    //for LOGIN & create_account concurrently
-      return await axios.post('api/authentication', {
-        login,
-        password
-      })                              //обращаемся к API-сервису докера через Nginx (а не напрямую).
+    async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {    //for LOGIN, LOGOUT & create_account concurrently
+      return await axios.post('api/authentication', {login, password})              //обращаемся к API-сервису докера через Nginx (а не к api-сервису напрямую).
         .then(({data}) => {
           commit('SET_AUTH', data)
-          return data   //for stupid TS
+          return data
         })
-    },
-    LOGOUT({commit}) {
-      commit('LOGOUT')
-      //удаление токенов
     }
   } as ActionTree<AuthState, RootState>
 }
