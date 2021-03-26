@@ -14,7 +14,7 @@ module.exports.checkIsLogin = async (req, res) => {
 module.exports.touchAccount = async (req, res) => {
   await axios.post(authApiUrl + `/authentication`, req.body)
   .then(({data}) => {
-    console.log(' ============ api=Account', data)
+    console.log(' ============ api=touchAccount >>', data)
     
     //генерируем куку from data.refreshToken
     res.cookie('refreshToken', data.refreshToken, {

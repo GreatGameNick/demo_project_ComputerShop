@@ -27,7 +27,7 @@ module.exports.touchAccount = async (req, res) => {
     return account
   })
   .then(async account => {
-    let accessToken = AuthService.createAccessToken()
+    let accessToken = AuthService.createAccessToken(login)
     let refreshToken = AuthService.createRefreshToken()
   
     if(account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.

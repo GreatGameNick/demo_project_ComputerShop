@@ -23,6 +23,8 @@ export default {
     SET_AUTH: (state, data: AuthData) => {
       state.userLogin =  data.userLogin
       state.isAuthorization = true
+      
+      console.log('SET_AUTH - accessToken ==================', data.accessToken)
 
       function closure(token: string) {     //сохраняем accessToken в замыкании
         return function() {
