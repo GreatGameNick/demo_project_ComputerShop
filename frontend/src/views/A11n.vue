@@ -47,7 +47,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from "vue"
 // @ts-ignore
 import AwesomeMask from 'awesome-mask'
@@ -79,8 +79,8 @@ export default Vue.extend({
         placeholder: 'it must be the same as the password',
         inputType: 'password'
       }
-    } as LoginForms,
-    isRegistrationInterface: false as boolean,
+    },
+    isRegistrationInterface: false,
   }),
   validations() {
     return {
@@ -98,7 +98,7 @@ export default Vue.extend({
         passwordConfirm: {
           value: {
             // @ts-ignore
-            sameAs: sameAs(function(): string {
+            sameAs: sameAs(function() {
               // @ts-ignore
               return this.forms.password.value
             })
@@ -111,14 +111,13 @@ export default Vue.extend({
     ...mapActions([
       'TOUCH_ACCOUNT'
     ]),
-    onLogin(): void {
+    onLogin() {
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       this.forms.passwordConfirm.value = this.forms.password.value
       // @ts-ignore
       this.$v.$touch()
       // @ts-ignore
-      if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
-
+      if(this.$v.forms.$dirty && !this.$v.forms.$anyError) {
         this.TOUCH_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
             .then(() => {
               this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
@@ -127,7 +126,7 @@ export default Vue.extend({
             })
       }
     },
-    onSwitchToTheRegistrationInterface(): void {
+    onSwitchToTheRegistrationInterface() {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)
       for(let formValue of Object.values(this.forms)) {
         formValue.value = ''
@@ -137,7 +136,7 @@ export default Vue.extend({
       //включаем интерфейс регистрации
       this.isRegistrationInterface = true
     },
-    onRegistrationIsDone(): void {
+    onRegistrationIsDone() {
       // @ts-ignore
       this.$v.$touch()
       // @ts-ignore

@@ -46,7 +46,7 @@ app.use(session({
     httpOnly: false,  //на клиенте эта кука читаться не будет
     maxAge: 3600000
   },
-  secret: 'kola',
+  secret: 'Nick',
   resave: false,
   saveUninitialized: false,
   store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
@@ -74,7 +74,7 @@ app.post("/authentication", touchAccount)
 //Загружаем файлы в diskStorage.
 //a) Декларируем хранилище diskStorage.            //not using yet. Использую diskStorage сразу для считки. Загрузка не востребована.
 var diskStorage = multer.diskStorage({
-  destination: ROOT_PATH + 'initialData/imgs/',   //ROOT_PATH = "/usr/src/app/"
+  destination: ROOT_PATH + 'initialData/imgs/',    //ROOT_PATH = "/usr/src/app/"
   filename: (req, file, cb) => {
     cb(null, file.originalname)
   }

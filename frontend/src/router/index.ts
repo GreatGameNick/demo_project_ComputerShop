@@ -4,6 +4,7 @@ import authStore from '../store/auth'
 import Basket from '../views/Basket.vue'
 import A11n from '../views/A11n.vue'
 import Person from '../views/Person.vue'
+import Try from '../views/try.vue'
 
 Vue.use(VueRouter)
 
@@ -11,6 +12,10 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     redirect: '/laptops'
+  },
+  {
+    path: '/try',
+    component: Try
   },
   {
     path: '/basket',

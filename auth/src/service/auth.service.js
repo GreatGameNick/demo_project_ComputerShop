@@ -12,7 +12,6 @@ module.exports.AuthService = class AuthService {
   // }
   
   static createRefreshToken() {
-    console.log(crypto.randomBytes(20).toString('base64').replace(/\W/g, ''))
     return crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
   }
 }
