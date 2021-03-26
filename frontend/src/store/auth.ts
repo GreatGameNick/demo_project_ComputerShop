@@ -15,13 +15,13 @@ export default {
     GET_IS_AUTHORIZATION: state => state.isAuthorization,
     GET_ACCESS_TOKEN: state => {
       if(state.accessTokenClosure != null)
-        return state.accessTokenClosure()
+        return state.accessTokenClosure()    //возвращаем accessToken из замыкания.
       return null
     }
   } as GetterTree<AuthState, RootState>,
   mutations: {
-    SET_AUTH: (state, data: AuthData) => {
-      state.userLogin =  data.accessToken ?  data.userLogin : ''
+    SET_AUTH: (state, data: AuthData) => {     //for LOGIN, LOGOUT & create_account concurrently
+      state.userLogin = data.accessToken ? data.userLogin : ''
       state.isAuthorization = data.accessToken !== ''
       
       function closure(token: string) {     //сохраняем accessToken в замыкании
@@ -29,7 +29,7 @@ export default {
           return token
         }
       }
-      state.accessTokenClosure = data.accessToken ?  closure(data.accessToken) : null
+      state.accessTokenClosure = data.accessToken ? closure(data.accessToken) : null
     }
   } as MutationTree<AuthState>,
   actions: {
