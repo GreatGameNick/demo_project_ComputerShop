@@ -43,7 +43,3 @@ export default {
   } as ActionTree<AuthState, RootState>
 }
 
-
-
-
-
