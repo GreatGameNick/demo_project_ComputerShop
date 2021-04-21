@@ -8,7 +8,7 @@ export default {
   state: {
     userLogin: '',
     isAuthorization: false,           //для интерфейса Vue-проекта
-    accessTokenClosure: null,         //для авторизации
+    accessTokenClosure: null,         //для авторизации. Замыкание, в котором сохраняется accessToken.
   } as AuthState,
   getters: {
     GET_USER_LOGIN: state => state.userLogin,

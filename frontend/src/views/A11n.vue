@@ -23,7 +23,7 @@
       </div>
 
       <div v-if="!isRegistrationInterface"
-           @click="onLogin"
+           @click="onAuthentication"
            class="forms__btn_login"
       >
         Take it
@@ -37,7 +37,7 @@
         !
       </div>
       <div v-else
-           @click="onRegistrationIsDone"
+           @click="onAuthentication"
            class="forms__signature"
            :class="{forms__signature_link: !$v.$invalid && forms.login.value && forms.passwordConfirm.value}"
       >
@@ -55,7 +55,6 @@ import {LoginForms} from "@/types/auth"
 import {minLength, required, sameAs} from 'vuelidate/lib/validators'
 import {isPhone, isPassword, isUnique} from '@/utils/validation.ts'
 import {mapActions} from "vuex";
-
 
 export default Vue.extend({
   data: () => ({
@@ -111,9 +110,12 @@ export default Vue.extend({
     ...mapActions([
       'TOUCH_ACCOUNT'
     ]),
-    onLogin() {
+    onAuthentication() {
+      //при Login (не при регистрации нового пользователя)
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
-      this.forms.passwordConfirm.value = this.forms.password.value
+      if(!this.isRegistrationInterface )
+        this.forms.passwordConfirm.value = this.forms.password.value
+
       // @ts-ignore
       this.$v.$touch()
       // @ts-ignore
@@ -135,19 +137,6 @@ export default Vue.extend({
       this.$v.$reset()
       //включаем интерфейс регистрации
       this.isRegistrationInterface = true
-    },
-    onRegistrationIsDone() {
-      // @ts-ignore
-      this.$v.$touch()
-      // @ts-ignore
-      if(this.$v.forms.$dirty && !this.$v.forms.anyError) {
-        this.TOUCH_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
-            .then(() => {
-              this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
-              this.forms.passwordConfirm.value = ''
-              this.$router.push('/person')
-            })
-      }
     }
   },
   directives: {
