@@ -16,7 +16,7 @@ module.exports.touchAccount = async (req, res) => {
   .then(({data}) => {
     //генерируем куку from data.refreshToken
     res.cookie('refreshToken', data.refreshToken, {
-      // maxAge: 3600000 * 24,                               // 3600000ms * 24 = 24 часа
+      // maxAge: 3600000 * 24,                                // 3600000ms * 24 = 24 часа
       expires: new Date(Date.now() + 86400000),         //формат 2021-03-25T09:53:13.067Z
       httpOnly: true,
       secure: true,
@@ -24,7 +24,17 @@ module.exports.touchAccount = async (req, res) => {
       // path: '/api/authentication'     //or '/authentication' ???
     })
     
+    //возвращаем клиенту accessToken и личные данные аккаунта.
     res.send({userLogin: data.userLogin, accessToken: data.accessToken})
+  
+    // данные корзины, привязанные к sessionId, переносим в личные данные аккаунта,
+    // а в API_mongoDb, т.е. привязанные к sessionId, обнуляем.
+    
+    
+    
+    
+  
+  
   })
   .catch(console.log)
 }
