@@ -15,10 +15,6 @@ module.exports.AuthService = class AuthService {
     return `Bearer ${head}.${body}.${signature}`
   }
   
-  // static setBearer(accessToken) {          //for headers.Authorization
-  //
-  // }
-  
   static createRefreshToken() {
     return crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
   }

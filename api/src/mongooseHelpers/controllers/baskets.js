@@ -9,8 +9,7 @@ module.exports.getBasket = async (req, res) => {
     assert.equal(err, null);
     return basket
   })
-  .then(basket =>
-    basket == null ? res.send('basket is empty') : res.send(basket))
+  .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))
 }
 
 module.exports.putProductToBasket = async (req, res) => {
@@ -64,8 +63,13 @@ module.exports.deleteProductAtBasket = async (req, res) => {
   res.sendStatus(200)
 }
 
-
-
+module.exports.deleteSessionBasketMethod = (sessionID) => {
+  BasketModel.findOneAndDelete({sessionID: sessionID}, function (err) {
+    if (err) console.log(err)
+  });
+  
+  
+}
 
 
 
