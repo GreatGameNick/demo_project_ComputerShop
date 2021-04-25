@@ -37,6 +37,7 @@ export default {
       return await axios.post('api/authentication', {login, password})              //обращаемся к API-сервису докера через Nginx (а не к api-сервису напрямую).
         .then(({data}) => {
           commit('SET_AUTH', data)
+          console.log('TOUCH_ACCOUNT responce =============', data)
           return data
         })
     }

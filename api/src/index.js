@@ -20,7 +20,7 @@ const {
   findAllOnTheShelf, findOneOnTheShelf,
   getSession
 } = require("./mongooseHelpers/controllers/shop")
-const {putProductToBasket, deleteProductAtBasket, getBasket} = require("./mongooseHelpers/controllers/baskets")
+const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
 const {checkIsLogin, touchAccount} = require("./mongooseHelpers/controllers/a12n")
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
@@ -63,11 +63,12 @@ app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
 app.put("/basket", putProductToBasket)         //use it
 app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use it
+app.get("/retrieveSessionBasket/:sessionID", retrieveSessionBasket)   //use it
 
 
 //a12n (Authentication_service).
 app.get("/identification/:login", checkIsLogin)       //Префикс роутера "/api" обрезан в nginx'e.
-app.post("/authentication", touchAccount)
+app.post("/authentication", touchAccount)     //for LOGIN, LOGOUT & create_account concurrently
 
 
 

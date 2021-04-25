@@ -63,12 +63,14 @@ module.exports.deleteProductAtBasket = async (req, res) => {
   res.sendStatus(200)
 }
 
-module.exports.deleteSessionBasketMethod = (sessionID) => {
-  BasketModel.findOneAndDelete({sessionID: sessionID}, function (err) {
+module.exports.retrieveSessionBasket = async (req, res) => {
+  let sessionID = req.params.sessionID
+  
+  await BasketModel.findOneAndDelete({sessionID: sessionID}, function (err, basket) {
     if (err) console.log(err)
-  });
-  
-  
+    return basket
+  })
+  .then(basket => res.send(basket))
 }
 
 
