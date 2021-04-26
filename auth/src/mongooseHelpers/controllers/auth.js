@@ -38,7 +38,7 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
   .then(async account => {
     let accessToken = password ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login, не при logout.
     let refreshToken = password ? AuthService.createRefreshToken() : ''
-    let basket = []
+    let basket = ['control_item']
     
     if (account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
       account = new authModel({
