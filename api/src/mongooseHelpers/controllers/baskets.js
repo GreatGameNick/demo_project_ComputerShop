@@ -9,7 +9,7 @@ module.exports.getBasket = async (req, res) => {
     assert.equal(err, null);
     return basket
   })
-  .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))
+  .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))  //надо ПРОВЕРИТЬ ПУТЬ СРАБАТЫВАНИЯ 'basket is empty'(!)
 }
 
 module.exports.putProductToBasket = async (req, res) => {
@@ -66,11 +66,10 @@ module.exports.deleteProductAtBasket = async (req, res) => {
 module.exports.retrieveSessionBasket = async (req, res) => {
   let sessionID = req.params.sessionID
   
-  await BasketModel.findOneAndDelete({sessionID: sessionID}, function (err, basket) {
+  await BasketModel.findOneAndDelete({sessionID: sessionID}, function (err, basket) {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
     if (err) console.log(err)
-    return basket
+    res.send(basket)
   })
-  .then(basket => res.send(basket))
 }
 
 

@@ -54,13 +54,13 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
       
       console.log('account =================', account)
     }
-    
+  
     //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину
-    // await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)
-    // .then(async sessionBasket => {
-    //   console.log('retrieveSessionBasket =================', sessionBasket)
-    //   basket = account.basket.push(sessionBasket)
-    // })
+    await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
+    .then(({data}) => {
+      console.log('retrieveSessionBasket  =================', data)   //yes <<<<<<<<<<<<<<<<<<<<<
+      // basket = account.basket.push(data) //undefined
+    })
     
     //сохраняем изменения аккаунта
     account.save(function (err, account) {
