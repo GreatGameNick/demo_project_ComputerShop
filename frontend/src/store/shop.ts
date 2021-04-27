@@ -49,10 +49,7 @@ const getters = {
 const mutations = {
   // @ts-ignore
   SET_PRODUCTS: (state, {shelf, products}: ProductsPoolForShelf) => state[shelf].push(...products),
-  SET_BASKET: (state, recoveryBasket: ProductPoint[]) => {
-    console.log('SET_BASKET ==========', recoveryBasket)
-    state.clientBasket = recoveryBasket
-  },
+  SET_BASKET: (state, recoveryBasket: ProductPoint[]) => state.clientBasket = recoveryBasket,
   SET_IS_BASKET_PRODUCTS: (state, status: boolean) => state.isBasketProductsInTheStore = status,
   SET_IS_BASKET_POINTS: (state, status: boolean) => state.isBasketPointsInTheStore = status,
   ADD_PRODUCT_TO_BASKET: (state, {shelf, _id}: ProductPoint) => state.clientBasket.push({shelf, _id}),

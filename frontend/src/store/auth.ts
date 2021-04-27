@@ -38,7 +38,7 @@ export default {
         .then(({data}) => {         //data = {userLogin, accessToken, userData}
           console.log('TOUCH_ACCOUNT responced =============', data)
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.userLogin})
-          // commit('SET_BASKET', data.basket)     //<<<<<<<<<<<<<<<<<<< NO
+          commit('SET_BASKET', data.userData.basket)
           return data
         })
     }

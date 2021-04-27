@@ -6,6 +6,9 @@
     <div>
       There is all stuff regarding exactly this person.
     </div>
+    <div>
+      YOU KEEP only <span>{{GET_BASKET_POINTS.length}} {{GET_BASKET_POINTS.length < 2 ? 'product' : 'products' }}</span> in your BASKET!
+    </div>
   </div>
 </template>
 
@@ -17,7 +20,8 @@ export default Vue.extend({
   name: "Person",
   computed: {
     ...mapGetters([
-      'GET_USER_LOGIN'
+      'GET_USER_LOGIN',
+      'GET_BASKET_POINTS'
     ])
   }
 })
@@ -28,9 +32,23 @@ export default Vue.extend({
 .cover {
   @extend .wrapper_common;
 
+  h2 {
+    margin-bottom: rem(20);
+    color: $green-dark;
+  }
+
   h2 span {
     text-transform: lowercase;
     font-weight: 700;
+  }
+
+  & :last-child {
+    margin-top: rem(20);
+
+    span {
+      text-decoration: underline;
+      color: $green-dark;
+    }
   }
 }
 </style>

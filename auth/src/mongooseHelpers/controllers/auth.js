@@ -40,7 +40,6 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
     let refreshToken = password ? AuthService.createRefreshToken() : ''
     
     if (account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
-      console.log('account is absent')
       account = new authModel({
         login,
         password,
@@ -64,7 +63,6 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
     })
   
     //сохраняем изменения аккаунта
-    console.log('account >>>>>>>>>>> ', account)
     account.save(function (err, account) {
       if (err) throw err;
     })
