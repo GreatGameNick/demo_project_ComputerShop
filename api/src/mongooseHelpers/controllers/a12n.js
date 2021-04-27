@@ -27,7 +27,7 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
     })
     
     //2. возвращаем клиенту accessToken, личные данные аккаунта и обновленную корзину.
-    res.send({userLogin: data.login, accessToken: data.accessToken, basket: data.basket})
+    res.send({userLogin: data.login, accessToken: data.accessToken, userData: data.userData})
     
   })
   .catch(console.log)

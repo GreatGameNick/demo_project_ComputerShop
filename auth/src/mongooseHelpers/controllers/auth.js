@@ -38,31 +38,33 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
   .then(async account => {
     let accessToken = password ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login, не при logout.
     let refreshToken = password ? AuthService.createRefreshToken() : ''
-    let basket = ['control_item']
     
     if (account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
+      console.log('account is absent')
       account = new authModel({
         login,
         password,
         accessToken,
         refreshToken,
-        basket: []
+        userData: {
+          basket: []
+        }
       })
     } else {        //если аккаунт есть, то обновляем аккаунт, вписав в него токены, И обновляем аккаунтную корзину, добавив в нее СЕССИОННУЮ КОРЗИНУ.
       account.accessToken = accessToken
       account.refreshToken = refreshToken
       
-      console.log('account =================', account)
     }
   
+    
     //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину
     await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
     .then(({data}) => {
-      console.log('retrieveSessionBasket  =================', data)   //yes <<<<<<<<<<<<<<<<<<<<<
-      // basket = account.basket.push(data) //undefined
+      account.userData.basket.push(...data.basketPoints)
     })
-    
+  
     //сохраняем изменения аккаунта
+    console.log('account >>>>>>>>>>> ', account)
     account.save(function (err, account) {
       if (err) throw err;
     })
@@ -71,7 +73,9 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
       login,
       accessToken,
       refreshToken,
-      basket   //возвращаем пользователю обновленную корзину, сессионная + аккаунтная корзины.
+      userData: {
+        basket: account.userData.basket  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины.
+      }
     })
   })
 }

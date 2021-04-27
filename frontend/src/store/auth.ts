@@ -35,9 +35,10 @@ export default {
   actions: {
     async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {    //for LOGIN, LOGOUT & create_account concurrently
       return await axios.post('api/authentication', {login, password})              //обращаемся к API-сервису докера через Nginx (а не к api-сервису напрямую).
-        .then(({data}) => {
-          commit('SET_AUTH', data)
-          console.log('TOUCH_ACCOUNT responce =============', data)
+        .then(({data}) => {         //data = {userLogin, accessToken, userData}
+          console.log('TOUCH_ACCOUNT responced =============', data)
+          commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.userLogin})
+          // commit('SET_BASKET', data.basket)     //<<<<<<<<<<<<<<<<<<< NO
           return data
         })
     }
