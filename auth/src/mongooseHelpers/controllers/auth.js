@@ -54,7 +54,7 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       account.refreshToken = refreshToken
     }
     
-    //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину, exactly for LOGIN.
+    //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину, exactly for a LOGIN.
     if (password) {
       await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
       .then(({data}) => {
@@ -72,7 +72,6 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       accessToken,
       refreshToken,
       userData: {
-        // basket: account.userData.basket  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
         basket: password ? account.userData.basket : []  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
       }
     })
