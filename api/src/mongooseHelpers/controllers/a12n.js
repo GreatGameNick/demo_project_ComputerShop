@@ -13,7 +13,7 @@ module.exports.checkIsLogin = async (req, res) => {
   .catch(console.log)
 }
 
-module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & create_account concurrently
+module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
   await axios.post(authApiUrl + `/authentication`, {authData: req.body, sessionID: req.sessionID})
   .then(async ({data}) => {                       //data = {accessToken, refreshToken, userLogin, basket }
     //1. генерируем куку from data.refreshToken

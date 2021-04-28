@@ -20,7 +20,7 @@ module.exports.identification = async (req, res) => {
   .catch(console.log)
 }
 
-module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & create_account+LOGIN concurrently
+module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
   let login = req.body.authData.login
   let password = req.body.authData.password
   let sessionID = req.body.sessionID
@@ -36,7 +36,7 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
     return account
   })
   .then(async account => {
-    let accessToken = password ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login, не при logout.
+    let accessToken = password ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login, а при logout - обнуляем их.
     let refreshToken = password ? AuthService.createRefreshToken() : ''
     
     if (account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
@@ -52,15 +52,15 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
     } else {        //если аккаунт есть, то обновляем аккаунт, вписав в него токены, И обновляем аккаунтную корзину, добавив в нее СЕССИОННУЮ КОРЗИНУ.
       account.accessToken = accessToken
       account.refreshToken = refreshToken
-      
     }
-  
     
-    //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину
-    await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
-    .then(({data}) => {
-      account.userData.basket.push(...data.basketPoints)
-    })
+    //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину, exactly for LOGIN.
+    if (password) {
+      await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
+      .then(({data}) => {
+        account.userData.basket.push(...data.basketPoints)
+      })
+    }
   
     //сохраняем изменения аккаунта
     account.save(function (err, account) {
@@ -72,7 +72,8 @@ module.exports.touchAccount = async (req, res) => {   //for LOGIN, LOGOUT & crea
       accessToken,
       refreshToken,
       userData: {
-        basket: account.userData.basket  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины.
+        // basket: account.userData.basket  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
+        basket: password ? account.userData.basket : []  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
       }
     })
   })

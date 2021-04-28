@@ -90,10 +90,10 @@ export default Vue.extend({
         return
       this.$router.push({path: '/basket', query: {startPath}})
     },
-    onSwitchAuth() {
+    onSwitchAuth() {   //for LOGIN
       if(!this.GET_IS_AUTHORIZATION) {
         this.$router.push('/a11n')
-      } else {
+      } else {    //for LOGOUT. Stigma - "password: false".
         this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: false})
         .then(() => {
           if(this.$route.path === '/person')

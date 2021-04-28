@@ -4,7 +4,10 @@ module.exports.initialAccounts = [
     password: '99999',
     isAuthorization: true,
     accessToken: 'accessToken',
-    refreshToken: 'refreshToken'
+    refreshToken: 'refreshToken',
+    userData: {
+      basket: []
+    }
   }
 ]
 
