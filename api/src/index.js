@@ -21,7 +21,6 @@ const {
   getSession
 } = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
-const {checkIsLogin, touchAccount} = require("./mongooseHelpers/controllers/a12n")
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
 const {initialMouseData} = require('../initialData/mouseData')
@@ -64,16 +63,11 @@ app.put("/basket", putProductToBasket)         //use it
 app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use
 
-//Запросы между сервисами
-app.get("/api/retrieveSessionBasket/:sessionID", retrieveSessionBasket)
+//Запросы между сервисами. Здесь - from auth-service to api-service.
+app.get("/api/retrieveSessionBasket", retrieveSessionBasket)
 //Запрос НЕ через nginx, поэтому в имени принимающего роутера НЕ ЗАБЫВАЕМ писать префикс "/api"(!).
 //Префикс "/api" добавился из apiUrl (http://api:3001/api), и далее основное доменное имя http://auth:3002/ отброшено EXPRESSOM'ом.
 //Поэтому в имени принимающего роутера должен фигурировать "/api"(!). Это МЕЖСЕРВИСНЫЙ запрос МИНУЯ NGNIX(!).
-
-
-//a12n (Authentication_service).
-app.get("/identification/:login", checkIsLogin)       //Префикс роутера "/api" обрезан в nginx'e.
-app.post("/authentication", touchAccount)     //for LOGIN, LOGOUT & create_account concurrently
 
 
 

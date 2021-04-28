@@ -64,10 +64,20 @@ module.exports.deleteProductAtBasket = async (req, res) => {
 }
 
 module.exports.retrieveSessionBasket = async (req, res) => {
-  let sessionID = req.params.sessionID
+  let sessionID = req.sessionID
+  console.log('retrieveSe ======= ID >>>>>>>>>>>>>>>>>>>>', sessionID)
   
   await BasketModel.findOneAndDelete({sessionID: sessionID}, function (err, basket) {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
     if (err) console.log(err)
+    
+    console.log('findOneAndDelete ===============', basket)
+    res.send(basket)
+  })
+  
+  await BasketModel.find({}, function (err, basket) {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
+    if (err) console.log(err)
+    
+    console.log('basketS ALL ===============', basket)
     res.send(basket)
   })
 }

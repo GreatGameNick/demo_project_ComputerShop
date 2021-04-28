@@ -21,9 +21,9 @@ module.exports.identification = async (req, res) => {
 }
 
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
-  let login = req.body.authData.login
-  let password = req.body.authData.password
-  let sessionID = req.body.sessionID
+  let login = req.body.login
+  let password = req.body.password
+  // let sessionID = req.sessionID  //не сработает, т.к. сессия генерируется на api-сервисе.
   
   //формируем фильтр для поиска аккаунта
   let filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
@@ -56,10 +56,12 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
     
     //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину, exactly for a LOGIN.
     if (password) {
-      await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
+      await axios.get(apiUrl + `/retrieveSessionBasket`)  //apiUrl = http://api:3001/api
       .then(({data}) => {
+        console.log('retrieveSessionBasket >>>>>>>>>>>>>>>>>>>>', data)
         account.userData.basket.push(...data.basketPoints)
       })
+      .catch(console.log)
     }
   
     //сохраняем изменения аккаунта
@@ -67,12 +69,22 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       if (err) throw err;
     })
     
+    // генерируем куку
+    res.cookie('refreshToken', refreshToken, {
+      // maxAge: 3600000 * 24,                                // 3600000ms * 24 = 24 часа
+      expires: new Date(Date.now() + 86400000),         //формат 2021-03-25T09:53:13.067Z
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Strict',
+      // path: '/api/authentication'     //or '/authentication' ???
+    })
+  
+    // возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
     res.send({
       login,
       accessToken,
-      refreshToken,
       userData: {
-        basket: password ? account.userData.basket : []  //возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
+        basket: password ? account.userData.basket : []
       }
     })
   })
