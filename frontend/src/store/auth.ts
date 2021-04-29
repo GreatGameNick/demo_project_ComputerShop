@@ -38,16 +38,12 @@ export default {
         let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
         return matches ? decodeURIComponent(matches[1]) : ''
       }
-      //мы обращаемся к серверу auth-сервиса, а к нему не будет через куки посылаться connect.sid, который предназначен для api-сервиса.
-      //поэтому забираем значение куки из броузера и шлем ее via pl для auth-сервиса.
+      
+      //мы обращаемся к серверу auth-сервиса, а к нему через куки не будет посылаться connect.sid, который предназначен ДЛЯ api-сервиса.
+      //поэтому забираем значение куки - из броузера, и шлем connect.sid-куку via pl для auth-сервиса.
       //connect.sid потребуется auth-сервису, когда он будет забирать из api-сервиса сессионную корзину.
-      
-      console.log('connectSidCookie ====', getCookie('connect.sid'))
-      
-      return await axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})              //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
-        .then(({data}) => {         //data = {login, accessToken, userData}
-          console.log('TOUCH_ACCOUNT responced =============', data)
-          
+      return await axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
+        .then(({data}) => {                                                                                                           //data = {login, accessToken, userData}
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})
           commit('SET_BASKET', data.userData.basket)
           return data

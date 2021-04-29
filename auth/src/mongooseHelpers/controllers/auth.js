@@ -1,4 +1,4 @@
-const cookieParser  = require ('cookie-parser')
+const cookieParser = require('cookie-parser')
 const axios = require("axios")
 const assert = require('assert');
 const {authModel} = require('../models/auth')
@@ -24,10 +24,8 @@ module.exports.identification = async (req, res) => {
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
   let login = req.body.login
   let password = req.body.password
-  let connectSidCookie = req.body.connectSidCookie
-  
-  let cookie = cookieParser.signedCookie(connectSidCookie, 'Nick')
-  console.log('cookie )))))))))))))))))))=> ', cookie)
+  let APIconnectSidCookie = req.body.connectSidCookie
+  let sessionID = cookieParser.signedCookie(APIconnectSidCookie, 'Nick')
   
   //формируем фильтр для поиска аккаунта
   let filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
@@ -60,14 +58,14 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
     
     //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину, exactly for a LOGIN.
     if (password) {
-      await axios.get(apiUrl + `/retrieveSessionBasket`)  //apiUrl = http://api:3001/api
+      await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
       .then(({data}) => {
-        console.log('retrieveSessionBasket >>>>>>>>>>>>>>>>>>>>', data)
-        account.userData.basket.push(...data.basketPoints)
+        if (data.basketPoints)
+          account.userData.basket.push(...data.basketPoints)
       })
       .catch(console.log)
     }
-  
+    
     //сохраняем изменения аккаунта
     account.save(function (err, account) {
       if (err) throw err;
@@ -82,7 +80,7 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       sameSite: 'Strict',
       // path: '/api/authentication'     //or '/authentication' ???
     })
-  
+    
     // возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
     res.send({
       login,

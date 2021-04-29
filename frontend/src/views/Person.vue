@@ -46,7 +46,6 @@ export default Vue.extend({
     margin-top: rem(20);
 
     span {
-      text-decoration: underline;
       color: $green-dark;
     }
   }

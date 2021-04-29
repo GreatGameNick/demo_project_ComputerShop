@@ -64,11 +64,10 @@ app.delete("/basket", deleteProductAtBasket)   //use it
 app.get("/basket", getBasket)                  //use
 
 //Запросы между сервисами. Здесь - from auth-service to api-service.
-app.get("/api/retrieveSessionBasket", retrieveSessionBasket)
-//Запрос НЕ через nginx, поэтому в имени принимающего роутера НЕ ЗАБЫВАЕМ писать префикс "/api"(!).
-//Префикс "/api" добавился из apiUrl (http://api:3001/api), и далее основное доменное имя http://auth:3002/ отброшено EXPRESSOM'ом.
-//Поэтому в имени принимающего роутера должен фигурировать "/api"(!). Это МЕЖСЕРВИСНЫЙ запрос МИНУЯ NGNIX(!).
-
+app.get("/api/retrieveSessionBasket/:sessionID", retrieveSessionBasket)
+//Запрос НЕ через nginx(который из запрашиваемого url обрезает префикс "/api"), поэтому в имени принимающего роутера НЕ ЗАБЫВАЕМ писать префикс "/api"(!).
+//Префикс "/api" добавился из apiUrl (http://api:3001/api), и далее основное доменное имя http://auth:3002/ отбрасывается EXPRESSOM'ом.
+//Поэтому в имени принимающего роутера должен фигурировать "/api"(!). Это МЕЖСЕРВИСНЫЙ запрос, МИНУЯ NGNIX(!).
 
 
 //Загружаем файлы в diskStorage.
