@@ -9,7 +9,7 @@
 <script lang="ts">
 import Vue, {PropType} from "vue";
 import {mapGetters, mapActions} from "vuex";
-import {ProductPoint} from "@/types/shop";
+import {ProductPoint} from "@/types/user";
 
 export default Vue.extend({
   props: {

@@ -8,6 +8,11 @@ const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configurat
 const {errorProduct} = require('../../../initialData/errorProduct')
 
 
+
+//  НЕ ПЕРЕДЕЛАНО ЕЩЕ!
+
+
+
 //Текстовые роуты для MongoDb.
 function choseTheShelf(req) {
   switch (req.params.shelf) {
@@ -171,7 +176,7 @@ module.exports.delOneDiskFile = async (req, res) => {
   fs.unlink(diskStoragePath + name, (err) => {
     if (err) {
       console.error(err)
-      return
+      
     }
   })
   res.end(`delOneDiskFile ${name} - successfully`)

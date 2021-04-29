@@ -9,7 +9,7 @@
         />
       </div>
       <div class="basket__underline">
-        <div class="basket__outcome">
+        <div v-if="price" class="basket__outcome">
           Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
         </div>
         <div @click="onAlertRun" class="basket__btn_orange">Купить</div>

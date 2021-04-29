@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {RootState} from '@/types';
+import {RootState} from '@/types'
 import shopState from './shop'
 import authState from './auth'
+import userState from './user'
 
 Vue.use(Vuex)
 
@@ -13,7 +14,8 @@ export default new Vuex.Store<RootState>({
   state,
   modules: {
     shopState,
-    authState
+    authState,
+    userState
   }
 })
 

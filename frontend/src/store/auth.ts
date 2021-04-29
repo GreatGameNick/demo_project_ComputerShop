@@ -22,7 +22,7 @@ export default {
   mutations: {
     SET_AUTH: (state, data: AuthData) => {     //for LOGIN, LOGOUT & create_account concurrently
       state.userLogin = data.accessToken ? data.userLogin : ''
-      state.isAuthorization = data.accessToken !== ''
+      state.isAuthorization = data.accessToken !== ''    // false/true
       
       function closure(token: string) {     //сохраняем accessToken в замыкании
         return function() {
