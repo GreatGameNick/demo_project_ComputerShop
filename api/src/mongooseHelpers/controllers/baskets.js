@@ -4,6 +4,16 @@ const fs = require('fs');
 
 const {BasketModel} = require('../models/baskets')
 
+//Без Аутентификации используем сессионную корзину, на базе api-сервиса.
+//При Аутентификации используем аккаунтную корзину, на базе auth-сервиса. А сессионную корзину - обнуляем.
+
+//Изначально все запросы по манипуляциям с корзиной направляются на auth-сервис,
+//и далее, при отсутствии Аутентификации, идет манипуляция с сессионной корзиной.
+
+//генерацию сессии лучше перенести в auth-сервис???
+//разбить контроллеры auth-сервиса на a12n, sessionWork, accountWork
+
+
 module.exports.getBasket = async (req, res) => {
   await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
     assert.equal(err, null);
