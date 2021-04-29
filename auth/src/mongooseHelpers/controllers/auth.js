@@ -1,3 +1,4 @@
+const cookieParser  = require ('cookie-parser')
 const axios = require("axios")
 const assert = require('assert');
 const {authModel} = require('../models/auth')
@@ -23,7 +24,10 @@ module.exports.identification = async (req, res) => {
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
   let login = req.body.login
   let password = req.body.password
-  // let sessionID = req.sessionID  //не сработает, т.к. сессия генерируется на api-сервисе.
+  let connectSidCookie = req.body.connectSidCookie
+  
+  let cookie = cookieParser.signedCookie(connectSidCookie, 'Nick')
+  console.log('cookie )))))))))))))))))))=> ', cookie)
   
   //формируем фильтр для поиска аккаунта
   let filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
@@ -69,7 +73,7 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       if (err) throw err;
     })
     
-    // генерируем куку
+    // генерируем refreshToken-куку
     res.cookie('refreshToken', refreshToken, {
       // maxAge: 3600000 * 24,                                // 3600000ms * 24 = 24 часа
       expires: new Date(Date.now() + 86400000),         //формат 2021-03-25T09:53:13.067Z

@@ -1,6 +1,7 @@
 const express = require("express");
 const assert = require('assert');
 const bodyParser = require('body-parser')
+const cookieParser  = require ('cookie-parser')
 const {port, MONGO_URL, mode} = require("./configuration");
 
 const {connectDb} = require("./mongooseHelpers/db");
@@ -10,6 +11,7 @@ const {identification, touchAccount} = require("./mongooseHelpers/controllers/au
 
 const app = express();
 app.use(bodyParser.json())    //(!) Обязателен для всех запросов, которые имеют pl.
+app.use(cookieParser('demoProject'))
 
 
 //a12n (Authentication).

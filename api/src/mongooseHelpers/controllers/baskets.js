@@ -65,7 +65,13 @@ module.exports.deleteProductAtBasket = async (req, res) => {
 
 module.exports.retrieveSessionBasket = async (req, res) => {
   let sessionID = req.sessionID
-  console.log('retrieveSe ======= ID >>>>>>>>>>>>>>>>>>>>', sessionID)
+  console.log('retrieveSe ======= ID +++++++++++', sessionID)
+  console.log('retrieveSe ======= req.headers.cookie +++++++++++', req.headers)
+  console.log('retrieveSe ======= req.session.id +++++++++++', req.session.id)
+  
+  // console.log('retrieveSe ======= req.signedCookies +++++++++++', req.signedCookies)
+  // console.log('retrieveSe ======= ID +++++++++++', req.cookies)
+  // console.log('retrieveSe ======= ID +++++++++++', req.cookies['connect.sid'])
   
   await BasketModel.findOneAndDelete({sessionID: sessionID}, function (err, basket) {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
     if (err) console.log(err)
@@ -73,13 +79,7 @@ module.exports.retrieveSessionBasket = async (req, res) => {
     console.log('findOneAndDelete ===============', basket)
     res.send(basket)
   })
-  
-  await BasketModel.find({}, function (err, basket) {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
-    if (err) console.log(err)
-    
-    console.log('basketS ALL ===============', basket)
-    res.send(basket)
-  })
+
 }
 
 
