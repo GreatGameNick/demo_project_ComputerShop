@@ -43,7 +43,8 @@
 <script lang="ts">
 import Vue from "vue";
 import {mapActions, mapGetters} from "vuex";
-import {BasketMovement, Product, ProductPoint} from '@/types/shop'
+import {Product} from '@/types/shop'
+import {BasketMovement, ProductPoint} from '@/types/user'
 import Alert from "@/components/alert.vue";
 
 export default Vue.extend({

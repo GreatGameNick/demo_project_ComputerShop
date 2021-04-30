@@ -20,9 +20,10 @@
 <script lang="ts">
 import Vue, {PropType} from 'vue'
 import {mapActions} from 'vuex'
-import {Product, BasketMovement} from '@/types/shop';
-import Stars from '@/components/stars.vue';
-import Alert from "@/components/alert.vue";
+import {Product} from '@/types/shop'
+import {BasketMovement} from '@/types/user'
+import Stars from '@/components/stars.vue'
+import Alert from "@/components/alert.vue"
 
 export default Vue.extend({
   components: {

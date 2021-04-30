@@ -10,7 +10,8 @@
 
 <script lang="ts">
 import Vue, {PropType} from 'vue'
-import {Product, ProductPoint} from '@/types/shop'
+import {Product} from '@/types/shop'
+import {ProductPoint} from '@/types/user'
 import counter from '@/components/counter.vue'
 
 export default Vue.extend({
