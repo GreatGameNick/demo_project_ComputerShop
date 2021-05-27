@@ -20,7 +20,7 @@ function choseTheShelf(req) {
   }
 }
 
-module.exports.findAllOnTheShelf = async (req, res) => {    // use it
+module.exports.findAllOnTheShelf = async (req, res) => {
   if (!req.session.i)
     req.session.i = 0;
   ++req.session.i;
@@ -171,7 +171,7 @@ module.exports.delOneDiskFile = async (req, res) => {
   fs.unlink(diskStoragePath + name, (err) => {
     if (err) {
       console.error(err)
-      return
+
     }
   })
   res.end(`delOneDiskFile ${name} - successfully`)

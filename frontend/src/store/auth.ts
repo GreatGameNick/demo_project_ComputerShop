@@ -38,8 +38,9 @@ export default {
         let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
         return matches ? decodeURIComponent(matches[1]) : ''
       }
+      console.log('getCookie ====', getCookie('connect.sid'))
       
-      //мы обращаемся к серверу auth-сервиса, а к нему через куки не будет посылаться connect.sid, который предназначен ДЛЯ api-сервиса.
+      //мы обращаемся к серверу auth-сервиса, но к нему с помощью куки не будет посылаться connect.sid, ибо он предназначен ДЛЯ api-сервиса.
       //поэтому забираем значение куки - из броузера, и шлем connect.sid-куку via pl для auth-сервиса.
       //connect.sid потребуется auth-сервису, когда он будет забирать из api-сервиса сессионную корзину.
       return await axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).

@@ -54,14 +54,14 @@ app.use(session({
 
 //Текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
-app.get("/shop/:shelf", findAllOnTheShelf)        //use it
-app.get("/shop/:shelf/:_id", findOneOnTheShelf)   //use it
+app.get("/shop/:shelf", findAllOnTheShelf)
+app.get("/shop/:shelf/:_id", findOneOnTheShelf)
 
 
 //basket
-app.put("/basket", putProductToBasket)         //use it
-app.delete("/basket", deleteProductAtBasket)   //use it
-app.get("/basket", getBasket)                  //use
+app.put("/basket", putProductToBasket)
+app.delete("/basket", deleteProductAtBasket)
+app.get("/basket", getBasket)
 
 //Запросы между сервисами. Здесь - from auth-service to api-service.
 app.get("/api/retrieveSessionBasket/:sessionID", retrieveSessionBasket)
@@ -89,15 +89,6 @@ app.post('/upload_file', upload.single('file'), (req, res) => {
 
 //d)Берем изображения для <img> from diskStorage
 app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it (!)
-
-
-//not using yet
-app.get("/getAllGridFiles", getAllGridFiles)
-app.get("/getAllDiskFilesName", getAllDiskFilesName)
-app.get("/gridImgs/:name", getOneGridFile)
-app.get("/diskImgs/:name", getOneDiskFile)
-app.delete("/gridImgs/:name", delOneGridFile)
-app.delete("/diskImgs/:name", delOneDiskFile)
 
 
 //функция по старту сервера.

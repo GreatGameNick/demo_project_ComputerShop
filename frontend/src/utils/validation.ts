@@ -25,6 +25,6 @@ export const isUnique = (isRegistrationInterface: boolean) => async (login: Iden
   }
   
   if(isRegistrationInterface)
-    return Promise.resolve(!isLogin)
-  return Promise.resolve(isLogin)
+    return Promise.resolve(!isLogin)   //для регистрации нового пользователя
+  return Promise.resolve(isLogin)      //для logIn
 }

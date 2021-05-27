@@ -10,8 +10,7 @@ const {BasketModel} = require('../models/baskets')
 //Изначально все запросы по манипуляциям с корзиной направляются на auth-сервис,
 //и далее, при отсутствии Аутентификации, идет манипуляция с сессионной корзиной.
 
-//генерацию сессии лучше перенести в auth-сервис???
-//разбить контроллеры auth-сервиса на a12n, sessionWork, accountWork
+//Надо разбить контроллеры auth-сервиса на a12n, sessionWork, accountWork
 
 
 module.exports.getBasket = async (req, res) => {
