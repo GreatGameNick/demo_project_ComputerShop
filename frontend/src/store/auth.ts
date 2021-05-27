@@ -1,7 +1,7 @@
 import {MutationTree, ActionTree, GetterTree} from 'vuex'
 import {RootState} from '@/types'
-import {AuthState, Authentication, AuthData} from "@/types/auth";
-import axios from "axios";
+import {AuthState, Authentication, AuthData} from "@/types/auth"
+import axios from "axios"
 
 export default {
   namespaced: false,

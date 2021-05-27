@@ -3,23 +3,10 @@ const mongoose = require("mongoose")
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const multer = require('multer')
-const methodOverride = require('method-override');
-const GridFsStorage = require('multer-gridfs-storage');
-const axios = require("axios")
-const crypto = require('crypto');
-const path = require('path');
 
 const {ROOT_PATH, port, MONGO_URL, mode} = require("./configuration")
 const {connectDb} = require("./mongooseHelpers/db")
-const {
-  delOneDiskFile, delOneGridFile,
-  getOneDiskFile, getOneGridFile,
-  getAllDiskFilesName, getAllGridFiles,
-  getOneImgFromDiskStorageForPicture, getOneImgFromGridStorageForPicture,
-  findAllOnTheShelf, findOneOnTheShelf,
-  getSession
-} = require("./mongooseHelpers/controllers/shop")
+const {findAllOnTheShelf, findOneOnTheShelf, getOneImgFromDiskStorageForPicture} = require("./mongooseHelpers/controllers/shop")
 const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
@@ -29,7 +16,7 @@ const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 const app = express();
 
-app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl.
+app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl(для POST-запросов).
 app.use(cookieParser('demoProject'))
 
 
@@ -63,32 +50,10 @@ app.put("/basket", putProductToBasket)
 app.delete("/basket", deleteProductAtBasket)
 app.get("/basket", getBasket)
 
-//Запросы между сервисами. Здесь - from auth-service to api-service.
-app.get("/api/retrieveSessionBasket/:sessionID", retrieveSessionBasket)
-//Запрос НЕ через nginx(который из запрашиваемого url обрезает префикс "/api"), поэтому в имени принимающего роутера НЕ ЗАБЫВАЕМ писать префикс "/api"(!).
-//Префикс "/api" добавился из apiUrl (http://api:3001/api), и далее основное доменное имя http://auth:3002/ отбрасывается EXPRESSOM'ом.
-//Поэтому в имени принимающего роутера должен фигурировать "/api"(!). Это МЕЖСЕРВИСНЫЙ запрос, МИНУЯ NGNIX(!).
 
-
-//Загружаем файлы в diskStorage.
-//a) Декларируем хранилище diskStorage.            //not using yet. Использую diskStorage сразу для считки. Загрузка не востребована.
-var diskStorage = multer.diskStorage({
-  destination: ROOT_PATH + 'initialData/imgs/',    //ROOT_PATH = "/usr/src/app/"
-  filename: (req, file, cb) => {
-    cb(null, file.originalname)
-  }
-});
-
-//b) заявляем multer, ЛОКАЛЬНО.                    //not using yet
-let upload = multer({storage: diskStorage})
-
-//c) роут для upload file to db.                    //not using yet
-app.post('/upload_file', upload.single('file'), (req, res) => {
-  res.send(`uploadFile ==> ${req.file.originalname}`);
-});
 
 //d)Берем изображения для <img> from diskStorage
-app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //< use it (!)
+app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //Использую diskStorage сразу и только для считки. Загрузка - не востребована, заявлять multer не требуется.
 
 
 //функция по старту сервера.

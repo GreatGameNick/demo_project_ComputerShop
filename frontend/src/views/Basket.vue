@@ -46,11 +46,15 @@ export default Vue.extend({
       'GET_PRODUCT_BASKET_AMOUNT'
     ]),
     price(): number {
-      let sum: number = 0
-      for (let product of this.GET_BASKET_PRODUCTS) {
-        sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
+      if(this.GET_BASKET_PRODUCTS && this.GET_PRODUCT_BASKET_AMOUNT) {
+        let sum: number = 0
+        for (let product of this.GET_BASKET_PRODUCTS) {
+          sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
+        }
+        return sum
+      } else {
+        return 0
       }
-      return sum
     },
     tooltip(): string {
       return `You bought the ${this.GET_BASKET_POINTS.length} products successfully!`

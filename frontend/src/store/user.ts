@@ -1,9 +1,9 @@
 import Vue from 'vue'
-import axios from "axios";
+import axios from "axios"
 import {MutationTree, ActionTree, GetterTree} from 'vuex'
 import {RootState} from '@/types/'
-import {UserState, ProductPoint, BasketMovement} from '@/types/user';
-import {Product, ProductsPoolForShelf} from '@/types/shop';
+import {UserState, ProductPoint, BasketMovement} from '@/types/user'
+import {Product, ProductsPoolForShelf} from '@/types/shop'
 
 const state = () => ({
   clientBasket: [],

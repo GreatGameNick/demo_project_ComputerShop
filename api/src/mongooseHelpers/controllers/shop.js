@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const Grid = require('gridfs-stream')
-const assert = require('assert');
-const fs = require('fs');
+const assert = require('assert')
+const fs = require('fs')
 
 const {laptops, mouses, accessories} = require('../models/shelves')
 const {ROOT_PATH, port, MONGO_URL, authApiUrl, mode} = require("../../configuration")
@@ -38,7 +38,7 @@ module.exports.findAllOnTheShelf = async (req, res) => {
   })
 }
 
-module.exports.findOneOnTheShelf = async (req, res) => {    // use it
+module.exports.findOneOnTheShelf = async (req, res) => {
   console.log('====findOne_OnTheShelf. req.sessionID = ', req.sessionID)
   
   let exactShelf = choseTheShelf(req)
@@ -147,11 +147,10 @@ module.exports.delOneGridFile = async (req, res) => {
 }
 
 
-//Роуты для diskStorage
+//Роут для diskStorage, для запроса <img>, используем команду sendFile()(!).
 const diskStoragePath = ROOT_PATH + 'initialData/';      //ROOT_PATH = "/usr/src/app/"
 
-//для <img>, sendFile().
-module.exports.getOneImgFromDiskStorageForPicture = async (req, res) => {  // = us it
+module.exports.getOneImgFromDiskStorageForPicture = async (req, res) => {
   let shelf = req.params.shelf
   let imgName = req.params.imgName
   res.sendFile(diskStoragePath + 'imgs/' + shelf + '/' + imgName)  //высылаем файлом, без createReadStream (как в случае с GridFsStorage).
