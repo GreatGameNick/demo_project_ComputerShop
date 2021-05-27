@@ -1,17 +1,39 @@
-const express = require("express");
-const assert = require('assert');
+const express = require("express")
+const mongoose = require("mongoose")
+const session = require('express-session')
+const assert = require('assert')
 const bodyParser = require('body-parser')
 const cookieParser  = require ('cookie-parser')
-const {port, MONGO_URL, mode} = require("./configuration");
+const {port, MONGO_URL, mode} = require("./configuration")
 
-const {connectDb} = require("./mongooseHelpers/db");
+const {connectDb} = require("./mongooseHelpers/db")
 const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
 const {identification, touchAccount} = require("./mongooseHelpers/controllers/auth")
 
-const app = express();
-app.use(bodyParser.json())    //(!) Обязателен для всех запросов, которые имеют pl.
+const app = express()
+app.use(bodyParser.json())    //(!) Обязателен для всех запросов, которые имеют pl(для POST-запросов).
 app.use(cookieParser('demoProject'))
+
+
+//session
+//это отдельная специализированный раздел в mongoDb - заточенный для хранения сессий.
+const MongoSessionStore = require('connect-mongo')(session)    //посредник между блоком session и блоком mongoose
+
+const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
+
+app.use(session({
+  // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
+  cookie: {
+    httpOnly: false,  //на клиенте эта кука читаться не будет
+    maxAge: 3600000
+  },
+  secret: 'Nick',
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
+}))
+
 
 
 //a12n (Authentication).

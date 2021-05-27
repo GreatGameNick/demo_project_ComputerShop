@@ -1,6 +1,4 @@
 const express = require("express")
-const mongoose = require("mongoose")
-const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 
@@ -14,29 +12,10 @@ const {initialMouseData} = require('../initialData/mouseData')
 const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 
-const app = express();
+const app = express()
 
 app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl(для POST-запросов).
 app.use(cookieParser('demoProject'))
-
-
-//session
-//это отдельная специализированный раздел в mongoDb для api-сервиса - заточенный для хранения сессий.
-const MongoSessionStore = require('connect-mongo')(session)    //посредник между блоком session и блоком mongoose
-
-const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
-
-app.use(session({
-  // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
-  cookie: {
-    httpOnly: false,  //на клиенте эта кука читаться не будет
-    maxAge: 3600000
-  },
-  secret: 'Nick',
-  resave: false,
-  saveUninitialized: false,
-  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
-}))
 
 
 //Текстовые роуты для MongoDb.

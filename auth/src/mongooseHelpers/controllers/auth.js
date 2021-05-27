@@ -6,6 +6,13 @@ const {AuthService} = require('../../service/auth.service')
 const {apiUrl} = require("../../configuration")
 
 module.exports.identification = async (req, res) => {
+  //for session
+  if (!req.session.i)
+    req.session.i = 0;
+  ++req.session.i;
+  console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
+
+
   let login = req.params.login
   
   await authModel.findOne({login: login}, function (err, login) {
