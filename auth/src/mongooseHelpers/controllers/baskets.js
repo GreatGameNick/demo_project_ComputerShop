@@ -3,12 +3,13 @@ const {BasketModel} = require('../models/baskets')
 
 module.exports.getBasket = async (req, res) => {
   console.log('basket <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+  res.send('basket is empty == 6')
 
-  if (!req.session.i)
-    req.session.i = 0;
-  ++req.session.i;
-
-  console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
+  // if (!req.session.i)
+  //   req.session.i = 0;
+  // ++req.session.i;
+  //
+  // console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
 
   // await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
   //   assert.equal(err, null);

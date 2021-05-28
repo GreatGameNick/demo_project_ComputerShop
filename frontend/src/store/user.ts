@@ -58,24 +58,20 @@ const actions = {
     console.log('FETCH_BASKET_POINTS <<<<<<<<<<<<<<<<<<<<<<<<< ')
 
 
-
-    // await axios.get(`auth/identification/2222222`)           //обращаемся к auth-сервису докера, через Nginx (а не к сервису напрямую).
-    //     .then(({data}) => {
-    //       console.log('data ======>>>', data)
-    //     })
-    //     .catch(console.log)
-
-
-
-    await axios.get(`/auth/test`)
-        .then(({data} )=> console.log('data ======>>>', data))
-
-    // await axios.get(`/auth/basket`)
+    await axios.get(`/auth/basket`)
+      .then(({data} )=> console.log('data ======>>>', data))
       // .then(recoveryBasket => {
       //   if (recoveryBasket.data !== 'basket is empty')   //'basket is empty' надо заменить на просто [].length === 0
       //     commit('SET_BASKET', recoveryBasket.data.basketPoints)
       //   commit('SET_IS_BASKET_POINTS', true)
       // })
+
+    // await axios.get(`/auth/basket`)
+    //   .then(recoveryBasket => {
+    //     if (recoveryBasket.data !== 'basket is empty')   //'basket is empty' надо заменить на просто [].length === 0
+    //       commit('SET_BASKET', recoveryBasket.data.basketPoints)
+    //     commit('SET_IS_BASKET_POINTS', true)
+    //   })
   },
 
 

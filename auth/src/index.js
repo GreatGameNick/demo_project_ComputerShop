@@ -10,12 +10,7 @@ const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
 
 
-const {
-    putProductToBasket,
-    deleteProductAtBasket,
-    getBasket,
-    retrieveSessionBasket
-} = require("./mongooseHelpers/controllers/baskets")
+const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
 const {identification, touchAccount} = require("./mongooseHelpers/controllers/auth")
 
 const app = express()
@@ -46,16 +41,6 @@ app.use(cookieParser('demoProject'))
 app.put("/basket", putProductToBasket)
 app.delete("/basket", deleteProductAtBasket)
 app.get("/basket", getBasket)
-
-app.get("/test", function (req, res) {
-    // if (!req.session.i)
-    //     req.session.i = 0;
-    // ++req.session.i;
-    // console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
-
-    console.log('app.get("test") ===============')
-    res.send('basket is empty')
-})
 
 
 //a12n (Authentication).
