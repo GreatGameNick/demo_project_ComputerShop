@@ -110,8 +110,8 @@ export default Vue.extend({
     ...mapActions([
       'TOUCH_ACCOUNT'
     ]),
-    onAuthentication() {
-      //при Login (не при регистрации нового пользователя)
+    onAuthentication() {   //for logIn & create_account concurrently
+      //при Login (т.е. не при регистрации нового пользователя)
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
       if(!this.isRegistrationInterface )
         this.forms.passwordConfirm.value = this.forms.password.value

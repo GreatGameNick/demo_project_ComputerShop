@@ -6,28 +6,19 @@ const {AuthService} = require('../../service/auth.service')
 const {apiUrl} = require("../../configuration")
 
 module.exports.identification = async (req, res) => {
-  //for session
-  // if (!req.session.i)
-  //   req.session.i = 0;
-  // ++req.session.i;
-  // console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
+  let login = req.params.login
 
-
-  // let login = req.params.login
-  //
-  // await authModel.findOne({login: login}, function (err, login) {
-  //   assert.equal(err, null);
-  //   return login
-  // })
-  // .then(login => {
-  //   if (login != null)
-  //     res.send({isLogin: true})
-  //   else
-  //     res.send({isLogin: false})
-  // })
-  // .catch(console.log)
-
-  res.send('ПРИВЕТ!')
+  await authModel.findOne({login: login}, function (err, login) {
+    assert.equal(err, null);
+    return login
+  })
+  .then(login => {
+    if (login != null)
+      res.send({isLogin: true})
+    else
+      res.send({isLogin: false})
+  })
+  .catch(console.log)
 }
 
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
@@ -64,8 +55,11 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       account.accessToken = accessToken
       account.refreshToken = refreshToken
     }
-    
-    //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину, exactly for a LOGIN.
+
+
+
+    //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину,
+    //exactly for LOGIN.
     if (password) {
       await axios.get(apiUrl + `/retrieveSessionBasket/${sessionID}`)  //apiUrl = http://api:3001/api
       .then(({data}) => {
@@ -74,6 +68,12 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       })
       .catch(console.log)
     }
+
+
+
+
+
+
     
     //сохраняем изменения аккаунта
     account.save(function (err, account) {
@@ -90,7 +90,7 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       // path: '/api/authentication'     //or '/authentication' ???
     })
     
-    // возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - пустой [].
+    // возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - возвращаем пустой [].
     res.send({
       login,
       accessToken,
