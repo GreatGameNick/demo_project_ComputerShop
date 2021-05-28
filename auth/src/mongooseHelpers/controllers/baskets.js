@@ -12,7 +12,7 @@ module.exports.getBasket = async (req, res) => {
     assert.equal(err, null);
     return basket
   })
-  .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))  //надо ПРОВЕРИТЬ ПУТЬ СРАБАТЫВАНИЯ 'basket is empty'(!)
+  .then(basket => basket == null ? res.send({basketPoints: []}) : res.send(basket))
 }
 
 module.exports.putProductToBasket = async (req, res) => {

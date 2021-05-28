@@ -55,22 +55,13 @@ const mutations = {
 
 const actions = {
   async FETCH_BASKET_POINTS({state, commit}): Promise<void> {     //грузим при загрузе App
-    console.log('FETCH_BASKET_POINTS <<<<<<<<<<<<<<<<<<<<<<<<< ')
-
-    // await axios.get(`/auth/basket`)
-    //   .then(({data} )=> console.log('data ======>>>', data))
-
     await axios.get(`/auth/basket`)
       .then(recoveryBasket => {
-        if (recoveryBasket.data !== 'basket is empty')   //'basket is empty' надо заменить на просто [].length === 0
+        if (recoveryBasket.data.basketPoints.length > 0)
           commit('SET_BASKET', recoveryBasket.data.basketPoints)
         commit('SET_IS_BASKET_POINTS', true)
       })
   },
-
-
-
-
   async FETCH_BASKET_PRODUCTS({state, getters, commit, dispatch}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
     if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Здесь требуется ждать обновления BasketPointsInTheStore.
       await dispatch('FETCH_BASKET_POINTS')
