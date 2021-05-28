@@ -26,13 +26,6 @@ app.get("/shop/:shelf", findAllOnTheShelf)
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)
 
 
-// //basket
-// app.put("/basket", putProductToBasket)
-// app.delete("/basket", deleteProductAtBasket)
-// app.get("/basket", getBasket)
-
-
-
 //d)Берем изображения для <img> from diskStorage
 app.get("/imgs/:shelf/:imgName", getOneImgFromDiskStorageForPicture)   //Использую diskStorage сразу и только для считки. Загрузка - не востребована, заявлять multer не требуется.
 
