@@ -18,29 +18,29 @@ app.use(bodyParser.json())    //(!) Обязателен для всех зап�
 app.use(cookieParser('demoProject'))
 
 
-// //session
-// //это отдельная специализированный раздел в mongoDb - заточенный для хранения сессий.
-// const MongoSessionStore = require('connect-mongo')(session)    //посредник между блоком session и блоком mongoose
-//
-// const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
-//
-// app.use(session({
-//     // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
-//     cookie: {
-//         httpOnly: false,  //на клиенте эта кука читаться не будет
-//         maxAge: 3600000
-//     },
-//     secret: 'Nick',
-//     resave: false,
-//     saveUninitialized: false,
-//     store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
-// }))
+//session
+//это отдельная специализированный раздел в mongoDb для api-сервиса - заточенный для хранения сессий.
+const MongoSession = require('connect-mongo')    //посредник между блоком session и блоком mongoose   //npm install connect-mongo@3(!), НЕ версия 4(!).
+const MongoSessionStore = MongoSession(session)
+const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
+
+app.use(session({
+    // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
+    cookie: {
+        httpOnly: false,  //на клиенте эта кука читаться не будет
+        maxAge: 3600000
+    },
+    secret: 'Nick',
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
+}))
 
 
 //basket
+app.get("/basket", getBasket)
 app.put("/basket", putProductToBasket)
 app.delete("/basket", deleteProductAtBasket)
-app.get("/basket", getBasket)
 
 
 //a12n (Authentication).

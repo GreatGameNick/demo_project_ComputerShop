@@ -2,20 +2,17 @@ const assert = require('assert')
 const {BasketModel} = require('../models/baskets')
 
 module.exports.getBasket = async (req, res) => {
-  console.log('basket <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
-  res.send('basket is empty == 6')
+  if (!req.session.i)            //сессию инициализируем данным запросом, т.к. он посылается при загрузке сайта.
+    req.session.i = 0;
+  ++req.session.i;
 
-  // if (!req.session.i)
-  //   req.session.i = 0;
-  // ++req.session.i;
-  //
-  // console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
+  console.log('===== getBasket // req.sessionID => ', req.sessionID)
 
-  // await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
-  //   assert.equal(err, null);
-  //   return basket
-  // })
-  // .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))  //надо ПРОВЕРИТЬ ПУТЬ СРАБАТЫВАНИЯ 'basket is empty'(!)
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+    assert.equal(err, null);
+    return basket
+  })
+  .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))  //надо ПРОВЕРИТЬ ПУТЬ СРАБАТЫВАНИЯ 'basket is empty'(!)
 }
 
 module.exports.putProductToBasket = async (req, res) => {
