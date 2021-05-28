@@ -1,25 +1,18 @@
-const mongoose = require("mongoose")
-const assert = require('assert');
-const fs = require('fs');
-
+const assert = require('assert')
 const {BasketModel} = require('../models/baskets')
 
-//Без Аутентификации используем сессионную корзину, на базе api-сервиса.
-//При Аутентификации используем аккаунтную корзину, на базе auth-сервиса. А сессионную корзину - обнуляем.
-
-//Изначально все запросы по манипуляциям с корзиной направляются на auth-сервис,
-//и далее, при отсутствии Аутентификации, идет манипуляция с сессионной корзиной.
-
-//генерацию сессии лучше перенести в auth-сервис???
-//разбить контроллеры auth-сервиса на a12n, sessionWork, accountWork
-
-
 module.exports.getBasket = async (req, res) => {
+  if (!req.session.i)            //сессию инициализируем данным запросом, т.к. он посылается при загрузке сайта.
+    req.session.i = 0;
+  ++req.session.i;
+
+  console.log('===== getBasket // req.sessionID => ', req.sessionID)
+
   await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
     assert.equal(err, null);
     return basket
   })
-  .then(basket => basket == null ? res.send('basket is empty') : res.send(basket))  //надо ПРОВЕРИТЬ ПУТЬ СРАБАТЫВАНИЯ 'basket is empty'(!)
+  .then(basket => basket == null ? res.send({basketPoints: []}) : res.send(basket))
 }
 
 module.exports.putProductToBasket = async (req, res) => {
@@ -73,6 +66,8 @@ module.exports.deleteProductAtBasket = async (req, res) => {
   res.sendStatus(200)
 }
 
+
+//переделать
 module.exports.retrieveSessionBasket = async (req, res) => {
   let sessionID = req.params.sessionID
   

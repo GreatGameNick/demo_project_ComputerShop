@@ -88,7 +88,7 @@ export default Vue.extend({
           value: {
             required,
             isPhone,
-            isUnique: isUnique(this.isRegistrationInterface)
+            isUnique: isUnique(this.isRegistrationInterface) //аргумент(величина login.value) поступает для замкнутой функции неявно, напрямую.
           }
         },
         password: {

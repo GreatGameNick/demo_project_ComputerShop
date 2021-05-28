@@ -1,15 +1,15 @@
 import Vue from 'vue'
-import axios from "axios";
+import axios from "axios"
 import {MutationTree, ActionTree, GetterTree} from 'vuex'
 import {RootState} from '@/types/'
-import {UserState, ProductPoint, BasketMovement} from '@/types/user';
-import {Product, ProductsPoolForShelf} from '@/types/shop';
+import {UserState, ProductPoint, BasketMovement} from '@/types/user'
+import {Product, ProductsPoolForShelf} from '@/types/shop'
 
 const state = () => ({
   clientBasket: [],
   isBasketProductsInTheStore: false,    //восстанавливались ли во Vuex после перезагрузки сайта описания продуктов, которые положены в корзину
   isBasketPointsInTheStore: false,       //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
-  privatUserData: {}                      //if you'll need for future
+  privatUserData: {}                      //if you'll need it for future
 }) as UserState
 
 const getters = {
@@ -55,9 +55,9 @@ const mutations = {
 
 const actions = {
   async FETCH_BASKET_POINTS({state, commit}): Promise<void> {     //грузим при загрузе App
-    await axios.get(`/api/basket`)
+    await axios.get(`/auth/basket`)
       .then(recoveryBasket => {
-        if (recoveryBasket.data !== 'basket is empty')   //'basket is empty' надо заменить на просто [].length === 0
+        if (recoveryBasket.data.basketPoints.length > 0)
           commit('SET_BASKET', recoveryBasket.data.basketPoints)
         commit('SET_IS_BASKET_POINTS', true)
       })
@@ -104,13 +104,13 @@ const actions = {
   //изменяем в корзине количество единиц выбранного товара
   async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement): Promise<void> {
     if (vector > 0) {
-      await axios.put(`/api/basket`, {shelf, _id})
+      await axios.put(`auth/basket`, {shelf, _id})
         .then(response => {
           if (response.status === 200)
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
         })
     } else {
-      await axios.delete(`/api/basket`, {params: {_id: _id}})  //_id мы получаем как req.query._id
+      await axios.delete(`auth/basket`, {params: {_id: _id}})  //_id мы получаем как req.query._id
         .then(response => {
           if (response.status === 200)
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
@@ -118,7 +118,7 @@ const actions = {
     }
   },
   async CLEAR_BASKET({commit}): Promise<void> {
-    await axios.delete(`/api/basket`, {params: {_id: 'all'}})
+    await axios.delete(`auth/basket`, {params: {_id: 'all'}})
       .then(response => {
         if (response.status === 200)
           commit('DELETE_PRODUCTS_AT_BASKET')
