@@ -171,7 +171,7 @@ module.exports.delOneDiskFile = async (req, res) => {
   fs.unlink(diskStoragePath + name, (err) => {
     if (err) {
       console.error(err)
-      return
+
     }
   })
   res.end(`delOneDiskFile ${name} - successfully`)
