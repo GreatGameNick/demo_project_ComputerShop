@@ -4,8 +4,10 @@ const cookieParser = require('cookie-parser')
 
 const {ROOT_PATH, port, MONGO_URL, mode} = require("./configuration")
 const {connectDb} = require("./mongooseHelpers/db")
+
 const {findAllOnTheShelf, findOneOnTheShelf, getOneImgFromDiskStorageForPicture} = require("./mongooseHelpers/controllers/shop")
-const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
+// const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
+
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
 const {initialMouseData} = require('../initialData/mouseData')
@@ -24,10 +26,10 @@ app.get("/shop/:shelf", findAllOnTheShelf)
 app.get("/shop/:shelf/:_id", findOneOnTheShelf)
 
 
-//basket
-app.put("/basket", putProductToBasket)
-app.delete("/basket", deleteProductAtBasket)
-app.get("/basket", getBasket)
+// //basket
+// app.put("/basket", putProductToBasket)
+// app.delete("/basket", deleteProductAtBasket)
+// app.get("/basket", getBasket)
 
 
 

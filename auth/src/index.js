@@ -1,14 +1,21 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const session = require('express-session')
-const assert = require('assert')
 const bodyParser = require('body-parser')
-const cookieParser  = require ('cookie-parser')
+const cookieParser = require('cookie-parser')
 const {port, MONGO_URL, mode} = require("./configuration")
 
 const {connectDb} = require("./mongooseHelpers/db")
 const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
+
+
+const {
+    putProductToBasket,
+    deleteProductAtBasket,
+    getBasket,
+    retrieveSessionBasket
+} = require("./mongooseHelpers/controllers/baskets")
 const {identification, touchAccount} = require("./mongooseHelpers/controllers/auth")
 
 const app = express()
@@ -16,24 +23,39 @@ app.use(bodyParser.json())    //(!) Обязателен для всех зап�
 app.use(cookieParser('demoProject'))
 
 
-//session
-//это отдельная специализированный раздел в mongoDb - заточенный для хранения сессий.
-const MongoSessionStore = require('connect-mongo')(session)    //посредник между блоком session и блоком mongoose
+// //session
+// //это отдельная специализированный раздел в mongoDb - заточенный для хранения сессий.
+// const MongoSessionStore = require('connect-mongo')(session)    //посредник между блоком session и блоком mongoose
+//
+// const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
+//
+// app.use(session({
+//     // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
+//     cookie: {
+//         httpOnly: false,  //на клиенте эта кука читаться не будет
+//         maxAge: 3600000
+//     },
+//     secret: 'Nick',
+//     resave: false,
+//     saveUninitialized: false,
+//     store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
+// }))
 
-const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
 
-app.use(session({
-  // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
-  cookie: {
-    httpOnly: false,  //на клиенте эта кука читаться не будет
-    maxAge: 3600000
-  },
-  secret: 'Nick',
-  resave: false,
-  saveUninitialized: false,
-  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
-}))
+//basket
+app.put("/basket", putProductToBasket)
+app.delete("/basket", deleteProductAtBasket)
+app.get("/basket", getBasket)
 
+app.get("/test", function (req, res) {
+    // if (!req.session.i)
+    //     req.session.i = 0;
+    // ++req.session.i;
+    // console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
+
+    console.log('app.get("test") ===============')
+    res.send('basket is empty')
+})
 
 
 //a12n (Authentication).
@@ -50,28 +72,28 @@ app.post("/authentication", touchAccount)     //for LOGIN, LOGOUT & create_accou
 
 
 const startServer = async () => {
-  //Загружаем в mongoDb начальные данные - тестовый аккаунт.
-  //a. предварительно очищаем db, если осуществляем dev-перезапуск.
-  if (mode === 'dev') {
-    await authModel.deleteMany({}).exec()
-    console.log('=============== AUTH stared on a DEV mode, Очищаем AUTH_db =>')
-  }
-  
-  //b. загружаем
-  await authModel.insertMany(initialAccounts)
-  .then(function () {
-    console.log("=============== initialAccounts is inserted")
-  })
-  .catch(console.log)
-  
-  
-  app.listen(port, () => {
-    console.log(`Started AUTH-service on port ${port}`);
-    console.log(`AUTH_Database url ${MONGO_URL}`);
-  });
+    //Загружаем в mongoDb начальные данные - тестовый аккаунт.
+    //a. предварительно очищаем db, если осуществляем dev-перезапуск.
+    if (mode === 'dev') {
+        await authModel.deleteMany({}).exec()
+        console.log('=============== AUTH stared on a DEV mode, Очищаем AUTH_db =>')
+    }
+
+    //b. загружаем
+    await authModel.insertMany(initialAccounts)
+        .then(function () {
+            console.log("=============== initialAccounts is inserted")
+        })
+        .catch(console.log)
+
+
+    app.listen(port, () => {
+        console.log(`Started AUTH-service on port ${port}`);
+        console.log(`AUTH_Database url ${MONGO_URL}`);
+    });
 };
 
 connectDb()
-.on("error", console.log)
-.on("disconnected", connectDb)
-.once("open", startServer);
+    .on("error", console.log)
+    .on("disconnected", connectDb)
+    .once("open", startServer);

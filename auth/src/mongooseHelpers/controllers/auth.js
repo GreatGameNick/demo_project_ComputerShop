@@ -7,25 +7,27 @@ const {apiUrl} = require("../../configuration")
 
 module.exports.identification = async (req, res) => {
   //for session
-  if (!req.session.i)
-    req.session.i = 0;
-  ++req.session.i;
-  console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
+  // if (!req.session.i)
+  //   req.session.i = 0;
+  // ++req.session.i;
+  // console.log('=====findAll_OnTheShelf. req.sessionID = ', req.sessionID)
 
 
-  let login = req.params.login
-  
-  await authModel.findOne({login: login}, function (err, login) {
-    assert.equal(err, null);
-    return login
-  })
-  .then(login => {
-    if (login != null)
-      res.send({isLogin: true})
-    else
-      res.send({isLogin: false})
-  })
-  .catch(console.log)
+  // let login = req.params.login
+  //
+  // await authModel.findOne({login: login}, function (err, login) {
+  //   assert.equal(err, null);
+  //   return login
+  // })
+  // .then(login => {
+  //   if (login != null)
+  //     res.send({isLogin: true})
+  //   else
+  //     res.send({isLogin: false})
+  // })
+  // .catch(console.log)
+
+  res.send('ПРИВЕТ!')
 }
 
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
