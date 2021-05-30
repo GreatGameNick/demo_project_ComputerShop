@@ -8,4 +8,3 @@ const basketPointsSchema = new mongoose.Schema({
 module.exports.userSchema = new mongoose.Schema({
   basket: [basketPointsSchema]
 });
-

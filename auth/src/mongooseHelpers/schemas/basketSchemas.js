@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const basketPointsSchema = new mongoose.Schema({
   shelf: String,
   _id: String
-});
+})
 
 module.exports.basketSchema = new mongoose.Schema({
   sessionID: String,
@@ -12,4 +12,6 @@ module.exports.basketSchema = new mongoose.Schema({
     type: Date,
   },
   basketPoints: [basketPointsSchema]
-});
+})
+
+

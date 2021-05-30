@@ -44,9 +44,9 @@ export default {
       //поэтому забираем значение куки - из броузера, и шлем connect.sid-куку via pl для auth-сервиса.
       //connect.sid потребуется auth-сервису, когда он будет забирать из api-сервиса сессионную корзину.
       return await axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
-        .then(({data}) => {                                                                                                           //data = {login, accessToken, userData}
+        .then(({data}) => {                                                                                                         //data = {login, accessToken, userData}
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})
-          commit('SET_BASKET', data.userData.basket)
+          commit('SET_BASKET', data.userData.basket.basketPoints)
           return data
         })
     }
