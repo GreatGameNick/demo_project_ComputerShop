@@ -66,24 +66,14 @@ module.exports.deleteProductAtBasket = async (req, res) => {
   res.sendStatus(200)
 }
 
-
-// module.exports.retrieveSessionBasket = (sessionID) => {
-//     let result
-//     BasketModel.findOneAndDelete({sessionID: sessionID}, (err, sessionBasket) => {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
-//         if (err) console.log(err)
-//         result = sessionBasket
-//         console.log('retrieveSessionBasket 1===========================', sessionBasket)
-//     })
-//     console.log('retrieveSessionBasket 2/result/===================', result)
-//     return result
-// }
-
-
 module.exports.retrieveSessionBasket = (sessionID) => new Promise(resolve => {
   BasketModel.findOneAndDelete({sessionID: sessionID}, (err, sessionBasket) => {   //findOneAndDelete, в отличии от findOne, НЕ ПРОМИС(!). Then()- не сработает(!).
     if (err) console.log(err)
-    console.log('retrieveSessionBasket 1===========================', sessionBasket)
-    resolve(sessionBasket)
+    
+    if (sessionBasket)
+      resolve(sessionBasket)
+    else               //если авторизуемся - сразу, не отбирая до этого товар в СЕССИОННУЮ корзину.
+      resolve({basketPoints: []})
   })
 })
 

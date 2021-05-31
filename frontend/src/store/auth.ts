@@ -46,7 +46,7 @@ export default {
       return await axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
         .then(({data}) => {                                                                                                         //data = {login, accessToken, userData}
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})
-          commit('SET_BASKET', data.userData.basket.basketPoints)
+          commit('SET_BASKET', data.userData.basket)
           return data
         })
     }

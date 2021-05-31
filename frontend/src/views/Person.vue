@@ -7,7 +7,8 @@
       There is all stuff regarding exactly this person.
     </div>
     <div>
-      YOU KEEP only <span>{{GET_BASKET_POINTS.length}} {{GET_BASKET_POINTS.length < 2 ? 'product' : 'products' }}</span> in your BASKET!
+      YOU KEEP only <span>{{GET_BASKET_POINTS.length}} {{GET_BASKET_POINTS.length < 2 ? 'product' : 'products' }}</span> in your
+      <router-link to="/basket"><u>BASKET</u></router-link>!
     </div>
   </div>
 </template>
@@ -28,7 +29,6 @@ export default Vue.extend({
 </script>
 
 <style scoped lang="scss">
-
 .cover {
   @extend .wrapper_common;
 
@@ -48,6 +48,9 @@ export default Vue.extend({
     span {
       color: $green-dark;
     }
+  }
+  a:hover {
+    color: $grey;
   }
 }
 </style>

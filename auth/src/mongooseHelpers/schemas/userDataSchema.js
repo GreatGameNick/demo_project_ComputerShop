@@ -5,6 +5,6 @@ const basketPointsSchema = new mongoose.Schema({
   _id: String
 });
 
-module.exports.userSchema = new mongoose.Schema({
+module.exports.userDataSchema = new mongoose.Schema({
   basket: [basketPointsSchema]
 });

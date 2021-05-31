@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const userSchema = require("./accountSchema")
+const userDataSchema = require("./userDataSchema")
 
 module.exports.authSchema = new mongoose.Schema({
   login: String,
@@ -7,7 +7,7 @@ module.exports.authSchema = new mongoose.Schema({
   accessToken: String,
   refreshToken: String,
   userData: {
-    type: userSchema,
+    type: userDataSchema,
     default: {}
   }
 })

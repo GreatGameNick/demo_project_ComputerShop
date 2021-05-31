@@ -59,12 +59,11 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       }
       
       //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину,
-      //exactly for LOGIN.
+      //exactly for LOGIN & create_account
       if (password) {
         await retrieveSessionBasket(sessionID)
           .then(retrievedBasket => {
-            console.log('retrieveSessionBasket 2===========================', retrievedBasket)
-            account.userData.basket = retrievedBasket
+            account.userData.basket.push(...retrievedBasket.basketPoints)
           })
       }
       
@@ -72,7 +71,6 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       await account.save(function (err, account) {
         if (err) throw err;
       })
-      console.log('account.userData.basket =AFTER SAVING=>>>>>>>>>>>>>>>>', account.userData.basket)
       
       // генерируем refreshToken-куку
       res.cookie('refreshToken', refreshToken, {
@@ -81,7 +79,7 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
         httpOnly: true,
         secure: true,
         sameSite: 'Strict',
-        // path: '/api/authentication'     //or '/authentication' ???. Скорее всего - '/api/authentication'.
+        // path: '/auth/authentication'     //or '/authentication' ???. Скорее всего - '/auth/authentication'.
       })
       
       // возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - возвращаем пустой [].
