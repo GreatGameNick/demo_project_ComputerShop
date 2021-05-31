@@ -11,16 +11,16 @@ export default {
     accessTokenClosure: null,         //для авторизации. Замыкание, в котором сохраняется accessToken.
   } as AuthState,
   getters: {
-    GET_USER_LOGIN: state => state.userLogin,
-    GET_IS_AUTHORIZATION: state => state.isAuthorization,
-    GET_ACCESS_TOKEN: state => {
+    GET_USER_LOGIN: (state): string => state.userLogin,
+    GET_IS_AUTHORIZATION: (state): boolean => state.isAuthorization,
+    GET_ACCESS_TOKEN: (state): string => {
       if(state.accessTokenClosure != null)
         return state.accessTokenClosure()    //возвращаем accessToken из замыкания.
-      return null
+      return ''
     }
   } as GetterTree<AuthState, RootState>,
   mutations: {
-    SET_AUTH: (state, data: AuthData) => {     //for LOGIN, LOGOUT & create_account concurrently
+    SET_AUTH: (state, data: AuthData): void => {     //for LOGIN, LOGOUT & create_account concurrently
       state.userLogin = data.accessToken ? data.userLogin : ''
       state.isAuthorization = data.accessToken !== ''    // false/true
       

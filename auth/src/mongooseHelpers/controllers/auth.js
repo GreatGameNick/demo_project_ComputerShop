@@ -26,8 +26,8 @@ module.exports.identification = async (req, res) => {
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
   let login = req.body.login
   let password = req.body.password
-  let APIconnectSidCookie = req.body.connectSidCookie
-  let sessionID = cookieParser.signedCookie(APIconnectSidCookie, 'Nick')
+  let connectSidCookie = req.body.connectSidCookie                 //зачем???? проверить надо.
+  let sessionID = cookieParser.signedCookie(connectSidCookie, 'Nick')
   
   //формируем фильтр для поиска аккаунта
   let filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.

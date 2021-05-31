@@ -16,8 +16,9 @@ const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 const app = express()
 
-app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl(для POST-запросов).
-app.use(cookieParser('demoProject'))
+//не востребовано
+// app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl(для POST-запросов).
+// app.use(cookieParser('demoProject'))
 
 
 //Текстовые роуты для MongoDb.

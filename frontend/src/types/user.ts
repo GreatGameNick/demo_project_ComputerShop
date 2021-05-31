@@ -7,6 +7,15 @@ export interface BasketMovement extends ProductPoint {
   vector: number
 }
 
+export interface AxiosConfig {
+  headers: {
+    accessToken: string
+  },
+  params: {
+    _id: string
+  }
+}
+
 export interface UserState {
   clientBasket: ProductPoint[],
   isBasketProductsInTheStore: boolean,
