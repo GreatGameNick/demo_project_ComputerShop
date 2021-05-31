@@ -42,7 +42,14 @@ module.exports.putProductToBasket = async (req, res) => {
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
-  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+  console.log('req.header(\'accesstoken\')================', req.header('accesstoken') )  //Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.Iig5OTkpIDk5OS05OS05OSI=./LkG6veVVwyFYMK37lIbRykL6jOy90OaOpcPu3cUxe0=
+  
+  if(req.header('accesstoken') === '--') {
+  
+  }
+  
+  
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {    //отбираем корзину ДАННОГО юзера
     assert.equal(err, null);
     return basket
   })

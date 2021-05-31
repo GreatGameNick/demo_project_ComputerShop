@@ -42,10 +42,10 @@ const getters = {
   GET_AXIOS_CONFIG: (state: UserState, getters): AxiosConfig => {
     return {
       headers: {
-        accessToken: getters.GET_ACCESS_TOKEN
+        accesstoken: getters.GET_ACCESS_TOKEN        //accessToken мы получаем на сервере как req.header('accesstoken'). Ключи у хедера надо писать МАЛЕНЬКИМИ буквами.
       },
       params: {
-        _id: ''
+        _id: ''         //_id мы получаем на сервере как req.query._id
       }
     }
   }

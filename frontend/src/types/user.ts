@@ -9,7 +9,7 @@ export interface BasketMovement extends ProductPoint {
 
 export interface AxiosConfig {
   headers: {
-    accessToken: string
+    accesstoken: string
   },
   params: {
     _id: string
