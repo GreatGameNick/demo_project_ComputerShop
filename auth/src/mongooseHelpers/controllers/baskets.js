@@ -95,7 +95,7 @@ module.exports.retrieveSessionBasket = (sessionID) => new Promise(resolve => {
     
     if (sessionBasket)
       resolve(sessionBasket)
-    else               //если авторизуемся - сразу, не отбирая до этого товар в СЕССИОННУЮ корзину.
+    else               //если авторизуемся - сразу, т.е. не отбирая до этого товар в СЕССИОННУЮ корзину.
       resolve({basketPoints: []})
   })
 })

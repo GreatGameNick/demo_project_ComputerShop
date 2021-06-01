@@ -1,4 +1,6 @@
 const crypto = require('crypto')
+const assert = require('assert')
+const {authModel} = require('../mongooseHelpers/models/auth')
 
 let accessTokenKey = '1a2b-3c4d-5e6f-7g8h'
 
@@ -20,12 +22,14 @@ module.exports.AuthService = class AuthService {
     return `Bearer ${head}.${body}.${signature}`
   }
   
+  
   static createRefreshToken() {
     return crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
   }
   
-  //проверка ликвидности accessToken'a - деформированность, просроченность
-  static checkAccessTokenforSolid(accessToken) {  //accessToken = 'Bearer eyJhbGcI6Imp3dCJ9.Iig5OTkp05OS05OSI=./LkG6veVVaOpcPu3cUxe0='
+  
+  //проверка ликвидности accessToken'a - его деформированность и просроченность
+  static checkAccessTokenForSolid(accessToken) {  //accessToken = 'Bearer eyJhbGcI6Imp3dCJ9.Iig5OTkp05OS05OSI=./LkG6veVVaOpcPu3cUxe0='
     let tokenParts = accessToken
       .split(' ')[1]
       .split('.')
@@ -38,15 +42,37 @@ module.exports.AuthService = class AuthService {
     
     let body = ''
     if (signature === tokenParts[2])
-      body = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf8'))   //получаем обратно дешифрованное тело токена { login: '(999) 999-99-99', exp: 1622532886941 }
+      body = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf8'))   //получаем дешифрованное тело токена { login: '(999) 999-99-99', exp: 1622532886941 }
     else
-      return null     //'accessTokenIsWrong'
+      return { login: '0', exp: body.exp }   //'accessTokenIsWrong'
     
     //проверяем непросроченность токена
     if (Date.now() < body.exp)
-      return null    //'accessTokenIsDied'
+      return { login: body.login, exp: 0 }   //'accessTokenIsDied'
     
-    return body
+    return body      //{login: '(999) 999-99-99', exp: 1622532886941}
+  }
+  
+  //идентичность accessToken'a серверному аналогу  =>> true/false
+  static async checkAccessTokenForMatch(accessToken, accessTokenBody) {
+    await authModel.findOne({login: accessTokenBody.login}, function (err, account) {
+      assert.equal(err, null);
+      return account
+    })
+      .then(account => {
+        return account.accessToken === accessToken
+      })
+  }
+  
+  static separateCookie(cookies, cookieName) {
+    let cookieArray = cookies.split(';')
+    
+    for(let cookie of cookieArray) {
+      let cookiePieces = cookie.trim().split('=')
+      if(cookiePieces[0] === cookieName) {
+        return  cookiePieces[1]
+      }
+    }
   }
 }
 

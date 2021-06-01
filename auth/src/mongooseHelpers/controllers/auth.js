@@ -24,16 +24,26 @@ module.exports.identification = async (req, res) => {
 }
 
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
-  let login = req.body.login
-  let password = req.body.password
-  let connectSidCookie = req.body.connectSidCookie                 //зачем???? проверить надо.
-  let sessionID = cookieParser.signedCookie(connectSidCookie, 'Nick')
+  let login, password, sessionID, filter
+  
+  if(req.body.login) {   //a. for LOGIN, LOGOUT & create_account
+    login = req.body.login
+    password = req.body.password
+    sessionID = cookieParser.signedCookie(req.body.connectSidCookie, 'Nick')
   
   //формируем фильтр для поиска аккаунта
-  let filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
+  filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
   if (password)            //если password=false, то здесь имеет место LOGOUT, ищем аккаунт без проверки паспорта.
     filter.password = req.body.password
-  
+  } else {             //b. for refreshing token. Аккаунт ищем по значению refreshToken'a.
+    let refreshToken = req.headers.cookie.split(';')     //или  req.cookies ???
+    
+    
+    
+    
+    filter = {refreshToken: AuthService.separateRefreshTokenFromCookies}  //refreshToken, отделяем RefreshToken из куков хедера
+  }
+
   //обращаемся к аккаунту
   await authModel.findOne(filter, function (err, account) {
     assert.equal(err, null);
@@ -66,6 +76,10 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
             account.userData.basket.push(...retrievedBasket.basketPoints)
           })
       }
+      
+      //очищаем но НЕ удаляем сессионную корзину.
+      //проверить, если это не так - дописать.
+      
       
       //сохраняем изменения аккаунта
       await account.save(function (err, account) {

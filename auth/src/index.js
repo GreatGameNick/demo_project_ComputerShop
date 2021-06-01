@@ -43,32 +43,45 @@ app.use(session({
 }))
 
 
-//проверка accessToken'a
+//проверка accessToken'a и восстановление его через refreshToken
 app.use((req, res, next) => {
   let accessToken = req.headers.accesstoken
   let accessTokenBody = ''
-  console.log('accessToken ==========', accessToken)
+  let isAccessTokenMatched = false    //корректность accessToken'a   =>> true/false
   
-  // //проверяем недеформированность токена
-  // if (accessToken)
-  //   accessTokenBody = AuthService.checkAccessTokenforSolid(accessToken)
-  //
-  // //проверяем идентичность полученного accessToken'a с серверным эталоном
-  //
-  //
-  //
-  //
-  // //в переменные запроса прописываем accessToken_тело /null or {}/ => используем сессионную или аккаунтную корзину.
-  // req.access_token_body = accessTokenBody
-  // console.log('req.AccessTokenBody ==============', req.access_token_body)
+  if (accessToken) {
+    //проверяем деформированность и просроченность токена
+    accessTokenBody = AuthService.checkAccessTokenForSolid(accessToken) //деформированный-{ login: '0', exp: body.exp }, просроченный-{ login: body.login, exp: 0 }, валидный-{ login: '(999) 999-99-99', exp: 1622543413881 }
+    
+    //проверяем идентичность полученного accessToken'a с серверным эталоном (при отсутствии деформации токена)
+    if (accessTokenBody.login !== '0')
+      AuthService.checkAccessTokenForMatch(accessToken, accessTokenBody)
+        .then(accessTokenValidation => isAccessTokenMatched = accessTokenValidation)
+  }
+  
+  //восстановление accessToken'a через refreshToken
+  if (isAccessTokenMatched && (accessTokenBody.exp === 0)) {  //токен коректный, но просроченный
+    //выделяем refreshToken из всех куков
+    let refreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
+    
+    // touchAccount(refreshToken)   //фильтр для контакта - не логин, а refreshToken
+  }
+  
+  
+  console.log('req.headers.cookie =================', req.headers.cookie)
+  if (req.headers.cookie) {
+    console.log('separateCookie /connect.sid\=====================', AuthService.separateCookie(req.headers.cookie, 'connect.sid'))
+    console.log('separateCookie refreshToken\=====================', AuthService.separateCookie(req.headers.cookie, 'refreshToken'))
+  }
+  //connect.sid=s%3A4FL6ne29YyPvnx_dwAC5k6iFlhuVVdRi.VoYBwevobEjMEuKjFjncnYuRgn9Gt%2BNj2FqEyU7F0Qk; refreshToken=7yhRM9SOvQB3ADkmxBnoFWq6TIs
+  
+  
+  //в переменные запроса прописываем accessToken_тело  => используем сессионную или аккаунтную корзину.
+  req.access_token_match = isAccessTokenMatched
+  console.log('req.access_token_match ==============', req.access_token_match)
   
   next()
 })
-
-
-
-
-
 
 
 //basket
