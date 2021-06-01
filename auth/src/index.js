@@ -10,8 +10,14 @@ const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
 
 
-const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
+const {
+  putProductToBasket,
+  deleteProductAtBasket,
+  getBasket,
+  retrieveSessionBasket
+} = require("./mongooseHelpers/controllers/baskets")
 const {identification, touchAccount} = require("./mongooseHelpers/controllers/auth")
+const {AuthService} = require('./service/auth.service')
 
 const app = express()
 app.use(bodyParser.json())    //(!) Обязателен для всех запросов, которые имеют pl(для POST-запросов).
@@ -25,16 +31,44 @@ const MongoSessionStore = MongoSession(session)
 const sessionConnection = mongoose.createConnection(MONGO_URL, {useNewUrlParser: true});
 
 app.use(session({
-    // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
-    cookie: {
-        httpOnly: false,  //на клиенте эта кука читаться не будет
-        maxAge: 3600000
-    },
-    secret: 'Nick',
-    resave: false,
-    saveUninitialized: false,
-    store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
+  // name: 'name_of_the_session_ID_cookie',   //имя сессии, ВМЕСТО "connect.sid"
+  cookie: {
+    httpOnly: false,  //на клиенте эта кука читаться не будет
+    maxAge: 3600000
+  },
+  secret: 'Nick',
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
 }))
+
+
+//проверка accessToken'a
+app.use((req, res, next) => {
+  let accessToken = req.headers.accesstoken
+  let accessTokenBody = ''
+  console.log('accessToken ==========', accessToken)
+  
+  // //проверяем недеформированность токена
+  // if (accessToken)
+  //   accessTokenBody = AuthService.checkAccessTokenforSolid(accessToken)
+  //
+  // //проверяем идентичность полученного accessToken'a с серверным эталоном
+  //
+  //
+  //
+  //
+  // //в переменные запроса прописываем accessToken_тело /null or {}/ => используем сессионную или аккаунтную корзину.
+  // req.access_token_body = accessTokenBody
+  // console.log('req.AccessTokenBody ==============', req.access_token_body)
+  
+  next()
+})
+
+
+
+
+
 
 
 //basket
@@ -57,28 +91,28 @@ app.post("/authentication", touchAccount)     //for LOGIN, LOGOUT & create_accou
 
 
 const startServer = async () => {
-    //Загружаем в mongoDb начальные данные - тестовый аккаунт.
-    //a. предварительно очищаем db, если осуществляем dev-перезапуск.
-    if (mode === 'dev') {
-        await authModel.deleteMany({}).exec()
-        console.log('=============== AUTH stared on a DEV mode, Очищаем AUTH_db =>')
-    }
-
-    //b. загружаем
-    await authModel.insertMany(initialAccounts)
-        .then(function () {
-            console.log("=============== initialAccounts is inserted")
-        })
-        .catch(console.log)
-
-
-    app.listen(port, () => {
-        console.log(`Started AUTH-service on port ${port}`);
-        console.log(`AUTH_Database url ${MONGO_URL}`);
-    });
+  //Загружаем в mongoDb начальные данные - тестовый аккаунт.
+  //a. предварительно очищаем db, если осуществляем dev-перезапуск.
+  if (mode === 'dev') {
+    await authModel.deleteMany({}).exec()
+    console.log('=============== AUTH stared on a DEV mode, Очищаем AUTH_db =>')
+  }
+  
+  //b. загружаем
+  await authModel.insertMany(initialAccounts)
+    .then(function () {
+      console.log("=============== initialAccounts is inserted")
+    })
+    .catch(console.log)
+  
+  
+  app.listen(port, () => {
+    console.log(`Started AUTH-service on port ${port}`);
+    console.log(`AUTH_Database url ${MONGO_URL}`);
+  });
 };
 
 connectDb()
-    .on("error", console.log)
-    .on("disconnected", connectDb)
-    .once("open", startServer);
+  .on("error", console.log)
+  .on("disconnected", connectDb)
+  .once("open", startServer);

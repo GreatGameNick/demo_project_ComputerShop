@@ -16,7 +16,7 @@ export default {
     GET_ACCESS_TOKEN: (state): string => {
       if(state.accessTokenClosure != null)
         return state.accessTokenClosure()    //возвращаем accessToken из замыкания.
-      return '--'
+      return ''
     }
   } as GetterTree<AuthState, RootState>,
   mutations: {

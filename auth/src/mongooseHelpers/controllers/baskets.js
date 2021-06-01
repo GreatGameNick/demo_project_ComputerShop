@@ -42,10 +42,26 @@ module.exports.putProductToBasket = async (req, res) => {
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
-  console.log('req.header(\'accesstoken\')================', req.header('accesstoken') )  //Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.Iig5OTkpIDk5OS05OS05OSI=./LkG6veVVwyFYMK37lIbRykL6jOy90OaOpcPu3cUxe0=
   
-  if(req.header('accesstoken') === '--') {
+  //делаем при каждом запросе
+  console.log('req.header(\'accesstoken\')================', req.header('accesstoken') )  //'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.Iig5OTkpIDk5OS05OS05OSI=./LkG6veVVwyFYMK37lIbRykL6jOy90OaOpcPu3cUxe0='
   
+  function checkAccessToken(accessToken) {
+    let tokenParts = accessToken
+      .split(' ')[1]
+      .split('.')
+    
+    let dd = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf8'))
+    console.log('accessToken ====>>>> ', dd)
+  }
+  checkAccessToken( req.header('accesstoken'))
+  
+  
+  
+  
+  
+  //если авторизация не проводилась, accessToken в хедере отсутствует
+  if(req.header('accesstoken') === '') {
   }
   
   
