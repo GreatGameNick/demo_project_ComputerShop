@@ -47,7 +47,7 @@ module.exports.AuthService = class AuthService {
       return { login: '0', exp: body.exp }   //'accessTokenIsWrong'
     
     //проверяем непросроченность токена
-    if (Date.now() < body.exp)
+    if (Date.now() > body.exp)
       return { login: body.login, exp: 0 }   //'accessTokenIsDied'
     
     return body      //{login: '(999) 999-99-99', exp: 1622532886941}
@@ -55,13 +55,17 @@ module.exports.AuthService = class AuthService {
   
   //идентичность accessToken'a серверному аналогу  =>> true/false
   static async checkAccessTokenForMatch(accessToken, accessTokenBody) {
-    await authModel.findOne({login: accessTokenBody.login}, function (err, account) {
+    let accessTokenForMatch = false
+    
+    return await authModel.findOne({login: accessTokenBody.login}, function (err, account) {
       assert.equal(err, null);
       return account
     })
       .then(account => {
         return account.accessToken === accessToken
       })
+    
+    // return accessTokenForMatch
   }
   
   static separateCookie(cookies, cookieName) {

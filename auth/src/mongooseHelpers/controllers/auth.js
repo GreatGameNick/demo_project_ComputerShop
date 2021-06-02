@@ -24,36 +24,43 @@ module.exports.identification = async (req, res) => {
 }
 
 module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "password: false") & create_account concurrently
-  let login, password, sessionID, filter
+  let login, password, sessionID, filter, oldRefreshToken
   
-  if(req.body.login) {   //a. for LOGIN, LOGOUT & create_account
+  if (req.body.login) {
+    //a. for LOGIN, LOGOUT & create_account
+    // Аккаунт ищем по значению login & password.
     login = req.body.login
     password = req.body.password
     sessionID = cookieParser.signedCookie(req.body.connectSidCookie, 'Nick')
-  
-  //формируем фильтр для поиска аккаунта
-  filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
-  if (password)            //если password=false, то здесь имеет место LOGOUT, ищем аккаунт без проверки паспорта.
-    filter.password = req.body.password
-  } else {             //b. for refreshing token. Аккаунт ищем по значению refreshToken'a.
-    let refreshToken = req.headers.cookie.split(';')     //или  req.cookies ???
     
+    //формируем фильтр для поиска аккаунта
+    filter = {login}      //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
+    if (password)            //если password=false, то здесь имеет место LOGOUT, ищем аккаунт без проверки паспорта.
+      filter.password = req.body.password
+  } else {
+    //b. for refreshing token.
+    // Аккаунт ищем по значению refreshToken'a.
+    oldRefreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
     
+    //проверка валидности refreshToken'a
+    let isRefreshTokenValid = AuthService.RefreshTokenValidation(oldRefreshToken)                  //<<<<<<<<<<<<<< делаю
     
-    
-    filter = {refreshToken: AuthService.separateRefreshTokenFromCookies}  //refreshToken, отделяем RefreshToken из куков хедера
+    if (isRefreshTokenValid)
+      filter = {refreshToken: oldRefreshToken}
+    else
+      res.redirect('/a11n')
   }
-
+  
   //обращаемся к аккаунту
   await authModel.findOne(filter, function (err, account) {
     assert.equal(err, null);
     return account
   })
     .then(async account => {
-      let accessToken = password ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login, а при logout - обнуляем их.
-      let refreshToken = password ? AuthService.createRefreshToken() : ''
+      let accessToken = (password || oldRefreshToken) ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login(будет присутствовать паспорт), а при logout - обнуляем их.
+      let refreshToken = (password || oldRefreshToken) ? AuthService.createRefreshToken() : ''
       
-      if (account == null) {       //если аккаунта нет, то создаем его, вписав в него токены.
+      if ((account == null) && !oldRefreshToken) {       //если аккаунта нет(и это - не восстановление токенов), то создаем его, вписав в него токены.
         account = new authModel({
           login,
           password,
@@ -63,23 +70,19 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
             basket: []
           }
         })
-      } else {        //если аккаунт есть, то обновляем аккаунт, вписав в него токены, И обновляем аккаунтную корзину, добавив в нее СЕССИОННУЮ КОРЗИНУ.
+      } else {        //если аккаунт есть, то обновляем аккаунт, вписав в него токены.
         account.accessToken = accessToken
         account.refreshToken = refreshToken
       }
       
       //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину,
-      //exactly for LOGIN & create_account
-      if (password) {
+      //exactly for LOGIN & create_account, а так же при восстановлении просроченного токена.
+      if ((password || oldRefreshToken) && sessionID) {
         await retrieveSessionBasket(sessionID)
           .then(retrievedBasket => {
             account.userData.basket.push(...retrievedBasket.basketPoints)
           })
       }
-      
-      //очищаем но НЕ удаляем сессионную корзину.
-      //проверить, если это не так - дописать.
-      
       
       //сохраняем изменения аккаунта
       await account.save(function (err, account) {
@@ -99,7 +102,7 @@ module.exports.touchAccount = async (req, res) => {  //for LOGIN, LOGOUT(when "p
       // возвращаем пользователю обновленную корзину: сессионная + аккаунтная корзины, а при logout - возвращаем пустой [].
       res.send({
         login,
-        accessToken,
+        accessToken,       //КАК этот ответ воспримиться при восстановлении токенов ???????????
         userData: {
           basket: password ? account.userData.basket : []
         }

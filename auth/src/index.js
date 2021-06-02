@@ -44,7 +44,7 @@ app.use(session({
 
 
 //проверка accessToken'a и восстановление его через refreshToken
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   let accessToken = req.headers.accesstoken
   let accessTokenBody = ''
   let isAccessTokenMatched = false    //корректность accessToken'a   =>> true/false
@@ -52,33 +52,29 @@ app.use((req, res, next) => {
   if (accessToken) {
     //проверяем деформированность и просроченность токена
     accessTokenBody = AuthService.checkAccessTokenForSolid(accessToken) //деформированный-{ login: '0', exp: body.exp }, просроченный-{ login: body.login, exp: 0 }, валидный-{ login: '(999) 999-99-99', exp: 1622543413881 }
+  
+    console.log('accessTokenBody  ==========', accessTokenBody)
     
     //проверяем идентичность полученного accessToken'a с серверным эталоном (при отсутствии деформации токена)
     if (accessTokenBody.login !== '0')
-      AuthService.checkAccessTokenForMatch(accessToken, accessTokenBody)
-        .then(accessTokenValidation => isAccessTokenMatched = accessTokenValidation)
+      await AuthService.checkAccessTokenForMatch(accessToken, accessTokenBody)                //ЗАПАЗДЫВАЕТ
+        .then(accessTokenValidation => {
+          isAccessTokenMatched = accessTokenValidation
+          console.log('accessTokenValidation ==========', accessTokenValidation)
+        })
   }
   
   //восстановление accessToken'a через refreshToken
-  if (isAccessTokenMatched && (accessTokenBody.exp === 0)) {  //токен коректный, но просроченный
-    //выделяем refreshToken из всех куков
-    let refreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
-    
-    // touchAccount(refreshToken)   //фильтр для контакта - не логин, а refreshToken
+  // if (isAccessTokenMatched && (accessTokenBody.exp === 0)) {  //токен корректный, но просроченный
+  if (isAccessTokenMatched && (accessTokenBody.exp === 0)) {  //токен корректный, но просроченный
+    await touchAccount()   //фильтром для отбора аккаунта будет не логин, а refreshToken
+      .then(data => console.log('touchAccount = what is it? >>>>>>>>>>>>>>', data))
   }
   
   
-  console.log('req.headers.cookie =================', req.headers.cookie)
-  if (req.headers.cookie) {
-    console.log('separateCookie /connect.sid\=====================', AuthService.separateCookie(req.headers.cookie, 'connect.sid'))
-    console.log('separateCookie refreshToken\=====================', AuthService.separateCookie(req.headers.cookie, 'refreshToken'))
-  }
-  //connect.sid=s%3A4FL6ne29YyPvnx_dwAC5k6iFlhuVVdRi.VoYBwevobEjMEuKjFjncnYuRgn9Gt%2BNj2FqEyU7F0Qk; refreshToken=7yhRM9SOvQB3ADkmxBnoFWq6TIs
-  
-  
-  //в переменные запроса прописываем accessToken_тело  => используем сессионную или аккаунтную корзину.
-  req.access_token_match = isAccessTokenMatched
-  console.log('req.access_token_match ==============', req.access_token_match)
+  //в переменные запроса прописываем isAccessTokenMatched  => используем сессионную или аккаунтную корзину.
+  req.is_access_token = isAccessTokenMatched
+  console.log('req.is_access_token  ==============', req.is_access_token )
   
   next()
 })
