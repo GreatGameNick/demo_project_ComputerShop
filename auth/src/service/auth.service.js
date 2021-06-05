@@ -24,15 +24,18 @@ module.exports.AuthService = class AuthService {
   
   
   static createRefreshToken() {
-    return crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
+    return (Date.now() + 60 * 24 * 60 * 60 * 1000) + '^' + crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
+  }
+  
+  static pullOutAccessTokenBody (accessToken) {
+    let tokenParts = accessToken.split(' ')[1].split('.')
+    return JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf8'))
   }
   
   
   //проверка ликвидности accessToken'a - его деформированность и просроченность
   static checkAccessTokenForSolid(accessToken) {  //accessToken = 'Bearer eyJhbGcI6Imp3dCJ9.Iig5OTkp05OS05OSI=./LkG6veVVaOpcPu3cUxe0='
-    let tokenParts = accessToken
-      .split(' ')[1]
-      .split('.')
+    let tokenParts = accessToken.split(' ')[1].split('.')
     
     //проверяем недеформированность токена - хеадер и тело продолжают формировать такую же подпись, которой и подписан токен
     let signature = crypto
@@ -44,19 +47,17 @@ module.exports.AuthService = class AuthService {
     if (signature === tokenParts[2])
       body = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString('utf8'))   //получаем дешифрованное тело токена { login: '(999) 999-99-99', exp: 1622532886941 }
     else
-      return { login: '0', exp: body.exp }   //'accessTokenIsWrong'
+      return {login: '0', exp: body.exp}   //<<'accessTokenIsWrong'
     
     //проверяем непросроченность токена
     if (Date.now() > body.exp)
-      return { login: body.login, exp: 0 }   //'accessTokenIsDied'
+      return {login: body.login, exp: 0}   //<<'accessTokenIsDied'
     
-    return body      //{login: '(999) 999-99-99', exp: 1622532886941}
+    return body      //{login: '(999) 999-99-99', exp: 1622532886941} <<'accessTokenIsSolid'
   }
   
   //идентичность accessToken'a серверному аналогу  =>> true/false
   static async checkAccessTokenForMatch(accessToken, accessTokenBody) {
-    let accessTokenForMatch = false
-    
     return await authModel.findOne({login: accessTokenBody.login}, function (err, account) {
       assert.equal(err, null);
       return account
@@ -64,8 +65,6 @@ module.exports.AuthService = class AuthService {
       .then(account => {
         return account.accessToken === accessToken
       })
-    
-    // return accessTokenForMatch
   }
   
   static separateCookie(cookies, cookieName) {
@@ -77,6 +76,14 @@ module.exports.AuthService = class AuthService {
         return  cookiePieces[1]
       }
     }
+  }
+  
+  static isRefreshTokenAlive(refreshToken, oldRefreshToken) {  //проверка на просроченность токена
+    return  oldRefreshToken.split('^')[0] > Date.now()
+  }
+  
+  static checkRefreshToken(refreshToken, oldRefreshToken) {   //проверка на просроченность и иденитичность токена
+    return this.isRefreshTokenAlive(refreshToken, oldRefreshToken) && (refreshToken === oldRefreshToken)
   }
 }
 
