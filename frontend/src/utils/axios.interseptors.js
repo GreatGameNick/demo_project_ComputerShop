@@ -1,17 +1,7 @@
 import store from '../store'
 import axios from "axios"
-import {AuthUtils} from './auth.utils'
+import AuthUtils from './auth.utils'
 //https://qna.habr.com/q/519691
-
-//в хедер запросов, у которых url содержит "auth", добавляем accessToken
-function attachAccessTokenToHeader(accessToken, config) {
-  if (accessToken && config.url.includes('auth')) {
-    config.headers.accesstoken = accessToken //accessToken мы получаем на сервере как req.headers.accesstoken. Ключи у хедера надо писать МАЛЕНЬКИМИ буквами, но тире - допустимы.
-  } else {                                   // или хедер можно заявлять так: headers['Access-Token']
-    delete config.headers.accesstoken
-  }
-  return config
-}
 
 //1.
 const treatAccessTokenInterceptor = store => async config => {
@@ -27,21 +17,21 @@ const treatAccessTokenInterceptor = store => async config => {
   // Сценарий честного поведения клиента - проверяем только просроченность access-токена.
   console.log('config.url auth =====', config.url)
   let tokenRecoveryPromise = null
-  let tokenExp = AuthUtils.pullOutAccessTokenBody.exp   //берем из дешифрованного тела токена { login: '(999) 999-99-99', exp: 1622532886941 }
+  let tokenExp = AuthUtils.pullOutAccessTokenBody.exp   //exp берем из дешифрованного тела токена { login: '(999) 999-99-99', exp: 1622532886941 }
   
-  if (Date.now() > tokenExp) {     //'accessTokenIsDied' => восстанавливаем его
+  if (Date.now() > tokenExp) {     //accessToken просрочен => восстанавливаем его
     //восстанавливаем accessToken
     tokenRecoveryPromise = store.dispatch('TOUCH_ACCOUNT', {login: '', password: ''})   //for "восстановление accessToken'a через refreshToken"
     await tokenRecoveryPromise
     tokenRecoveryPromise = null
   
-    //запрашиваем из стора ВОССТАНОВЛЕННЫЙ accessToken и прикрепляем его к хедеру запроса.
+    //запрашиваем из Store ВОССТАНОВЛЕННЫЙ accessToken и прикрепляем его к хедеру запроса.
     accessToken = store.getters.GET_ACCESS_TOKEN
     console.log('treatAccessTokenInterceptor//восстановленный AccessToken в config =======', config)
-    return attachAccessTokenToHeader(accessToken, config)
+    return AuthUtils.attachAccessTokenToHeader(accessToken, config)
   } else {
     //accessToken - непросроченный. Добавляем его в хедер запроса.
-    return attachAccessTokenToHeader(accessToken, config)
+    return AuthUtils.attachAccessTokenToHeader(accessToken, config)
   }
 }
 

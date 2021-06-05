@@ -11,8 +11,8 @@ export default {
     accessTokenClosure: null,         //для авторизации. Замыкание, в котором сохраняется accessToken.
   } as AuthState,
   getters: {
-    GET_USER_LOGIN: (state): string => state.userLogin,
-    GET_IS_AUTHORIZATION: (state): boolean => state.isAuthorization,
+    GET_USER_LOGIN: ({userLogin}): string => userLogin,
+    GET_IS_AUTHORIZATION: ({isAuthorization}): boolean => isAuthorization,
     GET_ACCESS_TOKEN: (state): string => {
       if(state.accessTokenClosure != null)
         return state.accessTokenClosure()    //возвращаем accessToken из замыкания.
@@ -47,7 +47,7 @@ export default {
         .then(({data}) => {                                                                                                         //data = {login, accessToken, userData}
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})
           commit('SET_BASKET', data.userData.basket)
-          return data
+          return data   //не востребован. Нужен только, что бы тайпскрипт не выпендривался. ))
         })
     }
   } as ActionTree<AuthState, RootState>
