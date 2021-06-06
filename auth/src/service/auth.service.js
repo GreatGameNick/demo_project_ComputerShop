@@ -57,14 +57,12 @@ module.exports.AuthService = class AuthService {
   }
   
   //идентичность accessToken'a серверному аналогу  =>> true/false
-  static async checkAccessTokenForMatch(accessToken, accessTokenBody) {
+  static async checkAccessTokenForMatch(accessToken, accessTokenBody) {   //accessTokenBody = { login: '(999) 999-99-99', exp: 1622543413881 }
     return await authModel.findOne({login: accessTokenBody.login}, function (err, account) {
       assert.equal(err, null);
       return account
     })
-      .then(account => {
-        return account.accessToken === accessToken
-      })
+      .then(account => account.accessToken === accessToken)
   }
   
   static separateCookie(cookies, cookieName) {

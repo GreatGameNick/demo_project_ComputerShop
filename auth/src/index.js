@@ -36,45 +36,71 @@ app.use(session({
     httpOnly: false,  //на клиенте эта кука читаться не будет
     maxAge: 3600000
   },
-  secret: 'Nick',
+  secret: 'Nick',       // <<<<<<<<<<<<<<< надо ПЕРЕНЕСТИ В ПЕРЕМЕННЫЕ ДОКЕРА(!)
   resave: false,
   saveUninitialized: false,
   store: new MongoSessionStore({mongooseConnection: sessionConnection, ttl: 14 * 24 * 60 * 60})
 }))
 
 
-//проверка accessToken'a и восстановление его через refreshToken
+//проверка accessToken'a
 app.use(async (req, res, next) => {
   let accessToken = req.headers.accesstoken
-  let accessTokenBody = ''
-  let isAccessTokenMatched = false    //корректность accessToken'a   =>> true/false
+  let accessTokenBody = ''             //{ login: '(999) 999-99-99', exp: 1622543413881 }
+  let isAccessTokenMatched = false    //accessToken идентичный И недеформированный. Просроченность здесь не обсуждается.
+  let isAccessTokenAlive = false      //accessToken НЕпросроченный.
   
   if (accessToken) {
-    //проверяем деформированность и просроченность токена
-    accessTokenBody = AuthService.checkAccessTokenForSolid(accessToken) //деформированный-{ login: '0', exp: body.exp }, просроченный-{ login: body.login, exp: 0 }, валидный-{ login: '(999) 999-99-99', exp: 1622543413881 }
-  
-    console.log('accessTokenBody  ==========', accessTokenBody)
+    //1. ПРОВЕРКИ access-токена:
+    //Проверяем ДЕФОРМИРОВАННОСТЬ и ПРОСРОЧЕННОСТЬ токена:
+    // НЕдеформированный и НЕпросроченный-{ login: '(999) 999-99-99', exp: 1622543413881 },
+    // деформированный-{ login: '0', exp: body.exp },
+    // просроченный-{ login: body.login, exp: 0 }.
+    accessTokenBody = AuthService.checkAccessTokenForSolid(accessToken)      //return тело токена
+    isAccessTokenAlive = Boolean(accessTokenBody.exp)
     
-    //проверяем идентичность полученного accessToken'a с серверным эталоном (при отсутствии деформации токена)
-    if (accessTokenBody.login !== '0')
-      await AuthService.checkAccessTokenForMatch(accessToken, accessTokenBody)                //ЗАПАЗДЫВАЕТ
+    
+    //Если accessToken - недеформированный, то дополнительно
+    //проверяем ИДЕНТИЧНОСТЬ accessToken'a с серверным эталоном.
+    if (accessTokenBody.login !== '0') {
+      await AuthService.checkAccessTokenForMatch(accessToken, accessTokenBody)   //login для поиска аккаунта берем из accessTokenBody.
         .then(accessTokenValidation => {
           isAccessTokenMatched = accessTokenValidation
-          console.log('accessTokenValidation ==========', accessTokenValidation)
         })
+    }
+    else {
+    //2с. Если accessToken - деформированный.
+      //<<<<<<<<<<<<<< СОВЕРШАЕМ LOGOUT(!) - ДОПИСАТЬ надо.
+      res.redirect('/a11n')
+      return
+    }
+    
+    //2. ДЕЙСТВИЯ на основании проверок:
+    //2а. Если accessToken недеформированный, непросроченный и идентичный - код идет дальше по общему сценарию.
+    //req.is_authorization будет равен true.
+    
+    //2b. Если accessToken недеформированный и идентичный, но ПРОСРОЧЕННЫЙ, то:
+    //2b-1. Поступил уже собственно запрос для восстановления accessToken'a.
+    //Запрос пропускаем.
+    //req.is_authorization здесь будет равен (true && false)=> false.
+    //В pl запроса будет {login: '', password: ''}.
+    
+    //2b-2. Поступил ПЕРВИЧНЫЙ какой-либо запрос на auth, но не на '/auth/authentication', - отправляем клиенту ошибку 401,
+    //далее интерсептор клиента получает ошибку и посылает запрос на восстановление accessToken"а (pl запроса будет - {login: '', password: ''}),
+    //Как только клиент получит восстановленный accessToken, то axios-интерсептор клиента повторяет неудавшийся запрос.
+    if (isAccessTokenMatched && !isAccessTokenAlive && !req.url.includes('authentication')) {
+      console.log('возвращаем ОШИБКУ 401 ==========')
+      res.status(401)
+      return
+    }
   }
   
-  //восстановление accessToken'a через refreshToken
-  // if (isAccessTokenMatched && (accessTokenBody.exp === 0)) {  //токен корректный, но просроченный
-  if (isAccessTokenMatched && (accessTokenBody.exp === 0)) {  //токен корректный, но просроченный
-    await touchAccount()   //фильтром для отбора аккаунта будет не логин, а refreshToken
-      .then(data => console.log('touchAccount = what is it? >>>>>>>>>>>>>>', data))
-  }
-  
-  
-  //в переменные запроса прописываем isAccessTokenMatched  => используем сессионную или аккаунтную корзину.
-  req.is_access_token = isAccessTokenMatched
-  console.log('req.is_access_token  ==============', req.is_access_token )
+  //запросы вне авторизации,
+  //запросы с авторизацией, accessToken - НЕдеформированный, идентичный и НЕпросроченный,
+  //запросы с авторизацией, accessToken - НЕдеформированный, идентичный, но ПРОСРОЧЕННЫЙ, но только на url('/auth/authentication').
+  //В переменные запроса прописываем is_authorization  => далее используем сессионную ИЛИ аккаунтную корзину.
+  req.is_authorization = isAccessTokenMatched && isAccessTokenAlive
+  console.log('req.is_authorization  ==============', req.is_authorization )
   
   next()
 })
@@ -89,7 +115,7 @@ app.delete("/basket", deleteProductAtBasket)
 //a12n (Authentication).
 //Префикс роутера "/api" обрезан в nginx'e.
 app.get("/identification/:login", identification)     //проверка наличия логина
-app.post("/authentication", touchAccount)     //for LOGIN, LOGOUT & create_account concurrently
+app.post("/authentication", touchAccount)     //for LOGIN, LOGOUT, create_account & for "восстановление accessToken'a через refreshToken" concurrently.
 
 
 //Запросы между сервисами, минуя nginx. (http://auth:3002/api/user_kola)

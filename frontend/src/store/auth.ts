@@ -33,18 +33,11 @@ export default {
     }
   } as MutationTree<AuthState>,
   actions: {
-    async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {    //for LOGIN, LOGOUT & create_account concurrently
-      function getCookie (name: String): String {
-        let matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
-        return matches ? decodeURIComponent(matches[1]) : ''
-      }
-      console.log('getCookie ====', getCookie('connect.sid'))
-      
-      //мы обращаемся к серверу auth-сервиса, но к нему с помощью куки не будет посылаться connect.sid, ибо он предназначен ДЛЯ api-сервиса.
-      //поэтому забираем значение куки - из броузера, и шлем connect.sid-куку via pl для auth-сервиса.
-      //connect.sid потребуется auth-сервису, когда он будет забирать из api-сервиса сессионную корзину.
-      return await axios.post('auth/authentication', {login, password, connectSidCookie: getCookie('connect.sid')})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
-        .then(({data}) => {                                                                                                         //data = {login, accessToken, userData}
+    //for LOGIN, LOGOUT & create_account concurrently AND
+    //for "восстановление accessToken'a через refreshToken"(в pl запроса будет {login: '', password: ''}).
+    async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {
+      return await axios.post('auth/authentication', {login, password})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
+        .then(({data}) => {                                                                                               //data = {login, accessToken, userData}
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})
           commit('SET_BASKET', data.userData.basket)
           return data   //не востребован. Нужен только, что бы тайпскрипт не выпендривался. ))

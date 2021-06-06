@@ -42,28 +42,31 @@ module.exports.putProductToBasket = async (req, res) => {
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
-  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
-    assert.equal(err, null);
-    return basket
-  })
-    .then(async basket => {
-      if (req.query._id === 'all') {
-        basket.basketPoints = []
-      } else {
-        let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
-        if (productPointIndex > -1)
-          basket.basketPoints.splice(productPointIndex, 1)
-      }
-      
-      await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
-        console.log(err)
-      })
-    })
-    .catch(error => {
-      console.log('deleteProductAtBasket ====== ', error)
-    })
+  // await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+  //   assert.equal(err, null);
+  //   return basket
+  // })
+  //   .then(async basket => {
+  //     if (req.query._id === 'all') {
+  //       basket.basketPoints = []
+  //     } else {
+  //       let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
+  //       if (productPointIndex > -1)
+  //         basket.basketPoints.splice(productPointIndex, 1)
+  //     }
+  //
+  //     await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+  //       console.log(err)
+  //     })
+  //   })
+  //   .catch(error => {
+  //     console.log('deleteProductAtBasket ====== ', error)
+  //   })
+  //
+  // res.sendStatus(200)
   
-  res.sendStatus(200)
+  // res.sendStatus(401).send(`ПРИВЕТ !`)
+  res.sendStatus(401).statusText(`ПРИВЕТ !`)
 }
 
 module.exports.retrieveSessionBasket = (sessionID) => new Promise(resolve => {
