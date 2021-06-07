@@ -28,24 +28,26 @@ module.exports.identification = async (req, res) => {
 //for LOGIN, LOGOUT(when "password: false", а req.is_authorization = true) & create_account concurrently AND
 //for "восстановление accessToken'a через refreshToken" (в pl запроса будет {login: '', password: ''}).
 module.exports.touchAccount = async (req, res) => {
-  let password, filter
   let login = req.body.login   // при LOGIN, LOGOUT & create_account - имеет значение, при "восстановлении accessToken'a" - login = ''.
+  let password = req.body.password
+  let filter
   let sessionID = req.sessionID
   let currentRefreshToken = ''
   
-  //a. for LOGIN, LOGOUT & create_account.
+  console.log('touchAccount 1 , req.body ============', req.body)
+  
+  //a. for LOGIN, LOGOUT({login: '999-99-99', password: ''}) & create_account. NOT for refreshing tokens.
   // Аккаунт ищем по значению login & password.
   // req.is_authorization задается в express/index.js/app.use().
-  if (!req.is_authorization) {
-    password = req.body.password
-    
-    //формируем фильтр для поиска аккаунта
-    filter = {login}         //filter = {login: login, password: password}, причем поле "password" может отсутствовать.
-    if (password)            //если password=false, то здесь имеет место LOGOUT, ищем аккаунт без проверки паспорта.
-      filter.password = req.body.password
+  if (login) {
+    filter = {login}         //filter = {login: login}
   } else {
-    //b. for refreshing token.
-    // Аккаунт ищем по значению refreshToken'a.
+  //b. for refreshing token.
+  // Аккаунт ищем по значению refreshToken'a.
+  
+  
+    console.log('req.headers.cookie ==!!!!=====', req.headers.cookie,)
+    
     currentRefreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
     
     if (currentRefreshToken) {
@@ -65,22 +67,22 @@ module.exports.touchAccount = async (req, res) => {
     return account
   })
     .then(async account => {
-      console.log('account =======', account)
-      
-      //в случае, когда речь идет о заходе в аккаунт для восстановления accessToken'a, проверяем непросроченность refreshToken'a и его идентичность эталонному
-      if(req.is_authorization && currentRefreshToken) {
+      console.log('account, который нашли в bd, =======', account)
+      //если восстановливаем accessToken, то проверяем непросроченность refreshToken'a и его идентичность эталонному
+      if(!login && currentRefreshToken) {
         let currentRefreshTokenValid = AuthService.checkRefreshToken(account.refreshToken, currentRefreshToken)
         
         if(!currentRefreshTokenValid) {  //currentRefreshToken невалидный
-          res.redirect('/a11n').end()
+          res.redirect('/a11n')
           return
         }
       }
       
       let accessToken = (password || currentRefreshToken) ? AuthService.createAccessToken(login) : ''  //присуждаем значение только при login(будет присутствовать паспорт), а при logout - обнуляем их.
       let refreshToken = (password || currentRefreshToken) ? AuthService.createRefreshToken() : ''
-      
-      if ((account == null) && !currentRefreshToken) {       //если аккаунта нет(и это - не восстановление токенов), то создаем его, вписав в него токены.
+  
+      //если аккаунта нет(и это - не восстановление токенов), то создаем его, вписав в него токены.
+      if ((account == null) && login) {
         account = new authModel({
           login,
           password,
@@ -90,15 +92,29 @@ module.exports.touchAccount = async (req, res) => {
             basket: []
           }
         })
-      } else {        //если аккаунт есть, то обновляем аккаунт, вписав в него токены.
-        account.accessToken = accessToken
-        account.refreshToken = refreshToken
+      } else {
+        //если аккаунт есть, то
+        //a) если в запросе password - не указан, т.е. здесь LOGOUT
+        if(!password) {
+          account.accessToken = ''
+          account.refreshToken = ''
+        } else if (account.password === password) {
+        //b) проверяем идентичность паспорта и далее обновляем аккаунт, вписав в него токены.
+          account.accessToken = accessToken
+          account.refreshToken = refreshToken
+        } else {
+        //несовпадение паспорта с эталоном
+          console.warn('>>>>>>>> password is wrong!', account.password, ' =/= ', password)
+          //to redirect сделать надо, + надо к редиректу добавить отсыл объяснение причины.
+          return
+        }
       }
       
       //добавляем СЕССИОННУЮ КОРЗИНУ в аккаунтную корзину,
-      //exactly for LOGIN & create_account (в этом случае будет присутствовать password), а так же при восстановлении просроченного токена.
-      //sessionID добавлено в условие для подстраховки, ибо далее мы забираем сессионную корзину, опираясь на именно sessionID.
-      if ((password || currentRefreshToken) && sessionID) {
+      //exactly for LOGIN & create_account (в этом случае будет присутствовать login+password), а так же при восстановлении просроченного токена(login'a нет),
+      //не для logout(есть login, но нет password),
+      //sessionID добавлено для подстраховки, ибо далее мы забираем сессионную корзину, опираясь на именно sessionID.
+      if (((login && password) || !login) && sessionID) {
         await retrieveSessionBasket(sessionID)
           .then(retrievedBasket => {
             account.userData.basket.push(...retrievedBasket.basketPoints)
@@ -110,6 +126,8 @@ module.exports.touchAccount = async (req, res) => {
         if (err) throw err;
       })
       
+      console.log('ACCOUNT to save ===========', account)
+      
       // генерируем refreshToken-куку
       res.cookie('refreshToken', refreshToken, {
         // maxAge: 3600000 * 24,                                          // 3600000ms * 24 = 24 часа
@@ -120,20 +138,12 @@ module.exports.touchAccount = async (req, res) => {
         // path: '/auth'
       })
       
-      
-      //когда происходит рефреш токенов мы это обозначаем для отработки этой части респонса в axios-интерсепторе на клиенте.
-      let isRefreshing = false
-      
-      if(currentRefreshToken)
-        isRefreshing = true
-      
       //RESPONSE
       //сообщаем accessToken,
       //возвращаем обновленную корзину: сессионная + аккаунтная корзины, а при logout - возвращаем пустой [].
       res.send({
-        isRefreshing,
         login,
-        accessToken,       //КАК этот ответ воспримиться при восстановлении токенов ???????????
+        accessToken,
         userData: {
           basket: password ? account.userData.basket : []
         }

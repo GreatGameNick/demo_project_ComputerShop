@@ -94,7 +94,7 @@ export default Vue.extend({
       if(!this.GET_IS_AUTHORIZATION) {
         this.$router.push('/a11n')
       } else {    //for LOGOUT. Stigma - "password: false".
-        this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: false})
+        this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: ''})
         .then(() => {
           if(this.$route.path === '/person')
             this.$router.push('/')

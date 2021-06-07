@@ -42,6 +42,9 @@ module.exports.putProductToBasket = async (req, res) => {
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
+  res.sendStatus(401)
+  
+  
   // await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
   //   assert.equal(err, null);
   //   return basket
@@ -64,9 +67,6 @@ module.exports.deleteProductAtBasket = async (req, res) => {
   //   })
   //
   // res.sendStatus(200)
-  
-  // res.sendStatus(401).send(`ПРИВЕТ !`)
-  res.sendStatus(401).statusText(`ПРИВЕТ !`)
 }
 
 module.exports.retrieveSessionBasket = (sessionID) => new Promise(resolve => {
@@ -75,7 +75,7 @@ module.exports.retrieveSessionBasket = (sessionID) => new Promise(resolve => {
     
     if (sessionBasket)
       resolve(sessionBasket)
-    else               //если авторизуемся - сразу, т.е. не отбирая до этого товар в СЕССИОННУЮ корзину.
+    else               //если пользователь, зайдя на сайт, сразу авторизуется, предварительно не отбирая товар в СЕССИОННУЮ корзину.
       resolve({basketPoints: []})
   })
 })

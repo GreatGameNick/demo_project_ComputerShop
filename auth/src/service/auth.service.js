@@ -24,7 +24,8 @@ module.exports.AuthService = class AuthService {
   
   
   static createRefreshToken() {
-    return (Date.now() + 60 * 24 * 60 * 60 * 1000) + '^' + crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
+    return (Date.now() + 60 * 24 * 60 * 60 * 1000) + '.' + crypto.randomBytes(20).toString('base64').replace(/\W/g, '')
+    //в роли разделителя можно использовать ТОЛЬКО точку. Другие знаки заменяются в хедере на '%', и далее поиск по идентичности - не проходит.
   }
   
   static pullOutAccessTokenBody (accessToken) {

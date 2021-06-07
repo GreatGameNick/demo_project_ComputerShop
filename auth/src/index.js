@@ -43,12 +43,15 @@ app.use(session({
 }))
 
 
+
+
+
 //проверка accessToken'a
 app.use(async (req, res, next) => {
   let accessToken = req.headers.accesstoken
-  let accessTokenBody = ''             //{ login: '(999) 999-99-99', exp: 1622543413881 }
+  let accessTokenBody = ''             //что бы узнать значение логина, { login: '(999) 999-99-99', exp: 1622543413881 }
   let isAccessTokenMatched = false    //accessToken идентичный И недеформированный. Просроченность здесь не обсуждается.
-  let isAccessTokenAlive = false      //accessToken НЕпросроченный.
+  let isAccessTokenAlive = false      //accessToken НЕпросроченный - true/false.
   
   if (accessToken) {
     //1. ПРОВЕРКИ access-токена:
@@ -80,14 +83,14 @@ app.use(async (req, res, next) => {
     //req.is_authorization будет равен true.
     
     //2b. Если accessToken недеформированный и идентичный, но ПРОСРОЧЕННЫЙ, то:
-    //2b-1. Поступил уже собственно запрос для восстановления accessToken'a.
+    //2b-1. Поступил уже собственно запрос для ВОССТАНОВЛЕНИЯ accessToken'a, '/auth/authentication'.
     //Запрос пропускаем.
     //req.is_authorization здесь будет равен (true && false)=> false.
     //В pl запроса будет {login: '', password: ''}.
     
     //2b-2. Поступил ПЕРВИЧНЫЙ какой-либо запрос на auth, но не на '/auth/authentication', - отправляем клиенту ошибку 401,
-    //далее интерсептор клиента получает ошибку и посылает запрос на восстановление accessToken"а (pl запроса будет - {login: '', password: ''}),
-    //Как только клиент получит восстановленный accessToken, то axios-интерсептор клиента повторяет неудавшийся запрос.
+    //далее axios-интерсептор клиента получает ошибку и посылает запрос на восстановление accessToken'а (pl запроса будет - {login: '', password: ''}),
+    //Как только клиент получит восстановленный accessToken, то axios-интерсептор повторяет неудавшийся запрос.
     if (isAccessTokenMatched && !isAccessTokenAlive && !req.url.includes('authentication')) {
       console.log('возвращаем ОШИБКУ 401 ==========')
       res.status(401)
@@ -95,15 +98,22 @@ app.use(async (req, res, next) => {
     }
   }
   
-  //запросы вне авторизации,
-  //запросы с авторизацией, accessToken - НЕдеформированный, идентичный и НЕпросроченный,
-  //запросы с авторизацией, accessToken - НЕдеформированный, идентичный, но ПРОСРОЧЕННЫЙ, но только на url('/auth/authentication').
+  //Сюда проходят:
+  //- запросы вне авторизации,
+  //- запросы с авторизацией, accessToken - НЕдеформированный, идентичный и НЕпросроченный,
+  //- запросы с авторизацией, accessToken - НЕдеформированный, идентичный, но ПРОСРОЧЕННЫЙ, причем только на url('/auth/authentication').
   //В переменные запроса прописываем is_authorization  => далее используем сессионную ИЛИ аккаунтную корзину.
   req.is_authorization = isAccessTokenMatched && isAccessTokenAlive
   console.log('req.is_authorization  ==============', req.is_authorization )
   
   next()
 })
+
+
+
+
+
+
 
 
 //basket
