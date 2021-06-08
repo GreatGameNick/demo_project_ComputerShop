@@ -13,7 +13,6 @@ const treatAccessTokenInterceptor = store => async config => {
     console.log('config.url "NO_/auth-path", "NO_accessToken" =====', config.url)
     return config
   }
-  
   //иначе - проверяем accessToken на просроченность, только.
   
   // Сценарий честного поведения клиента - проверяем только просроченность access-токена.
@@ -21,8 +20,10 @@ const treatAccessTokenInterceptor = store => async config => {
   let tokenRecoveryPromise = null
   let tokenExp = AuthUtils.pullOutAccessTokenBody.exp   //exp берем из дешифрованного тела токена { login: '(999) 999-99-99', exp: 1622532886941 }
   
-  //если accessToken просрочен => восстанавливаем его
-  if (Date.now() > tokenExp) {
+  //если accessToken просрочен => восстанавливаем его.
+  // Но ТОЛЬКО НЕ ПРИ ЗАПРОСАХ НА 'auth/authentication', не для TOUCH_ACCOUNT(!),
+  // что бы исключить зацикливание, когда TOUCH_ACCOUNT направлен на восстановление токенов.
+  if (!config.url.includes('auth/authentication') && (Date.now() > tokenExp)) {
     //посылаем запрос для восстановления access-токена с помощью refresh-токена,
     //в результате запроса обновленный accessToken пропишеться в сторе.
     tokenRecoveryPromise = store.dispatch('TOUCH_ACCOUNT', {login: '', password: ''})   //for "восстановление accessToken'a через refreshToken"

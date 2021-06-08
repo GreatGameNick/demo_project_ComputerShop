@@ -74,7 +74,8 @@ app.use(async (req, res, next) => {
     else {
     //2с. Если accessToken - деформированный.
       //<<<<<<<<<<<<<< СОВЕРШАЕМ LOGOUT(!) - ДОПИСАТЬ надо.
-      res.redirect('/a11n')
+      console.log('==здесь дб команда на логаут <<<<<<<<<<<<<<<<<<<')
+      // res.redirect('/a11n')
       return
     }
     
@@ -92,7 +93,7 @@ app.use(async (req, res, next) => {
     //далее axios-интерсептор клиента получает ошибку и посылает запрос на восстановление accessToken'а (pl запроса будет - {login: '', password: ''}),
     //Как только клиент получит восстановленный accessToken, то axios-интерсептор повторяет неудавшийся запрос.
     if (isAccessTokenMatched && !isAccessTokenAlive && !req.url.includes('authentication')) {
-      console.log('возвращаем ОШИБКУ 401 ==========')
+      console.log('app.use(), возвращаем ОШИБКУ 401 ==========')
       res.status(401)
       return
     }

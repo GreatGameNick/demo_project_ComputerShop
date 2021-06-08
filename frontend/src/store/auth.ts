@@ -30,12 +30,16 @@ export default {
         }
       }
       state.accessTokenClosure = data.accessToken ? closure(data.accessToken) : null
+      
+      console.log('STORE/SET_AUTH , data.accessToken ====', data.accessToken)
+      
     }
   } as MutationTree<AuthState>,
   actions: {
     //for LOGIN, LOGOUT & create_account concurrently AND
     //for "восстановление accessToken'a через refreshToken"(в pl запроса будет {login: '', password: ''}).
     async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {
+      console.log('STORE/ TOUCH_ACCOUNT, {login, password} = ', {login, password})
       return await axios.post('auth/authentication', {login, password})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
         .then(({data}) => {                                                                                               //data = {login, accessToken, userData}
           commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})

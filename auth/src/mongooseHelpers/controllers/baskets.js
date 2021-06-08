@@ -42,31 +42,30 @@ module.exports.putProductToBasket = async (req, res) => {
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
-  res.sendStatus(401)
+  console.log('req.is_authorization/BASKET ===>', req.is_authorization)
   
-  
-  // await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
-  //   assert.equal(err, null);
-  //   return basket
-  // })
-  //   .then(async basket => {
-  //     if (req.query._id === 'all') {
-  //       basket.basketPoints = []
-  //     } else {
-  //       let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
-  //       if (productPointIndex > -1)
-  //         basket.basketPoints.splice(productPointIndex, 1)
-  //     }
-  //
-  //     await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
-  //       console.log(err)
-  //     })
-  //   })
-  //   .catch(error => {
-  //     console.log('deleteProductAtBasket ====== ', error)
-  //   })
-  //
-  // res.sendStatus(200)
+  await BasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+    assert.equal(err, null);
+    return basket
+  })
+    .then(async basket => {
+      if (req.query._id === 'all') {
+        basket.basketPoints = []
+      } else {
+        let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
+        if (productPointIndex > -1)
+          basket.basketPoints.splice(productPointIndex, 1)
+      }
+
+      await BasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+        console.log(err)
+      })
+    })
+    .catch(error => {
+      console.log('deleteProductAtBasket ====== ', error)
+    })
+
+  res.sendStatus(200)
 }
 
 module.exports.retrieveSessionBasket = (sessionID) => new Promise(resolve => {

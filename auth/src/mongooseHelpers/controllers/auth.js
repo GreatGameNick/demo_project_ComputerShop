@@ -44,17 +44,14 @@ module.exports.touchAccount = async (req, res) => {
   } else {
   //b. for refreshing token.
   // Аккаунт ищем по значению refreshToken'a.
-  
-  
-    console.log('req.headers.cookie ==!!!!=====', req.headers.cookie,)
-    
     currentRefreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
     
     if (currentRefreshToken) {
       filter = {refreshToken: currentRefreshToken}  //фильтром для отбора аккаунта будет не логин, а refreshToken
     }
     else {
-      res.redirect('/a11n')
+      console.log('05 <<<<<<<<<<<<<<<<<<<')
+      // res.redirect('/a11n')
       return
     }
   }
@@ -73,7 +70,8 @@ module.exports.touchAccount = async (req, res) => {
         let currentRefreshTokenValid = AuthService.checkRefreshToken(account.refreshToken, currentRefreshToken)
         
         if(!currentRefreshTokenValid) {  //currentRefreshToken невалидный
-          res.redirect('/a11n')
+          console.log('==06 <<<<<<<<<<<<<<<<<<<')
+          // res.redirect('/a11n')
           return
         }
       }
@@ -151,7 +149,7 @@ module.exports.touchAccount = async (req, res) => {
     })
     .catch(error => {   //ошибка при поиске аккаунта.
       console.log('error_during_the_finding_account = ', error)
-      res.redirect('/a11n')
+      // res.redirect('/a11n')
     })
 }
 
