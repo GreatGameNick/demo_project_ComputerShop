@@ -92,8 +92,6 @@ module.exports.deleteProductAtBasket = async (req, res) => {
   if(login) {
     await authModel.findOne({login}, function (err, account) {
       assert.equal(err, null)
-  
-      console.log('01 findOne_account =====', account)
       return account
     })
       .then(async account => {
@@ -104,29 +102,14 @@ module.exports.deleteProductAtBasket = async (req, res) => {
           if (productPointIndex > -1)
             account.userData.basket.splice(productPointIndex, 1)
         }
-  
-        console.log('02 delete_at_account =====', account)
-  
+        
         await authModel.updateOne({login}, {userData: {basket: account.userData.basket}}, function (err, res) {
           console.log(err)
         })
-        
       })
       .catch(error => {
-        console.log('deleteProductAtBasket ====== ', error)
+        console.log('error deleteProductAtBasket ====== ', error)
       })
-  
-  //ПРОВЕРКА
-    await authModel.findOne({login}, function (err, account) {
-      assert.equal(err, null);
-      return account
-    })
-      .then(account => console.log('03 ACCOUNT_after_save_ProductAtBasket ==========', account))
-  
-  
-    
-    
-    
   } else {
     await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
       assert.equal(err, null);
