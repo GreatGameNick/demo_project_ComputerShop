@@ -104,7 +104,6 @@ app.use(async (req, res, next) => {
     req.authorizedLogin = ''
   
   console.log('req.authorizedLogin  ==============', req.authorizedLogin )
-  
   next()
 })
 

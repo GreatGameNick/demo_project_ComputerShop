@@ -20,14 +20,7 @@ module.exports.getBasket = async (req, res) => {
       return account.userData.basket
     })
       .then(basket => res.send(basket))
-  
-  
-    //сохраняем изменения аккаунта
-    // await account.save(function (err, account) {
-    //   if (err) throw err;
-    // })
-  
-  
+    
   //пользователь НЕ авторизован - используем сессионную корзину.
   } else {
     await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
@@ -39,55 +32,123 @@ module.exports.getBasket = async (req, res) => {
 }
 
 module.exports.putProductToBasket = async (req, res) => {
-  await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
-    assert.equal(err, null);
-    return basket
-  })
-    .then(async basket => {
-      if (!basket) {
-        const basketInstance = new SessionBasketModel({
-          sessionID: req.sessionID,
-          createdDate: Date.now(),
-          basketPoints: [{
-            shelf: req.body.shelf,
-            _id: req.body._id
-          }]
+  let login = req.authorizedLogin
+  
+  if(login) {
+    await authModel.findOne({login}, function (err, account) {
+      assert.equal(err, null)
+      return account
+    })
+      .then(account => {
+        account.userData.basket.push({
+          shelf: req.body.shelf,               // <<<<< ЭТО ЗАДАВАТЬ ЧЕРЕЗ КОНСТРУКТОР(!)
+          _id: req.body._id
         })
-        await basketInstance.save()
-      } else {
-        basket.basketPoints.push({shelf: req.body.shelf, _id: req.body._id})
-        await SessionBasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+        return account
+      })
+      .then(async account => {
+        await authModel.updateOne({login}, {userData: {basket: account.userData.basket}}, function (err, res) {
           console.log(err)
         })
-      }
+        
+        // await account.save(function (err, account) {     //  NO WORKING
+        //   if (err) throw err;
+        // })
+      })
+  
+  
+    
+    
+  } else {
+    await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+      assert.equal(err, null);
+      return basket
     })
+      .then(async basket => {
+        if (!basket) {
+          const basketInstance = new SessionBasketModel({
+            sessionID: req.sessionID,
+            createdDate: Date.now(),
+            basketPoints: [{
+              shelf: req.body.shelf,
+              _id: req.body._id
+            }]
+          })
+          await basketInstance.save()
+        } else {
+          basket.basketPoints.push({shelf: req.body.shelf, _id: req.body._id})
+          await SessionBasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+            console.log(err)
+          })
+        }
+      })
+  }
   res.sendStatus(200)
 }
 
 module.exports.deleteProductAtBasket = async (req, res) => {
-  console.log('req.is_authorization/BASKET ===>', req.is_authorization)
+  let login = req.authorizedLogin
   
-  await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
-    assert.equal(err, null);
-    return basket
-  })
-    .then(async basket => {
-      if (req.query._id === 'all') {
-        basket.basketPoints = []
-      } else {
-        let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
-        if (productPointIndex > -1)
-          basket.basketPoints.splice(productPointIndex, 1)
-      }
-
-      await SessionBasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
-        console.log(err)
+  if(login) {
+    await authModel.findOne({login}, function (err, account) {
+      assert.equal(err, null)
+  
+      console.log('01 findOne_account =====', account)
+      return account
+    })
+      .then(async account => {
+        if (req.query._id === 'all') {
+          account.userData.basket = []
+        } else {
+          let productPointIndex = account.userData.basket.findIndex(item => item._id.toString() === req.query._id)
+          if (productPointIndex > -1)
+            account.userData.basket.splice(productPointIndex, 1)
+        }
+  
+        console.log('02 delete_at_account =====', account)
+  
+        await authModel.updateOne({login}, {userData: {basket: account.userData.basket}}, function (err, res) {
+          console.log(err)
+        })
+        
       })
+      .catch(error => {
+        console.log('deleteProductAtBasket ====== ', error)
+      })
+  
+  //ПРОВЕРКА
+    await authModel.findOne({login}, function (err, account) {
+      assert.equal(err, null);
+      return account
     })
-    .catch(error => {
-      console.log('deleteProductAtBasket ====== ', error)
+      .then(account => console.log('03 ACCOUNT_after_save_ProductAtBasket ==========', account))
+  
+  
+    
+    
+    
+  } else {
+    await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+      assert.equal(err, null);
+      return basket
     })
-
+      .then(async basket => {
+        if (req.query._id === 'all') {
+          basket.basketPoints = []
+        } else {
+          let productPointIndex = basket.basketPoints.findIndex(item => item._id.toString() === req.query._id)
+          if (productPointIndex > -1)
+            basket.basketPoints.splice(productPointIndex, 1)
+        }
+      
+        await SessionBasketModel.updateOne({sessionID: req.sessionID}, {basketPoints: basket.basketPoints}, function (err, res) {
+          console.log(err)
+        })
+      })
+      .catch(error => {
+        console.log('deleteProductAtBasket ====== ', error)
+      })
+  }
   res.sendStatus(200)
 }
 

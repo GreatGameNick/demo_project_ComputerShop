@@ -10,7 +10,7 @@ module.exports.AuthService = class AuthService {
     let body = Buffer.from(JSON.stringify(
       {
         login,
-        exp: Date.now() + 7 * 1000   // +(30 * 60 * 1000) = +30min
+        exp: Date.now() + 30 * 60 * 1000   // +(30 * 60 * 1000) = +30min
       }
     )).toString('base64')        //кодирование, но НЕ шифрование
     
