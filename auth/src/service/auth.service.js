@@ -35,7 +35,7 @@ module.exports.AuthService = class AuthService {
   
   
   //проверка ликвидности accessToken'a - его деформированность и просроченность
-  static checkAccessTokenForSolid(accessToken) {  //accessToken = 'Bearer eyJhbGcI6Imp3dCJ9.Iig5OTkp05OS05OSI=./LkG6veVVaOpcPu3cUxe0='
+  static checkAccessTokenForSolidAndRepresentTokenBody(accessToken) {  //accessToken = 'Bearer eyJhbGcI6Imp3dCJ9.Iig5OTkp05OS05OSI=./LkG6veVVaOpcPu3cUxe0='
     let tokenParts = accessToken.split(' ')[1].split('.')
     
     //проверяем недеформированность токена - хеадер и тело продолжают формировать такую же подпись, которой этот же токен подписан.

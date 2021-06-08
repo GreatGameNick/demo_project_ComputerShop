@@ -53,7 +53,7 @@ app.use(async (req, res, next) => {
     // НЕдеформированный и НЕпросроченный-{ login: '(999) 999-99-99', exp: 1622543413881 },
     // деформированный-{ login: '0', exp: body.exp },
     // просроченный-{ login: body.login, exp: 0 }.
-    accessTokenBody = AuthService.checkAccessTokenForSolid(accessToken)      //return тело токена
+    accessTokenBody = AuthService.checkAccessTokenForSolidAndRepresentTokenBody(accessToken)      //return тело токена, { login: '(999) 999-99-99', exp: 1622543413881 }.
     isAccessTokenAlive = Boolean(accessTokenBody.exp)
     
     
@@ -96,10 +96,14 @@ app.use(async (req, res, next) => {
   //Сюда проходят:
   //- запросы вне авторизации,
   //- запросы с авторизацией, accessToken - НЕдеформированный, идентичный и НЕпросроченный,
-  //- запросы с авторизацией, accessToken - НЕдеформированный, идентичный, но ПРОСРОЧЕННЫЙ, причем только на url('/auth/authentication').
-  //В переменные запроса прописываем is_authorization  => далее используем сессионную ИЛИ аккаунтную корзину.
-  req.is_authorization = isAccessTokenMatched && isAccessTokenAlive
-  console.log('req.is_authorization  ==============', req.is_authorization )
+  //- запросы с авторизацией, accessToken - НЕдеформированный, идентичный, но ПРОСРОЧЕННЫЙ, причем пропускаем запросы только на url('/auth/authentication').
+  //В переменные запроса прописываем authorizedLogin  => далее используем сессионную ИЛИ аккаунтную корзину.
+  if(isAccessTokenMatched && isAccessTokenAlive)
+    req.authorizedLogin = accessTokenBody.login
+  else
+    req.authorizedLogin = ''
+  
+  console.log('req.authorizedLogin  ==============', req.authorizedLogin )
   
   next()
 })
