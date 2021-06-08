@@ -9,13 +9,7 @@ const {connectDb} = require("./mongooseHelpers/db")
 const {authModel} = require("./mongooseHelpers/models/auth")
 const {initialAccounts} = require("../initialData/initialAccounts")
 
-
-const {
-  putProductToBasket,
-  deleteProductAtBasket,
-  getBasket,
-  retrieveSessionBasket
-} = require("./mongooseHelpers/controllers/baskets")
+const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/anyBaskets")
 const {identification, touchAccount} = require("./mongooseHelpers/controllers/auth")
 const {AuthService} = require('./service/auth.service')
 

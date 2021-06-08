@@ -38,7 +38,7 @@ module.exports.AuthService = class AuthService {
   static checkAccessTokenForSolid(accessToken) {  //accessToken = 'Bearer eyJhbGcI6Imp3dCJ9.Iig5OTkp05OS05OSI=./LkG6veVVaOpcPu3cUxe0='
     let tokenParts = accessToken.split(' ')[1].split('.')
     
-    //проверяем недеформированность токена - хеадер и тело продолжают формировать такую же подпись, которой и подписан токен
+    //проверяем недеформированность токена - хеадер и тело продолжают формировать такую же подпись, которой этот же токен подписан.
     let signature = crypto
       .createHmac('SHA256', accessTokenKey)
       .update(`${tokenParts[0]}.${tokenParts[1]}`)
@@ -87,5 +87,5 @@ module.exports.AuthService = class AuthService {
 }
 
 
-// # axios- запросы, что бы куки отправлялись.
-// axios.get('url', {withCredentials: true})
+
+

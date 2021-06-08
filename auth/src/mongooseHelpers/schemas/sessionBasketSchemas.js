@@ -5,7 +5,7 @@ const basketPointsSchema = new mongoose.Schema({
   _id: String
 })
 
-module.exports.basketSchema = new mongoose.Schema({
+module.exports.sessionBasketSchema = new mongoose.Schema({
   sessionID: String,
   createdAt: {
     default: Date.now(),
