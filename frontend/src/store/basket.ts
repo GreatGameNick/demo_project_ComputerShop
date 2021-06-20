@@ -114,7 +114,7 @@ const actions = {
   //изменяем в корзине количество единиц выбранного товара
   async MOVE_THE_BASKET_PRODUCT({state, commit, getters}, {shelf, _id, vector}: BasketMovement): Promise<void> {
     if (vector > 0) {
-      await axios.put(`auth/basket`, {shelf, _id}, getters.GET_AXIOS_CONFIG)
+      await axios.put(`/auth/basket`, {shelf, _id}, getters.GET_AXIOS_CONFIG)
         .then(response => {
           if (response.status === 200)
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
@@ -123,7 +123,7 @@ const actions = {
       let config = getters.GET_AXIOS_CONFIG
       config.params._id = _id        //_id мы получаем на сервере как req.query._id
       
-      await axios.delete(`auth/basket`, config)
+      await axios.delete(`/auth/basket`, config)
         .then(response => {
           if (response.status === 200)
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
@@ -134,7 +134,7 @@ const actions = {
     let config = getters.GET_AXIOS_CONFIG
     config.params._id = 'all'
     
-    await axios.delete(`auth/basket`, config)
+    await axios.delete(`/auth/basket`, config)
       .then(response => {
         if (response.status === 200)
           commit('DELETE_PRODUCTS_AT_BASKET')
