@@ -94,7 +94,7 @@ module.exports.touchAccount = async (req, res) => {
         })
       } else {
         //если аккаунт есть, то
-        //a) если в запросе password - не указан, т.е. здесь LOGOUT
+        //a) если в запросе password - не указан, т.е. здесь >LOGOUT<.
         if(!password) {
           account.accessToken = ''
           account.refreshToken = ''
@@ -104,8 +104,7 @@ module.exports.touchAccount = async (req, res) => {
           account.refreshToken = refreshToken
         } else {
         //несовпадение паспорта с эталоном
-          console.warn('>>>>>>>> password is wrong!', account.password, ' =/= ', password)
-          //to redirect сделать надо, + надо к редиректу добавить отсыл объяснение причины.
+          res.status(403).send({message: 'password is wrong'})
           return
         }
       }

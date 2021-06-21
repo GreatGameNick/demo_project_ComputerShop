@@ -41,15 +41,13 @@ export default {
     async TOUCH_ACCOUNT({commit}, {login, password}: Authentication): Promise<AuthData> {
       console.log('STORE/ TOUCH_ACCOUNT, {login, password} = ', {login, password})
       return await axios.post('auth/authentication', {login, password})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
-        .then(({data}) => {                                                                                               //data = {login, accessToken, userData}
-          commit('SET_AUTH', {accessToken: data.accessToken, userLogin: data.login})
-          commit('SET_BASKET', data.userData.basket)
-          return data   //не востребован. Нужен только, что бы тайпскрипт не выпендривался. ))
+        .then((data) => {                                            //data = {login, accessToken, userData}
+          console.log('TOUCH_ACCOUNT-RES-data =====', data)
+          
+          commit('SET_AUTH', {accessToken: data.data.accessToken, userLogin: data.data.login})
+          commit('SET_BASKET', data.data.userData.basket)
+          return data.data   //не востребован. Нужен только, что бы тайпскрипт не выпендривался. ))
         })
     },
-    ERROR_ORDER({commit}, {errorType, message}) {
-    
-    }
   } as ActionTree<AuthState, RootState>
 }
-

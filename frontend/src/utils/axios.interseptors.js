@@ -107,8 +107,12 @@ const updateTokensInterceptor = (store, http) => async error => {
   // if (!['Token_expired', 'Invalid_token'].includes(message)) {  //в случае, когда ошибка не связана с валидностью accessToken'a.
   //   return Promise.reject(error)
   // }
+  console.log('ERROR ========')
+  console.log('ERROR, error.response.data.message >>>>>>>>>', error.response.data.message)
+  
   
   if(error.response.status === 401) {   //"для доступа требуется аутентификация".
+    
     //посылаем запрос для восстановления access-токена via refresh-токен.
     console.log('updateTokensInterceptor - 401 ============')
     
@@ -123,11 +127,17 @@ const updateTokensInterceptor = (store, http) => async error => {
     return http(accessConfig)
   }
   
-  if(error.response.status === 403) {    //"есть ограничения в доступе": Невалидный access-токен при заросе на корзину. Невалидный refresh-токен при перезагрузке. Неверный пароль при login'e.
-    //принуждаем повторно пройти Идентификацию.
-    await router.push('/auth')    //делаем редирект на '/auth' и показываем алерт с объяснением причины.
-    // store.commit('SET_CLARIFICATION', 'поврежденный токен')   //  <<<<<< дописать надо
+  //"есть ограничения в доступе":
+  // - Невалидный access-токен при заросе на корзину.
+  // - Невалидный refresh-токен при перезагрузке.
+  // - Неверный пароль при login'e.
+  if(error.response.status === 403) {
+    console.log('ERROR_403 ========')
+  
+    //Описываем причину для алерта и принуждаем повторно пройти идентификацию.
+    store.commit('CLARIFICATION', error.response.data.message)
     // store.dispatch('REMOVE_AUTH_AT_LOCAL_STORAGE', 'authAccess')
+    await router.push('/auth')    //делаем редирект на '/auth' и показываем алерт с объяснением причины.    // Здесь router - импортирован(!), а не берется из this.$...
   }
 }
 
