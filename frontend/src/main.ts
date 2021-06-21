@@ -10,7 +10,6 @@ import {treatAccessToken, updateTokens} from './utils/axios.interseptors.js'
 Vue.config.productionTip = false
 // @ts-ignore
 Vue.use(Vuelidate)
-
 axios.interceptors.request.use(treatAccessToken)
 axios.interceptors.response.use(response => response, updateTokens)
 

@@ -93,17 +93,19 @@ export default Vue.extend({
     onSwitchAuth() {   //for LOGIN
       if(!this.GET_IS_AUTHORIZATION) {
         this.$router.push('/a11n')
-      } else {    //for LOGOUT. Stigma - "password: false".
+      } else {        //for LOGOUT. Stigma - "password: ''".
         this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: ''})
         .then(() => {
-          if(this.$route.path === '/person')
+          console.log('LOGOUT, this.$route.path ===============', this.$route.path)
+
+          if(this.$route.path === '/person' || this.$route.path === '/basket')
             this.$router.push('/')
         })
       }
     }
   },
   async created() {
-    if(!this.GET_IS_BASKET_POINTS)
+    if(!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
       await this.FETCH_BASKET_POINTS()
   }
 })

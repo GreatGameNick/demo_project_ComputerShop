@@ -46,6 +46,9 @@ export default {
           commit('SET_BASKET', data.userData.basket)
           return data   //не востребован. Нужен только, что бы тайпскрипт не выпендривался. ))
         })
+    },
+    ERROR_ORDER({commit}, {errorType, message}) {
+    
     }
   } as ActionTree<AuthState, RootState>
 }

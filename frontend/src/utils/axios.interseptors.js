@@ -1,50 +1,95 @@
 import store from '../store'
+import router from "@/router";
 import axios from "axios"
 import AuthUtils from './auth.utils'
 //https://qna.habr.com/q/519691
 
-//1. Валидация access-токина.
+//1. Предварительная валидация access-токена.
 const treatAccessTokenInterceptor = store => async config => {
-  let accessToken = store.getters.GET_ACCESS_TOKEN
+  let url = config.url
+  let accessToken = store.getters.GET_ACCESS_TOKEN      //по-умолчанию равен ''.
+  let isAuthAccess                                      //from LocalStorage, стигма о наличии (скрытой и недоступной для клиента) refresh-куки. Для перезагрузки в состоянии совершенного Login'a.
+  // await store.dispatch('GET_AUTH_AT_LOCAL_STORAGE', 'authAccess').then(authAccess => isAuthAccess = authAccess)      //actions возвращают return, ОБЕРНУТЫЙ в промис(!). await-обязателен(!).
   
-  //если запрос - не к "/auth", то всё - пропускаем, в хедер токен не прикрепляем.
-  //если обращение к 'auth' - первичное (запрос на аутентификацию - только отправляем, токен еще не получен), то тоже пропускаем, в хеадер записывать еще нечего.
-  if (!config.url.includes('auth') || !accessToken) {
-    console.log('config.url "NO_/auth-path", "NO_accessToken" =====', config.url)
+  console.log('front=interceptor, url = ', url)
+  console.log('front=interceptor, accessToken = ', accessToken)
+  console.log('front=interceptor, isAuthAccess = ', isAuthAccess)
+  
+  //1. отправляем запрос без изменений
+  //a) если запрос - не на "/auth".
+  //b) если запрос на "/auth", но к СЕССИОННОЙ карзине, т.е. когда НЕ к "/auth/authentication", а accessToken и isAuthAccess - отсутствуют.
+  //с) если обращение к "/auth/authentication"- первичное (когда только отправляем запрос на аутентификацию, create_accaunt), accessToken и isAuthAccess - отсутствуют.
+ // //d) если обращаемся к "/auth/authentication" в перезагрузе сайта + когда пользователь уже залогененый - accessToken нет, isAuthAccess - есть.
+ 
+ // // Важно:
+  // что бы запрос на восстановление не пошел в интерсепторе по пути, который вновь запускает action по восстановлениею accessToken'a.
+  // Когда мы перезагружаем сайт у залогиненного пользователя. accessToken- слетает, но refreshToken продолжает быть.
+  // Однако запросить из броузера refreshToken-куку - невозможно.
+  // Поэтому факт залогенности мы дополнительно фиксируем в LocalStorage- isAuthAccess (маркер наличия у пользователя refreshToken'a), и
+  // при наличии после перезагрузки сайта этого флага - мы запускаем восстановление access-токена.
+  
+  isAuthAccess = false   //присудил - на время, пока отключен код по восстановлению токенов при перезагрузке сайта в условиях уже осуществленного login'a.
+  
+  if(
+    !url.includes('auth') ||
+    (!url.includes('auth/authentication') && !accessToken && !isAuthAccess) ||
+    (url.includes('auth/authentication') && !accessToken && !isAuthAccess) ||
+    (url.includes('auth/authentication') && !accessToken && isAuthAccess)         //выражение можно упростить, но для наглядности оставляю его в развернутом виде
+  ) {
+    console.log('config.url withOut_token_revision =====', config.url)
     return config
   }
-  //иначе - проверяем accessToken на просроченность, только.
   
-  // Сценарий честного поведения клиента - проверяем только просроченность access-токена.
-  console.log('config.url "auth" =====', config.url)
+  //2. Добавляем accessToken в хедер.
+  // via
+  // проверяем accessToken
+  //Это случаи, когда:
+  //а) обращение к аккаунтной корзине или к accountData - путь НЕ к "/auth/authentication", есть accessToken и isAuthAccess.
+  // Когда accessToken НЕ просрочен, то прикрепляем его в хедер запроса.
+  // При просроченности accessToken:
+  // - запускаем action, который посылает запрос на восстановление токена
+  // - по приходу ответа сервера токены перезаписываются на клиенте.
+  // - всё это время интерсептор находиться в состоянии await
+  // - после завершения await action интерсептор повторяет(продолжает) неудавшейся запрос.
+  //b) LOGOUT.
+  
   let tokenRecoveryPromise = null
-  let tokenExp = AuthUtils.pullOutAccessTokenBody.exp   //exp берем из дешифрованного тела токена { login: '(999) 999-99-99', exp: 1622532886941 }
+  let tokenExp = AuthUtils.pullOutAccessTokenBody(accessToken).exp   //exp берем из дешифрованного тела токена { login: '(999) 999-99-99', exp: 1622532886941 }
   
-  //если accessToken просрочен => восстанавливаем его.
-  // Но ТОЛЬКО НЕ ПРИ ЗАПРОСАХ НА 'auth/authentication', не для TOUCH_ACCOUNT(!),
-  // что бы исключить зацикливание, когда TOUCH_ACCOUNT направлен на восстановление токенов.
-  if (!config.url.includes('auth/authentication') && (Date.now() > tokenExp)) {
-    //посылаем запрос для восстановления access-токена с помощью refresh-токена,
-    //в результате запроса обновленный accessToken пропишеться в сторе.
-    tokenRecoveryPromise = store.dispatch('TOUCH_ACCOUNT', {login: '', password: ''})   //for "восстановление accessToken'a через refreshToken"
-    await tokenRecoveryPromise
-    tokenRecoveryPromise = null
+  isAuthAccess = true   //присудил - на время, пока отключен код по восстановлению токенов при перезагрузке сайта в условиях уже осуществленного login'a.
   
-    //запрашиваем из Store ВОССТАНОВЛЕННЫЙ accessToken и прикрепляем его к хедеру запроса.
-    accessToken = store.getters.GET_ACCESS_TOKEN
-    console.log('treatAccessTokenInterceptor//восстановленный AccessToken в config"e =======', config)
-    return AuthUtils.attachAccessTokenToHeader(accessToken, config)
-  } else {
-    //accessToken - непросроченный. Добавляем его в хедер запроса.
-    return AuthUtils.attachAccessTokenToHeader(accessToken, config)
+  // запросы по манипуляциям с АККАУНТНОЙ корзиной или с accountData, или если запрашиваетсяlogout.
+  if(tokenExp && !config.url.includes('auth/authentication') && accessToken && isAuthAccess ||
+     tokenExp && config.url.includes('auth/authentication') && config.data.login && !config.data.password && accessToken && isAuthAccess
+  ) {
+    //проверяем просроченность access-токена
+    if(tokenExp < Date.now()) {    //a) access-токен - просрочен.
+      //посылаем запрос для восстановления access-токена с помощью refresh-токена,
+      //в результате запроса обновленный accessToken пропишеться в Store.
+      tokenRecoveryPromise = store.dispatch('TOUCH_ACCOUNT', {login: '', password: ''})   //for "восстановление accessToken'a через refreshToken"
+      await tokenRecoveryPromise
+      tokenRecoveryPromise = null
+      
+      //ПОВТОРНО запрашиваем из Store ВОССТАНОВЛЕННЫЙ accessToken и прикрепляем его к хедеру запроса и далее
+      //передаем в пролонгацию запроса config запроса с корректным AccessToken'ом в хедере.
+      accessToken = store.getters.GET_ACCESS_TOKEN
+      console.log('treatAccessTokenInterceptor//ВОССТАНОВЛЕННЫЙ AccessToken в config"e =======', config)
+      return AuthUtils.attachAccessTokenToHeader(accessToken, config)
+      
+    } else {                      //b) access-токен НЕ просрочен. Добавляем его в хедер запроса.
+      return AuthUtils.attachAccessTokenToHeader(accessToken, config)
+    }
   }
 }
 
 export const treatAccessToken = treatAccessTokenInterceptor(store)
 
-//2. На случай, когда в ответе приходит ошибка 401, нет авторизации.
+
+
+//2. На случай, когда в ответе приходит ошибка 401, ошибка при авторизации.
 const updateTokensInterceptor = (store, http) => async error => {
   let tokenRecoveryPromise = null
+  
   console.log('error_for_response.data.message-1', error)
   console.log('error_for_response.data.message-2', error.config)   //СКРЫТОЕ(!) поле у error(!).
   console.log('error_for_response.data.message-3', error.response) //СКРЫТОЕ(!) поле у error(!).  =>
@@ -57,24 +102,32 @@ const updateTokensInterceptor = (store, http) => async error => {
   //  statusText: "Unauthorized"
   //}
   
-  
   //По уму, здесь надо дополнительно отрабатывать error.response.data.message,
   //но задавать его в ответе сервера мне не получилось.
   // if (!['Token_expired', 'Invalid_token'].includes(message)) {  //в случае, когда ошибка не связана с валидностью accessToken'a.
   //   return Promise.reject(error)
   // }
   
-  if(error.response.status === 401) {
-    //посылаем запрос для восстановления access-токена с помощью refresh-токена.
+  if(error.response.status === 401) {   //"для доступа требуется аутентификация".
+    //посылаем запрос для восстановления access-токена via refresh-токен.
     console.log('updateTokensInterceptor - 401 ============')
     
     tokenRecoveryPromise = store.dispatch('TOUCH_ACCOUNT', {login: '', password: ''})
     await tokenRecoveryPromise
     tokenRecoveryPromise = null
-    AuthUtils.attachAccessTokenToHeader(store.getters.GET_ACCESS_TOKEN, error.config)
-  
+    
+    let accessToken = store.getters.GET_ACCESS_TOKEN
+    let accessConfig = AuthUtils.attachAccessTokenToHeader(accessToken, error.config)
+    
     //заново повторяем неудавшийся запрос, но уже с восстановленным accessToken'ом.
-    return http(error.config)
+    return http(accessConfig)
+  }
+  
+  if(error.response.status === 403) {    //"есть ограничения в доступе": Невалидный access-токен при заросе на корзину. Невалидный refresh-токен при перезагрузке. Неверный пароль при login'e.
+    //принуждаем повторно пройти Идентификацию.
+    await router.push('/auth')    //делаем редирект на '/auth' и показываем алерт с объяснением причины.
+    // store.commit('SET_CLARIFICATION', 'поврежденный токен')   //  <<<<<< дописать надо
+    // store.dispatch('REMOVE_AUTH_AT_LOCAL_STORAGE', 'authAccess')
   }
 }
 

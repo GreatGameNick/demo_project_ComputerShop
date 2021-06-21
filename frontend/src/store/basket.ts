@@ -39,16 +39,16 @@ const getters = {
     }
     return count
   },
-  GET_AXIOS_CONFIG: (state: UserState, getters): AxiosConfig => {
-    return {
-      headers: {
-        accesstoken: getters.GET_ACCESS_TOKEN        //accessToken мы получаем на сервере как req.header('accesstoken'). Ключи у хедера надо писать МАЛЕНЬКИМИ буквами.
-      },
-      params: {
-        _id: ''         //_id мы получаем на сервере как req.query._id
-      }
-    }
-  }
+  // GET_AXIOS_CONFIG: (state: UserState, getters): AxiosConfig => {
+  //   return {
+  //     headers: {
+  //       accesstoken: getters.GET_ACCESS_TOKEN        //accessToken мы получаем на сервере как req.header('accesstoken'). Ключи у хедера надо писать МАЛЕНЬКИМИ буквами.
+  //     },
+  //     params: {
+  //       _id: ''         //_id мы получаем на сервере как req.query._id
+  //     }
+  //   }
+  // }
 } as GetterTree<UserState, RootState>
 
 const mutations = {
@@ -64,8 +64,8 @@ const mutations = {
 } as MutationTree<UserState>
 
 const actions = {
-  async FETCH_BASKET_POINTS({commit, getters}): Promise<void> {     //грузим при загрузе App
-    await axios.get(`/auth/basket`, getters.GET_AXIOS_CONFIG)
+  async FETCH_BASKET_POINTS({commit}): Promise<void> {     //грузим при загрузе App
+    await axios.get(`/auth/basket`)
       .then(recoveryBasket => {
         if (recoveryBasket.data.basketPoints.length > 0)
           commit('SET_BASKET', recoveryBasket.data.basketPoints)
@@ -112,29 +112,29 @@ const actions = {
     commit('SET_IS_BASKET_PRODUCTS', true)
   },
   //изменяем в корзине количество единиц выбранного товара
-  async MOVE_THE_BASKET_PRODUCT({state, commit, getters}, {shelf, _id, vector}: BasketMovement): Promise<void> {
+  async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement): Promise<void> {
     if (vector > 0) {
-      await axios.put(`/auth/basket`, {shelf, _id}, getters.GET_AXIOS_CONFIG)
+      await axios.put(`/auth/basket`, {shelf, _id})
         .then(response => {
           if (response.status === 200)
             commit('ADD_PRODUCT_TO_BASKET', {shelf, _id})
         })
     } else {
-      let config = getters.GET_AXIOS_CONFIG
-      config.params._id = _id        //_id мы получаем на сервере как req.query._id
+      // let config = getters.GET_AXIOS_CONFIG
+      // config.params._id = _id        //_id мы получаем на сервере как req.query._id
       
-      await axios.delete(`/auth/basket`, config)
+      await axios.delete(`/auth/basket`, {params: {_id}})
         .then(response => {
           if (response.status === 200)
             commit('DELETE_PRODUCT_AT_BASKET', {shelf, _id})
         })
     }
   },
-  async CLEAR_BASKET({commit, getters}): Promise<void> {
-    let config = getters.GET_AXIOS_CONFIG
-    config.params._id = 'all'
+  async CLEAR_BASKET({commit}): Promise<void> {
+    // let config = getters.GET_AXIOS_CONFIG
+    // config.params._id = 'all'
     
-    await axios.delete(`/auth/basket`, config)
+    await axios.delete(`/auth/basket`, {params: {_id: 'all'}})
       .then(response => {
         if (response.status === 200)
           commit('DELETE_PRODUCTS_AT_BASKET')
