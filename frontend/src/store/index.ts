@@ -4,7 +4,6 @@ import {RootState} from '@/types'
 import shopState from './shop'
 import authState from './auth'
 import basketState from './basket'
-import {ShopState} from "@/types/shop";
 
 Vue.use(Vuex)
 
@@ -13,7 +12,7 @@ const state = () => ({
 }) as RootState
 
 const getters = {
-  GET_CLARIFICATION: ({clarification}) => clarification
+  GET_CLARIFICATION: ({clarification}): string  => clarification
 } as GetterTree<RootState, RootState>
 
 const mutations ={
@@ -22,16 +21,18 @@ const mutations ={
 
 const actions = {
   SHOW_CLARIFICATION({commit}, message: string): void {
-    console.log('rr')
-    commit('SET_CLARIFICATION', message)
+    console.log('SHOW_CLARIFICATION ==== ', message)
+    
+    commit('SET_CLARIFICATION', message)   //показываем алерт
     setTimeout(function () {
-      commit('SET_CLARIFICATION', '')
-    }, 5000)
+      commit('SET_CLARIFICATION', '')     //удаляем алерт
+    }, 7000)
   }
 } as ActionTree<RootState, RootState>
 
 export default new Vuex.Store<RootState>({
   state,
+  getters,
   mutations,
   actions,
   modules: {

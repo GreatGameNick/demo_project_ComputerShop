@@ -19,9 +19,9 @@ const treatAccessTokenInterceptor = store => async config => {
   //a) если запрос - не на "/auth".
   //b) если запрос на "/auth", но к СЕССИОННОЙ карзине, т.е. когда НЕ к "/auth/authentication", а accessToken и isAuthAccess - отсутствуют.
   //с) если обращение к "/auth/authentication"- первичное (когда только отправляем запрос на аутентификацию, create_accaunt), accessToken и isAuthAccess - отсутствуют.
- // //d) если обращаемся к "/auth/authentication" в перезагрузе сайта + когда пользователь уже залогененый - accessToken нет, isAuthAccess - есть.
- 
- // // Важно:
+  // //d) если обращаемся к "/auth/authentication" в перезагрузе сайта + когда пользователь уже залогененый - accessToken нет, isAuthAccess - есть.
+  
+  // // Важно:
   // что бы запрос на восстановление не пошел в интерсепторе по пути, который вновь запускает action по восстановлениею accessToken'a.
   // Когда мы перезагружаем сайт у залогиненного пользователя. accessToken- слетает, но refreshToken продолжает быть.
   // Однако запросить из броузера refreshToken-куку - невозможно.
@@ -60,7 +60,7 @@ const treatAccessTokenInterceptor = store => async config => {
   
   // запросы по манипуляциям с АККАУНТНОЙ корзиной или с accountData, или если запрашиваетсяlogout.
   if(tokenExp && !config.url.includes('auth/authentication') && accessToken && isAuthAccess ||
-     tokenExp && config.url.includes('auth/authentication') && config.data.login && !config.data.password && accessToken && isAuthAccess
+    tokenExp && config.url.includes('auth/authentication') && config.data.login && !config.data.password && accessToken && isAuthAccess
   ) {
     //проверяем просроченность access-токена
     if(tokenExp < Date.now()) {    //a) access-токен - просрочен.
@@ -83,7 +83,6 @@ const treatAccessTokenInterceptor = store => async config => {
 }
 
 export const treatAccessToken = treatAccessTokenInterceptor(store)
-
 
 
 //2. На случай, когда в ответе приходит ошибка 401, ошибка при авторизации.
@@ -132,12 +131,13 @@ const updateTokensInterceptor = (store, http) => async error => {
   // - Невалидный refresh-токен при перезагрузке.
   // - Неверный пароль при login'e.
   if(error.response.status === 403) {
+    //Описываем причину для алерта и предлагаем повторно пройти идентификацию.
     console.log('ERROR_403 ========')
-  
-    //Описываем причину для алерта и принуждаем повторно пройти идентификацию.
-    store.commit('CLARIFICATION', error.response.data.message)
+    store.dispatch('SHOW_CLARIFICATION', error.response.data.message)
     // store.dispatch('REMOVE_AUTH_AT_LOCAL_STORAGE', 'authAccess')
-    await router.push('/auth')    //делаем редирект на '/auth' и показываем алерт с объяснением причины.    // Здесь router - импортирован(!), а не берется из this.$...
+    
+    if(true)      //For avoided redundant navigation to current location: "/a11n"
+      await router.push('/a11n')    //делаем редирект на '/a11n' и показываем алерт с объяснением причины.    // Здесь router - импортирован(!), а не берется из this.$...
   }
 }
 

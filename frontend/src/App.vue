@@ -2,7 +2,7 @@
   <div class="wrap">
     <header>
       <div @click="onThrowToShop" class="header-btn">
-        computer shop
+        computer shop  ={{ GET_CLARIFICATION }}=
       </div>
 
       <div @click="$router.push('/person')"
@@ -13,11 +13,11 @@
       </div>
 
       <div @click="onSwitchAuth" v-if="$route.path !== '/a11n'" class="header-btn">
-        {{GET_IS_AUTHORIZATION ? 'logout' : 'login'}}
+        {{ GET_IS_AUTHORIZATION ? 'logout' : 'login' }}
       </div>
       <div @click="onThrowToBasket" class="basket">
         <div>
-          {{GET_BASKET_POINTS.length}}
+          {{ GET_BASKET_POINTS.length }}
         </div>
       </div>
     </header>
@@ -29,7 +29,7 @@
                      exact
                      active-class="text_current-page"
         >
-          {{shelf.shelfName}}
+          {{ shelf.shelfName }}
         </router-link>
       </aside>
       <router-view :key="$route.params.shelf"/>
@@ -63,7 +63,8 @@ export default Vue.extend({
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_POINTS',
       'GET_IS_AUTHORIZATION',
-      'GET_USER_LOGIN'
+      'GET_USER_LOGIN',
+      'GET_CLARIFICATION'
     ]),
 
   },
@@ -73,39 +74,39 @@ export default Vue.extend({
       'TOUCH_ACCOUNT'
     ]),
     onThrowToShop(): void {
-      if(this.$route.path === '/a11n' || this.$route.path === '/person')
+      if (this.$route.path === '/a11n' || this.$route.path === '/person')
         this.$router.push('/')
 
-      if(this.$route.query.startPath) {
+      if (this.$route.query.startPath) {
         this.$router.push(`${this.$route.query.startPath}`)  //переход из корзины to prevision root shelf.
       } else {
         let pathChunks = this.$route.path.split('/')
-        if(pathChunks.length > 2)
+        if (pathChunks.length > 2)
           this.$router.push('/' + pathChunks[1])   //переход на корень того shelf'a, где клиент до того находился.
       }
     },
     onThrowToBasket(): void {
       let startPath = this.$route.path.split('/')[1]
-      if(startPath === 'basket')    //если мы уже находимся в Корзине, то пресекаем редирект на себя самого.
+      if (startPath === 'basket')    //если мы уже находимся в Корзине, то пресекаем редирект на себя самого.
         return
       this.$router.push({path: '/basket', query: {startPath}})
     },
     onSwitchAuth() {   //for LOGIN
-      if(!this.GET_IS_AUTHORIZATION) {
+      if (!this.GET_IS_AUTHORIZATION) {
         this.$router.push('/a11n')
       } else {        //for LOGOUT. Stigma - "password: ''".
         this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: ''})
-        .then(() => {
-          console.log('LOGOUT, this.$route.path ===============', this.$route.path)
+            .then(() => {
+              console.log('LOGOUT, this.$route.path ===============', this.$route.path)
 
-          if(this.$route.path === '/person' || this.$route.path === '/basket')
-            this.$router.push('/')
-        })
+              if (this.$route.path === '/person' || this.$route.path === '/basket')
+                this.$router.push('/')
+            })
       }
     }
   },
   async created() {
-    if(!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
+    if (!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
       await this.FETCH_BASKET_POINTS()
   }
 })
