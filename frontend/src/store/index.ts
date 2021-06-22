@@ -21,12 +21,7 @@ const mutations ={
 
 const actions = {
   SHOW_CLARIFICATION({commit}, message: string): void {
-    console.log('SHOW_CLARIFICATION ==== ', message)
-    
     commit('SET_CLARIFICATION', message)   //показываем алерт
-    setTimeout(function () {
-      commit('SET_CLARIFICATION', '')     //удаляем алерт
-    }, 7000)
   }
 } as ActionTree<RootState, RootState>
 

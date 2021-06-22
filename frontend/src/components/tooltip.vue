@@ -7,25 +7,22 @@
 </template>
 
 <script>
+import {mapMutations} from "vuex"
+
 export default {
   props: {
     tooltip: {
       type: String,
       required: true
     },
-    thenFunction: {
-      type: Function,
-      required: true
-    }
   },
   methods: {
-    throwAway() {
-      this.$emit('alertDown')
-      setTimeout(() => this.thenFunction(), 1000)
-    }
+    ...mapMutations([
+      'SET_CLARIFICATION'
+    ]),
   },
   mounted() {
-    setTimeout(() => this.throwAway(), 3000)
+    setTimeout(() => this.SET_CLARIFICATION(''), 6000)   //самоустранение алерта
   }
 }
 </script>

@@ -11,7 +11,7 @@
               'valid': !$v.forms[key].value.$invalid && forms[key].value
             }"
         >
-          {{field.name}}
+          {{ field.name }}
         </h2>
         <input :type="field.inputType"
                v-model="field.value"
@@ -113,7 +113,7 @@ export default Vue.extend({
     onAuthentication() {   //for logIn & create_account concurrently
       //при Login (т.е. не при регистрации нового пользователя)
       //устраняем влияние незадействованного поля passwordConfirm, иначе this.$v.forms.$anyError будет давать false.
-      if(!this.isRegistrationInterface )
+      if(!this.isRegistrationInterface)
         this.forms.passwordConfirm.value = this.forms.password.value
 
       // @ts-ignore
@@ -121,10 +121,12 @@ export default Vue.extend({
       // @ts-ignore
       if(this.$v.forms.$dirty && !this.$v.forms.$anyError) {
         this.TOUCH_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
-            .then(() => {
+            .then(isSuccess => {
               this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
               this.forms.passwordConfirm.value = ''
-              this.$router.push('/person')
+
+              if(isSuccess)
+                this.$router.push('/person')         //when isSuccess is false we would go to another url or stay on a same place.
             })
       }
     },

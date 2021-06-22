@@ -101,14 +101,13 @@ const updateTokensInterceptor = (store, http) => async error => {
   //  statusText: "Unauthorized"
   //}
   
-  //По уму, здесь надо дополнительно отрабатывать error.response.data.message,
-  //но задавать его в ответе сервера мне не получилось.
-  // if (!['Token_expired', 'Invalid_token'].includes(message)) {  //в случае, когда ошибка не связана с валидностью accessToken'a.
-  //   return Promise.reject(error)
-  // }
+  
   console.log('ERROR ========')
   console.log('ERROR, error.response.data.message >>>>>>>>>', error.response.data.message)
-  
+  //здесь можно дополнительно отрабатывать error.response.data.message, который высылается сервером via res.status(403).send({message: 'refreshToken is wrong'})
+  // if (!['Token_expired', 'refreshToken is wrong'].includes(message)) {  //в случае, когда ошибка не связана с валидностью accessToken'a.
+  //   return Promise.reject(error)
+  // }
   
   if(error.response.status === 401) {   //"для доступа требуется аутентификация".
     
@@ -127,17 +126,21 @@ const updateTokensInterceptor = (store, http) => async error => {
   }
   
   //"есть ограничения в доступе":
-  // - Невалидный access-токен при заросе на корзину.
-  // - Невалидный refresh-токен при перезагрузке.
   // - Неверный пароль при login'e.
+  // - Невалидный access-токен и refresh-токен
+  // - Невалидный refresh-токен при перезагрузке.
   if(error.response.status === 403) {
     //Описываем причину для алерта и предлагаем повторно пройти идентификацию.
     console.log('ERROR_403 ========')
-    store.dispatch('SHOW_CLARIFICATION', error.response.data.message)
-    // store.dispatch('REMOVE_AUTH_AT_LOCAL_STORAGE', 'authAccess')
     
-    if(true)      //For avoided redundant navigation to current location: "/a11n"
-      await router.push('/a11n')    //делаем редирект на '/a11n' и показываем алерт с объяснением причины.    // Здесь router - импортирован(!), а не берется из this.$...
+    let clarification = `Access was denied because of ${error.response.data.message}`
+    store.dispatch('SHOW_CLARIFICATION', clarification)
+      .then(() => {
+        if(router.currentRoute.path !== '/a11n')   //For avoid redundant navigation to current location "/a11n".
+          router.push('/a11n')    //делаем редирект на '/a11n' и показываем алерт с объяснением причины.    // Здесь router - импортирован(!), а не берется из this.$...
+      })
+    
+    // store.dispatch('REMOVE_AUTH_AT_LOCAL_STORAGE', 'authAccess')
   }
 }
 

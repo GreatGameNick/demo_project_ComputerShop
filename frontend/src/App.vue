@@ -2,7 +2,7 @@
   <div class="wrap">
     <header>
       <div @click="onThrowToShop" class="header-btn">
-        computer shop  ={{ GET_CLARIFICATION }}=
+        computer shop
       </div>
 
       <div @click="$router.push('/person')"
@@ -34,14 +34,20 @@
       </aside>
       <router-view :key="$route.params.shelf"/>
     </main>
+
+    <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import {mapActions, mapGetters} from 'vuex';
+import {mapActions, mapGetters, mapMutations} from 'vuex'
+import Tooltip from '@/components/tooltip.vue'
 
 export default Vue.extend({
+  components: {
+    Tooltip
+  },
   data: () => ({
     shelves: [         //сделать из запроса о количестве библиотек
       {

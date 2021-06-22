@@ -1,6 +1,6 @@
 <template>
   <div class="cover">
-    <h2>В корзине: <span>{{GET_BASKET_POINTS.length | productCounterDeclension}}</span></h2>
+    <h2>В корзине: <span>{{ GET_BASKET_POINTS.length | productCounterDeclension }}</span></h2>
     <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
       <div class="basket__list">
         <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
@@ -10,17 +10,13 @@
       </div>
       <div class="basket__underline">
         <div v-if="price" class="basket__outcome">
-          Итого: <span> {{GET_BASKET_POINTS.length | productCounterDeclension}} на {{price | splitPrice}} ₽</span>
+          Итого: <span> {{ GET_BASKET_POINTS.length | productCounterDeclension }} на {{ price | splitPrice }} ₽</span>
         </div>
         <div @click="onAlertRun" class="basket__btn_orange">Купить</div>
       </div>
     </div>
     
-    <tooltip :tooltip="tooltip"
-             :thenFunction="returnToShopping"
-             v-if="alertUp"
-             @alertDown="alertDown"
-    />
+    <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
   </div>
 </template>
 
@@ -35,18 +31,16 @@ export default Vue.extend({
     BasketCart,
     Tooltip
   },
-  data: () => ({
-    alertUp: false as boolean
-  }),
   computed: {
     ...mapGetters([
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_PRODUCTS',
       'GET_BASKET_PRODUCTS',
-      'GET_PRODUCT_BASKET_AMOUNT'
+      'GET_PRODUCT_BASKET_AMOUNT',
+      'GET_CLARIFICATION'
     ]),
     price(): number {
-      if(this.GET_BASKET_PRODUCTS && this.GET_PRODUCT_BASKET_AMOUNT) {
+      if (this.GET_BASKET_PRODUCTS && this.GET_PRODUCT_BASKET_AMOUNT) {
         let sum: number = 0
         for (let product of this.GET_BASKET_PRODUCTS) {
           sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
@@ -56,25 +50,21 @@ export default Vue.extend({
         return 0
       }
     },
-    tooltip(): string {
-      return `You bought the ${this.GET_BASKET_POINTS.length} products successfully!`
-    }
   },
   methods: {
     ...mapActions([
       'FETCH_BASKET_PRODUCTS',
-      'CLEAR_BASKET'
+      'CLEAR_BASKET',
+      'SHOW_CLARIFICATION'
     ]),
     onAlertRun(): void {
-      this.alertUp = true
+      let clarification = `You bought the ${this.GET_BASKET_POINTS.length} products successfully!`
+      this.SHOW_CLARIFICATION(clarification)
+        .then(() => {
+          this.CLEAR_BASKET()
+          setTimeout(() => this.$router.push('/'), 6100)
+        })
     },
-    alertDown(): void {
-      this.alertUp = false
-    },
-    returnToShopping(): void {
-      this.CLEAR_BASKET()
-      this.$router.push('/')
-    }
   },
   filters: {
     productCounterDeclension(val: number): string {
