@@ -1,10 +1,11 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" :class="{'show-products': runCascadeAppearance}" :key="`${$route.params.shelf}`">
     <div v-for="(product, ind) in GET_PRODUCTS($route.params.shelf)"
          :key="ind"
          @click.exact="onGoToProductDescription(product._id)"
+         class="cart"
     >
-      <product-cart :product="product" class="cart"/>
+      <product-cart :product="product"/>
     </div>
   </div>
 </template>
@@ -18,6 +19,9 @@ export default Vue.extend({
   components: {
     ProductCart
   },
+  data: () => ({
+    runCascadeAppearance: false
+  }),
   computed: {
     ...mapGetters([
       'GET_PRODUCTS'
@@ -29,10 +33,13 @@ export default Vue.extend({
     ]),
     onGoToProductDescription(_id: any) {
       this.$router.push(`/${this.$route.params.shelf}/${_id}`)
-    }
+    },
   },
   created() {
     this.FETCH_PRODUCTS(this.$route.params.shelf)
+  },
+  mounted() {
+    setTimeout(() => this.runCascadeAppearance = true, 70)
   }
 });
 </script>
@@ -56,6 +63,39 @@ export default Vue.extend({
     height: rem(400);
     margin: rem(10) rem(1) 0 rem(1);
     cursor: pointer;
+    
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+//for cascading appearance
+@mixin tr-reset() {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+@function trns($how, $properties...) {
+  $result: '';
+  @each $property in $properties {
+    $result: $result + $property + ' ' + $how + ', ';
+  }
+  @return #{$result};
+}
+
+.show-products {
+  @for $i from 1 through 8 {
+    .cart:nth-child(#{$i}) {
+      @include tr-reset();
+      transition: trns($appear, opacity, transform);
+      transition-delay: ($base-delay + $i * $base-delay);
+    }
+  }
+  
+  .cart:nth-child(n+9) {
+    @include tr-reset();
+    transition: trns($appear, opacity, transform);
+    transition-delay: ($base-delay + 9 * $base-delay);
   }
 }
 </style>

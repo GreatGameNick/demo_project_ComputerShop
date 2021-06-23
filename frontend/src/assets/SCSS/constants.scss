@@ -17,6 +17,10 @@ $purple: #8854d0;
 $error: #ff0000;
 $valid: #008000;
 
+$base-delay: 0.2s;
+$OutCubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+$appear: $OutCubic 0.5s;
+
 
 // Media queries
 $maxDesktopWidth: 1280px;
