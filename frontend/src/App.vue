@@ -34,11 +34,12 @@
       <router-view :key="$route.params.shelf"/>
     </main>
 
-    <aside v-if="GET_CLARIFICATION || isShowDescription">
-      <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
+    <aside v-if=" isShowDescription || GET_CLARIFICATION ||GET_ALERT.suffix">
       <div v-if="isShowDescription" @click="onShowDescription">
         <project-description/>
       </div>
+      <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
+      <alert v-if="GET_ALERT.suffix"/>
     </aside>
   </div>
 </template>
@@ -46,13 +47,15 @@
 <script lang="ts">
 import Vue from 'vue'
 import {mapActions, mapGetters, mapMutations} from 'vuex'
-import Tooltip from '@/components/tooltip.vue'
 import ProjectDescription from '@/components/projectDescription.vue'
+import Tooltip from '@/components/tooltip.vue'
+import Alert from '@/components/alert.vue'
 
 export default Vue.extend({
   components: {
+    ProjectDescription,
     Tooltip,
-    ProjectDescription
+    Alert
   },
   data: () => ({
     shelves: [         //сделать получение из запроса
@@ -77,7 +80,8 @@ export default Vue.extend({
       'GET_IS_BASKET_POINTS',
       'GET_IS_AUTHORIZATION',
       'GET_USER_LOGIN',
-      'GET_CLARIFICATION'
+      'GET_CLARIFICATION',
+      'GET_ALERT'
     ]),
 
   },

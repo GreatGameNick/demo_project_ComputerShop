@@ -2,10 +2,10 @@
   <div class="alert-fon">
     <div v-click-outside="onClickOutside" class="alert">
       <div class="alert__title">
-        <div>{{slogan}}</div>
-        <div>{{suffix}} ?</div>
+        <div>{{ GET_ALERT.slogan }}</div>
+        <div>{{ GET_ALERT.suffix }} ?</div>
       </div>
-
+      
       <div class="alert__btns">
         <button @mouseup="onChoice('yes')" class="alert__btn">YES</button>
         <button @mouseup="onChoice('abort')" class="alert__btn">abort</button>
@@ -15,41 +15,43 @@
 </template>
 
 <script>
-import vClickOutside from 'v-click-outside';
+import vClickOutside from 'v-click-outside'
+import {mapActions, mapGetters} from 'vuex'
 
 export default {
-  props: {
-    slogan: {
-      type: String,
-      required: true
-    },
-    suffix: {
-      type: String,
-      required: true
-    },
-    yesFunction: {
-      type: Function,
-      required: true
-    },
-    functionArgument: {
-      type: Object,
-      required: true
-    }
-  },
-  data: () =>({
+  data: () => ({
     vcoConfig: {
       events: ['mouseup'],
       isActive: false
     }
   }),
+  computed: {
+    ...mapGetters([
+      'GET_ALERT'
+    ])
+  },
   methods: {
+    ...mapActions([
+      'SHOW_ALERT'
+    ]),
     onChoice(type) {
-      if (type === 'yes')
-        this.yesFunction(this.functionArgument)
-      this.$emit('alertDown')
+      if(type === 'yes')
+        this.GET_ALERT.yesFunction(this.GET_ALERT.functionArgument)
+      
+      this.SHOW_ALERT({
+        slogan: '',
+        suffix: '',
+        yesFunction: null,
+        functionArgument: null
+      })
     },
-    onClickOutside () {
-      this.$emit('alertDown')
+    onClickOutside() {
+      this.SHOW_ALERT({
+        slogan: '',
+        suffix: '',
+        yesFunction: null,
+        functionArgument: null
+      })
     }
   },
   directives: {
@@ -66,7 +68,7 @@ export default {
   width: 100vw;
   height: 100vh;
   background-color: transparent;
-
+  
   .alert {
     position: absolute;
     width: 50vw;
@@ -81,20 +83,20 @@ export default {
     opacity: 1;
     transition: all 1s ease;
     margin-left: 0;
-
+    
     &__title {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       font-size: 18px;
-
+      
       :first-child {
         color: $valid;
         margin-bottom: 5px;
         text-transform: uppercase;
       }
     }
-
+    
     &__btns {
       display: flex;
       flex-flow: row wrap;
@@ -102,14 +104,14 @@ export default {
       align-self: flex-end;
       justify-content: space-between;
       margin: 60px 0 0;
-
+      
       .alert__btn {
         width: 44%;
         min-width: 70px;
         min-height: 20px;
         height: fit-content;
       }
-
+      
       .alert__btn:hover {
         background-color: $grey;
         color: white;

@@ -7,13 +7,13 @@
     <div class="cart__price">{{product.price | splitPrice}} <span>₽</span></div>
     <div @click.stop="onAlertRun" class="cart__btn">Купить</div>
   
-    <alert :slogan="'are you sure'"
-           :suffix="alertSuffix"
-           :yesFunction="MOVE_THE_BASKET_PRODUCT"
-           :functionArgument = "basketArgument"
-           v-if="alertUp"
-           @alertDown="alertDown"
-    />
+<!--    <alert :slogan="'are you sure'"-->
+<!--           :suffix="alertSuffix"-->
+<!--           :yesFunction="MOVE_THE_BASKET_PRODUCT"-->
+<!--           :functionArgument = "basketArgument"-->
+<!--           v-if="alertUp"-->
+<!--           @alertDown="alertDown"-->
+<!--    />-->
   </div>
 </template>
 
@@ -36,27 +36,33 @@ export default Vue.extend({
       required: true
     }
   },
-  data: () => ({
-    alertUp: false as boolean
-  }),
-  computed: {
-    alertSuffix(): string {
-      return `to buy ${this.product.name}`
-    },
-    basketArgument(): BasketMovement {
-      return {shelf: this.product.shelf, _id: this.product._id, vector: 1}
-    }
-  },
+  // data: () => ({
+  //   alertUp: false as boolean
+  // }),
+  // computed: {
+    // alertSuffix(): string {
+    //   return `to buy ${this.product.name}`
+    // },
+    // basketArgument(): BasketMovement {
+    //   return {shelf: this.product.shelf, _id: this.product._id, vector: 1}
+    // }
+  // },
   methods: {
     ...mapActions([
-      'MOVE_THE_BASKET_PRODUCT'
+      'MOVE_THE_BASKET_PRODUCT',
+      'SHOW_ALERT'
     ]),
     onAlertRun(): void {
-      this.alertUp = true
+      this.SHOW_ALERT({
+        slogan: 'are you sure',
+        suffix: `to buy ${this.product.name}`,
+        yesFunction: this.MOVE_THE_BASKET_PRODUCT,
+        functionArgument: {shelf: this.product.shelf, _id: this.product._id, vector: 1}
+      })
     },
-    alertDown() {
-      this.alertUp = false
-    },
+    // alertDown() {
+    //   this.alertUp = false
+    // },
   },
   filters: {
     splitPrice: function (val: number): string {

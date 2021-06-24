@@ -1,3 +1,10 @@
 export interface RootState {
-  clarification: string
+  clarification: string,
+  alertStuff: {
+    slogan: string,
+    suffix: string,
+    yesFunction: any,
+    functionArgument: any
+  }
 }
+
