@@ -4,14 +4,12 @@
       <div @click="onThrowToShop" class="header-btn">
         computer shop
       </div>
-
       <div @click="$router.push('/person')"
            v-if="$route.path !== '/person' && GET_IS_AUTHORIZATION"
            class="header-btn"
       >
         your account
       </div>
-
       <div @click="onSwitchAuth" v-if="$route.path !== '/a11n'" class="header-btn">
         {{ GET_IS_AUTHORIZATION ? 'logout' : 'login' }}
       </div>
@@ -21,8 +19,9 @@
         </div>
       </div>
     </header>
+    
     <main>
-      <aside>
+      <nav>
         <h2>Каталог</h2>
         <router-link v-for="(shelf, ind) of shelves" :key="ind"
                      :to="`/${shelf.shelf}`"
@@ -31,11 +30,16 @@
         >
           {{ shelf.shelfName }}
         </router-link>
-      </aside>
+      </nav>
       <router-view :key="$route.params.shelf"/>
     </main>
 
-    <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
+    <aside v-if="GET_CLARIFICATION || isShowDescription">
+      <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
+      <div v-if="isShowDescription" @click="onShowDescription">
+        <project-description/>
+      </div>
+    </aside>
   </div>
 </template>
 
@@ -43,13 +47,15 @@
 import Vue from 'vue'
 import {mapActions, mapGetters, mapMutations} from 'vuex'
 import Tooltip from '@/components/tooltip.vue'
+import ProjectDescription from '@/components/projectDescription.vue'
 
 export default Vue.extend({
   components: {
-    Tooltip
+    Tooltip,
+    ProjectDescription
   },
   data: () => ({
-    shelves: [         //сделать из запроса о количестве библиотек
+    shelves: [         //сделать получение из запроса
       {
         shelf: 'laptops',
         shelfName: 'Ноутбуки'
@@ -62,7 +68,8 @@ export default Vue.extend({
         shelf: 'accessories',
         shelfName: 'Аксессуары'
       },
-    ]
+    ],
+    isShowDescription: true
   }),
   computed: {
     ...mapGetters([
@@ -109,6 +116,9 @@ export default Vue.extend({
                 this.$router.push('/')
             })
       }
+    },
+    onShowDescription() {
+      this.isShowDescription = false
     }
   },
   async created() {
@@ -120,7 +130,6 @@ export default Vue.extend({
 
 <style lang="scss">
 $appMediaPoint_1: 560px;
-
 
 .text_current-page {
   text-decoration: underline;
@@ -189,7 +198,7 @@ $appMediaPoint_1: 560px;
     display: flex;
     margin-top: rem(10);
 
-    aside {
+    nav {
       display: flex;
       flex-flow: column;
       min-width: rem(160);
@@ -210,6 +219,20 @@ $appMediaPoint_1: 560px;
         display: none; //надо доделать @media на оч малых размерах
       }
     }
+  }
+  
+  aside {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: $maxDesktopWidth;
+    margin: 0 auto;
+    z-index: 100;
+    background: rgba(250, 250, 250, 0.85);
+    box-sizing: border-box;
+    
+    border: red 1px solid;
   }
 }
 </style>
