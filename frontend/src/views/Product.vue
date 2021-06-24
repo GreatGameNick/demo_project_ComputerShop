@@ -69,9 +69,11 @@ export default Vue.extend({
       'FETCH_PRODUCT'
     ]),
     onAlertRun(): void {
-      this.SHOW_ALERT({
+      //@ts-ignore
+      this.SHOW_ALERT({     //in frontend/src/components/productCart.vue - the same is WORKing good!!!   ))
         slogan: 'are you sure',
         suffix: `to buy ${this.product.name}`,
+        //@ts-ignore
         yesFunction: this.MOVE_THE_BASKET_PRODUCT,
         functionArgument: {shelf: this.product.shelf, _id: this.product._id, vector: 1}
       })
@@ -92,7 +94,7 @@ export default Vue.extend({
 
     if (this.product == null)
         // @ts-ignore
-      this.FETCH_PRODUCT(this.productPoint)   // Почему TS дает ошибку?? In Basket - work!!
+      this.FETCH_PRODUCT(this.productPoint)   // Почему TS дает ошибку?? In Basket - work!! The same problem - in onAlertRun(). ))
           .then((product: Product) => {
             this.product = product
           })
