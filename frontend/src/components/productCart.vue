@@ -6,14 +6,6 @@
     <div class="cart__description">{{product.description}}</div>
     <div class="cart__price">{{product.price | splitPrice}} <span>₽</span></div>
     <div @click.stop="onAlertRun" class="cart__btn">Купить</div>
-  
-<!--    <alert :slogan="'are you sure'"-->
-<!--           :suffix="alertSuffix"-->
-<!--           :yesFunction="MOVE_THE_BASKET_PRODUCT"-->
-<!--           :functionArgument = "basketArgument"-->
-<!--           v-if="alertUp"-->
-<!--           @alertDown="alertDown"-->
-<!--    />-->
   </div>
 </template>
 
@@ -21,14 +13,11 @@
 import Vue, {PropType} from 'vue'
 import {mapActions} from 'vuex'
 import {Product} from '@/types/shop'
-import {BasketMovement} from '@/types/user'
 import Stars from '@/components/stars.vue'
-import Alert from "@/components/alert.vue"
 
 export default Vue.extend({
   components: {
-    Stars,
-    Alert
+    Stars
   },
   props: {
     product: {
@@ -36,17 +25,6 @@ export default Vue.extend({
       required: true
     }
   },
-  // data: () => ({
-  //   alertUp: false as boolean
-  // }),
-  // computed: {
-    // alertSuffix(): string {
-    //   return `to buy ${this.product.name}`
-    // },
-    // basketArgument(): BasketMovement {
-    //   return {shelf: this.product.shelf, _id: this.product._id, vector: 1}
-    // }
-  // },
   methods: {
     ...mapActions([
       'MOVE_THE_BASKET_PRODUCT',
@@ -60,9 +38,6 @@ export default Vue.extend({
         functionArgument: {shelf: this.product.shelf, _id: this.product._id, vector: 1}
       })
     },
-    // alertDown() {
-    //   this.alertUp = false
-    // },
   },
   filters: {
     splitPrice: function (val: number): string {

@@ -5,7 +5,7 @@
       <div class="anons">
         <div class="anons__img" :style="{backgroundImage: `url(${product.img})`}"></div>
         <div class="anons__price">{{product.price | splitPrice}} <span>₽</span></div>
-        <div @click="onAlertRun(product)" class="anons__btn">Купить</div>
+        <div @click="onAlertRun" class="anons__btn">Купить</div>
       </div>
 
       <h3>Характеристики</h3>
@@ -29,14 +29,6 @@
         </div>
       </div>
     </div>
-
-    <alert :slogan="'are you sure'"
-           :suffix="alertSuffix"
-           :yesFunction="MOVE_THE_BASKET_PRODUCT"
-           :functionArgument = "basketArgument"
-           v-if="alertUp"
-           @alertDown="alertDown"
-    />
   </div>
 </template>
 
@@ -48,13 +40,9 @@ import {BasketMovement, ProductPoint} from '@/types/user'
 import Alert from "@/components/alert.vue";
 
 export default Vue.extend({
-  components: {
-    Alert,
-  },
   data: () => ({
     product: {} as Product,
-    productPoint: {} as ProductPoint,
-    alertUp: false as boolean
+    productPoint: {} as ProductPoint
   }),
   computed: {
     ...mapGetters([
@@ -73,23 +61,20 @@ export default Vue.extend({
       }
       return featuresGroup
     },
-    alertSuffix(): string {
-      return `to buy ${this.product.name}`
-    },
-    basketArgument(): BasketMovement {
-      return {shelf: this.product.shelf, _id: this.product._id, vector: 1}
-    }
   },
   methods: {
     ...mapActions([
+      'SHOW_ALERT',
       'MOVE_THE_BASKET_PRODUCT',
       'FETCH_PRODUCT'
     ]),
     onAlertRun(): void {
-      this.alertUp = true
-    },
-    alertDown() {
-      this.alertUp = false
+      this.SHOW_ALERT({
+        slogan: 'are you sure',
+        suffix: `to buy ${this.product.name}`,
+        yesFunction: this.MOVE_THE_BASKET_PRODUCT,
+        functionArgument: {shelf: this.product.shelf, _id: this.product._id, vector: 1}
+      })
     },
   },
   filters: {
