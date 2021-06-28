@@ -233,10 +233,8 @@ $appMediaPoint_1: 560px;
     max-width: $maxDesktopWidth;
     margin: 0 auto;
     z-index: 100;
-    background: rgba(250, 250, 250, 0.85);
+    background: rgba(250, 250, 250, 0.95);
     box-sizing: border-box;
-    
-    border: red 1px solid;
   }
 }
 </style>

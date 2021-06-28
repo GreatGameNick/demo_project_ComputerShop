@@ -4,6 +4,7 @@ import {RootState} from '@/types'
 import shopState from './shop'
 import authState from './auth'
 import basketState from './basket'
+import axios from "axios";
 
 Vue.use(Vuex)
 
@@ -13,18 +14,24 @@ const state = () => ({
     slogan: '',
     suffix: '',
     yesFunction: null,
-    functionArgument: null
+    functionArgument: null,
+  },
+  besideData: {
+    projectDescription: {}
   }
 }) as RootState
 
 const getters = {
-  GET_CLARIFICATION: ({clarification}): string  => clarification,
-  GET_ALERT: ({alertStuff}): any  => alertStuff
+  GET_CLARIFICATION: ({clarification}): string => clarification,
+  GET_ALERT: ({alertStuff}): object => alertStuff,
+  GET_DESCRIPTION: ({besideData}): object => besideData.projectDescription
 } as GetterTree<RootState, RootState>
 
-const mutations ={
+const mutations = {
   SET_CLARIFICATION: (state, message) => state.clarification = message,
-  SET_ALERT: (state, alertStuff) => state.alertStuff = alertStuff
+  SET_ALERT: (state, alertStuff) => state.alertStuff = alertStuff,
+// @ts-ignore
+  SET_BESIDE_DATA: (state, {dataName, data}) => state.besideData[dataName] = data
 } as MutationTree<RootState>
 
 const actions = {
@@ -34,6 +41,12 @@ const actions = {
   SHOW_ALERT({commit}, alertStuff): void {
     console.log('SHOW_ALERT')
     commit('SET_ALERT', alertStuff)   //показываем алерт
+  },
+  async FETCH_DATA_FROM_DISKSTORAGE({commit}, dataName): Promise<void> {
+    await axios.get(`api/common_data/${dataName}`)
+      .then(({data}) => {
+        commit('SET_BESIDE_DATA', {dataName, data})
+      })
   }
 } as ActionTree<RootState, RootState>
 

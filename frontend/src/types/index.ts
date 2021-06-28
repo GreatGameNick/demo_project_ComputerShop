@@ -4,7 +4,20 @@ export interface RootState {
     slogan: string,
     suffix: string,
     yesFunction: any,
-    functionArgument: any
+    functionArgument: any,
+  },
+  besideData: {
+    projectDescription: {
+      projectPurpose: string
+      technologies: string[],
+      Methodologies: string[],
+      Functionalities: string[],
+      contacts: {
+        name: string,
+        email: string,
+        phone: string
+      }
+    }
   }
 }
 

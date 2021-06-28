@@ -6,7 +6,7 @@ const {ROOT_PATH, port, MONGO_URL, mode} = require("./configuration")
 const {connectDb} = require("./mongooseHelpers/db")
 
 const {findAllOnTheShelf, findOneOnTheShelf, getOneImgFromDiskStorageForPicture} = require("./mongooseHelpers/controllers/shop")
-// const {putProductToBasket, deleteProductAtBasket, getBasket, retrieveSessionBasket} = require("./mongooseHelpers/controllers/baskets")
+const {getThisOneFromDiskStorage} = require("./mongooseHelpers/controllers/common")
 
 const {laptops, mouses, accessories} = require('./mongooseHelpers/models/shelves')
 const {initialLaptopData} = require('../initialData/laptopData')
@@ -16,10 +16,8 @@ const {initialAccessoriesData} = require('../initialData/accessoriesData')
 
 const app = express()
 
-//не востребовано
-// app.use(bodyParser.json())      //Обязателен для всех запросов, которые имеют pl(для POST-запросов).
-// app.use(cookieParser('demoProject'))
-
+//get project Description
+app.get("/common_data/:dataName", getThisOneFromDiskStorage)
 
 //Текстовые роуты для MongoDb.
 //Должны быть прописаны НИЖЕ, чем заявление сессии, т.к. мы сессию генерируем в ходе "/mongoCollection" запроса.
