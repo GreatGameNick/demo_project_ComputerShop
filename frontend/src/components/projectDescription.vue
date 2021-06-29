@@ -2,24 +2,37 @@
   <div class="cover">
     <div v-html="GET_DESCRIPTION.projectPurpose">
     </div>
+    
+    
+    
+    
+    
+    
+    
+    
     <div>
       <h1>Technologies</h1>
       <p v-for="(technology, ind) in GET_DESCRIPTION.technologies" :key="ind + 'technology'" :data-section="technology.includes(') ')">
         {{ technology }}
       </p>
     </div>
+    
     <div>
       <h1>Methodologies</h1>
       <p v-for="(methodology, ind) in GET_DESCRIPTION.methodologies" :key="ind + 'methodology'">
         {{ methodology }}
       </p>
     </div>
+    
     <div>
       <h1>Functionalities</h1>
       <p v-for="(functionality, ind) in GET_DESCRIPTION.functionalities" :key="ind + 'functionality'">
         {{ functionality }}
       </p>
     </div>
+    
+    
+    
     <div>
       <p>{{GET_DESCRIPTION.contacts.name}}</p>
       <p>{{GET_DESCRIPTION.contacts.email}}</p>
@@ -35,7 +48,14 @@ export default {
   computed: {
     ...mapGetters([
       'GET_DESCRIPTION'
-    ])
+    ]),
+    clarificationArray() {
+      for(let key in this.GET_DESCRIPTION) {
+        if(typeof this.GET_DESCRIPTION[key] !== 'string') {
+        
+        }
+      }
+    }
   },
   methods: {
     ...mapActions([

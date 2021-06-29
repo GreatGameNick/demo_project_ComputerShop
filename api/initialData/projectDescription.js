@@ -33,7 +33,7 @@ module.exports.projectDescription = {
     
     'сессионная корзина',
     'authorization',
-    'валидаци',
+    'валидация',
     'валидация асинхронная',
     'jwt: access-token, refresh-token',
     'routing guards for privat pages',
