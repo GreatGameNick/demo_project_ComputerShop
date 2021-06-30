@@ -1,42 +1,18 @@
 <template>
   <div class="cover">
-    <div v-html="GET_DESCRIPTION.projectPurpose">
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    <div>
-      <h1>Technologies</h1>
-      <p v-for="(technology, ind) in GET_DESCRIPTION.technologies" :key="ind + 'technology'" :data-section="technology.includes(') ')">
-        {{ technology }}
+    <div v-for="(volume, key, ind) of GET_DESCRIPTION" :key="ind">
+      <h1>{{ key }}</h1>
+      <div v-if="typeof volume === 'string'"
+           v-html="volume"
+      >
+      </div>
+      <p v-else
+         v-for="(row, ind) of volume"
+         :key="ind + 'rows'"
+         :data-section="row.includes(') ')"
+      >
+        {{ row }}
       </p>
-    </div>
-    
-    <div>
-      <h1>Methodologies</h1>
-      <p v-for="(methodology, ind) in GET_DESCRIPTION.methodologies" :key="ind + 'methodology'">
-        {{ methodology }}
-      </p>
-    </div>
-    
-    <div>
-      <h1>Functionalities</h1>
-      <p v-for="(functionality, ind) in GET_DESCRIPTION.functionalities" :key="ind + 'functionality'">
-        {{ functionality }}
-      </p>
-    </div>
-    
-    
-    
-    <div>
-      <p>{{GET_DESCRIPTION.contacts.name}}</p>
-      <p>{{GET_DESCRIPTION.contacts.email}}</p>
-      <p>{{GET_DESCRIPTION.contacts.phone}}</p>
     </div>
   </div>
 </template>
@@ -49,13 +25,6 @@ export default {
     ...mapGetters([
       'GET_DESCRIPTION'
     ]),
-    clarificationArray() {
-      for(let key in this.GET_DESCRIPTION) {
-        if(typeof this.GET_DESCRIPTION[key] !== 'string') {
-        
-        }
-      }
-    }
   },
   methods: {
     ...mapActions([
@@ -78,16 +47,16 @@ export default {
   width: 100%;
   cursor: pointer;
   box-sizing: border-box;
-  padding: rem(10);
-  
+  padding: 0 rem(30) rem(30) rem(30);
+
+  background: rgba(255, 255, 255, 0.8);
+
   display: grid;
   grid-template-columns: repeat(5, 20%);
   grid-auto-rows: rem(60);
   color: #333333;
   text-align: left;
-  
-  border: #269a09 1px solid;
-  
+
   &::before {
     content: '';
     width: 100%;
@@ -98,39 +67,47 @@ export default {
     background: url("../assets/imgs/allRight.png") right 100px bottom 15% no-repeat;
     background-size: auto 40%;
     filter: opacity(0.2);
-    
+
   }
-  
+
   & div {
     height: fit-content;
-    
+
     & > h1 {
       color: $green-dark;
+      box-sizing: border-box;
     }
-    
+
     & > p {
       margin-top: rem(3);
+      border-left: $green-dark 1px solid;
+      box-sizing: border-box;
+      padding-left: rem(10);
     }
-    
+
     & > p[data-section="true"] {
       color: $purple;
       margin-top: rem(20);
+      border: none;
+      padding: 0;
+      margin-bottom: rem(7);
     }
-    
+
     & > p[data-section="true"]:first-of-type {
       margin-top: 0;
     }
   }
-  
-  &  > :first-child {
-    grid-area: 1/1/span 1/span 5;
+
+  & > :first-child {
+    grid-area: 1/1/span 2/span 5;
     text-align: center;
+    border: none;
   }
-  
+
   & :nth-child(4) {
     grid-column: span 3;
   }
-  
+
   & :last-child {
     grid-column: 4/span 1;
     grid-row: 9/span 1;

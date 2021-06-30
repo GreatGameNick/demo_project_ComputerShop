@@ -34,8 +34,8 @@
       <router-view :key="$route.params.shelf"/>
     </main>
 
-    <aside v-if=" isShowDescription || GET_CLARIFICATION ||GET_ALERT.suffix">
-      <div v-if="isShowDescription" @click="onShowDescription">
+    <aside v-if="(isShowDescription && $route.path === '/laptops') || GET_CLARIFICATION ||GET_ALERT.suffix">
+      <div v-if="isShowDescription && $route.path === '/laptops'" @click="onShowDescription">
         <project-description/>
       </div>
       <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
@@ -72,7 +72,7 @@ export default Vue.extend({
         shelfName: 'Аксессуары'
       },
     ],
-    isShowDescription: true
+    isShowDescription: false
   }),
   computed: {
     ...mapGetters([
@@ -91,7 +91,7 @@ export default Vue.extend({
       'TOUCH_ACCOUNT'
     ]),
     onThrowToShop(): void {
-      if (this.$route.path === '/a11n' || this.$route.path === '/person')
+      if (this.$route.path === '/a11n' || this.$route.path === '/person' || this.$route.path === '/basket')
         this.$router.push('/')
 
       if (this.$route.query.startPath) {
@@ -128,6 +128,9 @@ export default Vue.extend({
   async created() {
     if (!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
       await this.FETCH_BASKET_POINTS()
+
+    if (this.$route.path === '/' || this.$route.path === '/laptops')
+      this.isShowDescription = true   //что бы, когда перезагружаем сайт,находясь на не '/laptops', а далее переходим на страницу '/laptops', - projectDescription - не появлялся бы.
   }
 })
 </script>
@@ -233,7 +236,7 @@ $appMediaPoint_1: 560px;
     max-width: $maxDesktopWidth;
     margin: 0 auto;
     z-index: 100;
-    background: rgba(250, 250, 250, 0.95);
+    background: rgba(250, 250, 250, 0.85);
     box-sizing: border-box;
   }
 }

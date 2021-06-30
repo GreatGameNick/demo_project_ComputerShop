@@ -12,11 +12,7 @@ export interface RootState {
       technologies: string[],
       Methodologies: string[],
       Functionalities: string[],
-      contacts: {
-        name: string,
-        email: string,
-        phone: string
-      }
+      contacts: string[]
     }
   }
 }
