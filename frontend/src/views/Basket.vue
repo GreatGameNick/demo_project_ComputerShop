@@ -1,6 +1,7 @@
 <template>
   <div class="cover">
     <h2>В корзине: <span>{{ GET_BASKET_POINTS.length | productCounterDeclension }}</span></h2>
+    <div>{{GET_BASKET_PRODUCTS}}</div>
     <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
       <div class="basket__list">
         <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
@@ -15,29 +16,25 @@
         <div @click="onAlertRun" class="basket__btn_orange">Купить</div>
       </div>
     </div>
-    
-    <tooltip v-if="GET_CLARIFICATION" :tooltip="GET_CLARIFICATION"/>
   </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import {mapActions, mapGetters} from "vuex";
-import BasketCart from "@/components/basketCart.vue";
-import Tooltip from "@/components/tooltip.vue";
+import Vue from "vue"
+import {mapActions, mapGetters} from "vuex"
+import BasketCart from "@/components/basketCart.vue"
 
 export default Vue.extend({
   components: {
-    BasketCart,
-    Tooltip
+    BasketCart
   },
   computed: {
     ...mapGetters([
+      'GET_IS_BASKET_POINTS',   //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
       'GET_BASKET_POINTS',
       'GET_IS_BASKET_PRODUCTS',
       'GET_BASKET_PRODUCTS',
-      'GET_PRODUCT_BASKET_AMOUNT',
-      'GET_CLARIFICATION'
+      'GET_PRODUCT_BASKET_AMOUNT'
     ]),
     price(): number {
       if (this.GET_BASKET_PRODUCTS && this.GET_PRODUCT_BASKET_AMOUNT) {
@@ -60,10 +57,10 @@ export default Vue.extend({
     onAlertRun(): void {
       let clarification = `You bought the ${this.GET_BASKET_POINTS.length} products successfully!`
       this.SHOW_CLARIFICATION(clarification)
-        .then(() => {
-          this.CLEAR_BASKET()
-          setTimeout(() => this.$router.push('/'), 6100)
-        })
+          .then(() => {
+            this.CLEAR_BASKET()
+            setTimeout(() => this.$router.push('/'), 3200)   //интервал должен быть больше, чем задержка перед самоустранением tooltip'a.
+          })
     },
   },
   filters: {
@@ -84,6 +81,11 @@ export default Vue.extend({
   async created() {
     if (!this.GET_IS_BASKET_PRODUCTS)
       await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при первом посещении корзины.
+
+    if (!this.GET_IS_BASKET_POINTS) {  //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
+      // @ts-ignore
+      await this.FETCH_BASKET_POINTS()
+    }
   }
 })
 
@@ -94,37 +96,37 @@ $basketMediaPoint: 1200px;
 
 .cover {
   @extend .wrapper_common;
-  
+
   h2 span {
     color: $grey;
     margin-left: rem(5);
   }
-  
+
   .basket {
     display: flex;
     justify-content: space-between;
-    
+
     @media (max-width: $basketMediaPoint) {
       flex-flow: wrap column;
     }
-    
+
     .basket__list {
       display: block;
       width: calc(100% - 320px);
-      
+
       & * {
         margin-top: rem(20);
       }
-      
+
       @media (max-width: $basketMediaPoint) {
         width: 100%;
       }
     }
-    
+
     &__underline {
       margin: rem(20) 0 0 rem(10);
       width: 300px;
-      
+
       .basket__outcome {
         width: 100%;
         height: rem(60);
@@ -132,16 +134,16 @@ $basketMediaPoint: 1200px;
         align-items: center;
         box-sizing: border-box;
         padding-left: rem(20);
-        
+
         background: $white;
         font-weight: 700;
-        
+
         span {
           padding-left: rem(7);
           color: $grey;
         }
       }
-      
+
       .basket__btn_orange {
         width: 100%;
         max-width: rem(500);

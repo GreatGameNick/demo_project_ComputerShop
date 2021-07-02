@@ -15,7 +15,9 @@ const state = () => ({
 const getters = {
   GET_BASKET_POINTS: ({clientBasket}): ProductPoint[] => clientBasket,
   GET_BASKET_PRODUCTS: (state: UserState, getters): Product[] => {
-    if (getters.GET_BASKET_POINTS.lengthb === 0)
+    console.log('getters.GET_BASKET_POINTS ===', getters.GET_BASKET_POINTS)
+
+    if (getters.GET_BASKET_POINTS.length === 0)
       return []
     
     //устраняем в корзине повторы заказанных продуктов
@@ -23,7 +25,6 @@ const getters = {
     
     let basketProducts = [] as Product[]
     for (let productPoint of noRedundantBasketProductPoints) {
-      // let product = state[productPoint.shelf].find(item => item._id === productPoint._id)
       let product = getters.GET_PRODUCTS(productPoint.shelf).find((item: Product) => item._id === productPoint._id)
       basketProducts.push(product)
     }
@@ -38,17 +39,7 @@ const getters = {
         count += 1
     }
     return count
-  },
-  // GET_AXIOS_CONFIG: (state: UserState, getters): AxiosConfig => {
-  //   return {
-  //     headers: {
-  //       accesstoken: getters.GET_ACCESS_TOKEN        //accessToken мы получаем на сервере как req.header('accesstoken'). Ключи у хедера надо писать МАЛЕНЬКИМИ буквами.
-  //     },
-  //     params: {
-  //       _id: ''         //_id мы получаем на сервере как req.query._id
-  //     }
-  //   }
-  // }
+  }
 } as GetterTree<UserState, RootState>
 
 const mutations = {
@@ -67,6 +58,8 @@ const actions = {
   async FETCH_BASKET_POINTS({commit}): Promise<void> {     //грузим при загрузе App
     await axios.get(`/auth/basket`)
       .then(recoveryBasket => {
+        console.log('FETCH_BASKET_POINTS ===', recoveryBasket)
+
         if (recoveryBasket.data.basketPoints.length > 0)
           commit('SET_BASKET', recoveryBasket.data.basketPoints)
         commit('SET_IS_BASKET_POINTS', true)

@@ -82,8 +82,7 @@ export default Vue.extend({
       'GET_USER_LOGIN',
       'GET_CLARIFICATION',
       'GET_ALERT'
-    ]),
-
+    ])
   },
   methods: {
     ...mapActions([
@@ -126,7 +125,8 @@ export default Vue.extend({
     }
   },
   async created() {
-    if (!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex после перезагрузки сайта сноски на продукты, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
+    if (!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
+      // @ts-ignore
       await this.FETCH_BASKET_POINTS()
 
     if (this.$route.path === '/' || this.$route.path === '/laptops')
