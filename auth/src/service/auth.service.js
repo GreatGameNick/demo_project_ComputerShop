@@ -67,14 +67,19 @@ module.exports.AuthService = class AuthService {
   }
   
   static separateCookie(cookies, cookieName) {
+    if(!cookies)
+      return ''
+
     let cookieArray = cookies.split(';')
+    let cookieValue = ''
     
     for(let cookie of cookieArray) {
       let cookiePieces = cookie.trim().split('=')
       if(cookiePieces[0] === cookieName) {
-        return  cookiePieces[1]
+        return  cookieValue = cookiePieces[1]
       }
     }
+    return cookieValue
   }
   
   static isRefreshTokenAlive(refreshToken, oldRefreshToken) {  //проверка на просроченность токена

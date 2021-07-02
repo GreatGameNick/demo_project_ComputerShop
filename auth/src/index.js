@@ -46,6 +46,7 @@ app.use(async (req, res, next) => {
   let accessTokenBody = ''             //что бы узнать значение логина, { login: '(999) 999-99-99', exp: 1622543413881 }
   let isAccessTokenMatched = false    //accessToken идентичный И недеформированный. Просроченность здесь не обсуждается.
   let isAccessTokenAlive = false      //accessToken НЕпросроченный - true/false.
+  let refreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
   
   if (accessToken) {
     //1. ПРОВЕРКИ access-токена:
@@ -92,7 +93,19 @@ app.use(async (req, res, next) => {
       return
     }
   }
-  
+
+
+  console.log('req.url <<<<<<<<<', req.url)
+  console.log('req.headers.referer<<<<<<<<<', req.headers.referer)
+
+  //в состоянии login + находимся в '/basket' (refreshToken - есть) и перезагружаем сайт (т.е. url запроса будет '/basket', но accessToken слетает) - перебрасываемся на '/a11n'.
+  if(!accessToken && req.headers.referer.includes('/basket') && refreshToken) {
+    console.log('accessToken <<<<<<<<<', accessToken)
+    console.log('req.url.includes(\'/basket\') <<<<<<<<<', req.url.includes('/basket'))
+    return res.status(403).send({message: 'you need to get authorisation again'})
+  }
+
+
   //Сюда проходят:
   //- запросы вне авторизации,
   //- запросы с авторизацией, accessToken - НЕдеформированный, идентичный и НЕпросроченный,

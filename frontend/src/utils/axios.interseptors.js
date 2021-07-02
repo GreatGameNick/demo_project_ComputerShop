@@ -4,7 +4,7 @@ import axios from "axios"
 import AuthUtils from './auth.utils'
 //https://qna.habr.com/q/519691
 
-//1. Предварительная валидация access-токена.
+//#A. Предварительная валидация access-токена.
 const treatAccessTokenInterceptor = store => async config => {
   let url = config.url
   let accessToken = store.getters.GET_ACCESS_TOKEN      //по-умолчанию равен ''.
@@ -15,7 +15,7 @@ const treatAccessTokenInterceptor = store => async config => {
   console.log('front=interceptor, accessToken = ', accessToken)
   console.log('front=interceptor, isAuthAccess = ', isAuthAccess)
   
-  //1. отправляем запрос без изменений
+  //1. отправляем запрос без изменений, не добавляя header с accessToken'ом.
   //a) если запрос - не на "/auth".
   //b) если запрос на "/auth", но к СЕССИОННОЙ карзине, т.е. когда НЕ к "/auth/authentication", а accessToken и isAuthAccess - отсутствуют.
   //с) если обращение к "/auth/authentication"- первичное (когда только отправляем запрос на аутентификацию, create_accaunt), accessToken и isAuthAccess - отсутствуют.
@@ -85,7 +85,7 @@ const treatAccessTokenInterceptor = store => async config => {
 export const treatAccessToken = treatAccessTokenInterceptor(store)
 
 
-//2. На случай, когда в ответе приходит ошибка 401, ошибка при авторизации.
+//#B. Когда в ответе приходит error_401 или error_403.
 const updateTokensInterceptor = (store, http) => async error => {
   let tokenRecoveryPromise = null
   
@@ -139,8 +139,6 @@ const updateTokensInterceptor = (store, http) => async error => {
         if(router.currentRoute.path !== '/a11n')   //For avoid redundant navigation to current location "/a11n".
           router.push('/a11n')    //делаем редирект на '/a11n' и показываем алерт с объяснением причины.    // Здесь router - импортирован(!), а не берется из this.$...
       })
-    
-    // store.dispatch('REMOVE_AUTH_AT_LOCAL_STORAGE', 'authAccess')
   }
 }
 
