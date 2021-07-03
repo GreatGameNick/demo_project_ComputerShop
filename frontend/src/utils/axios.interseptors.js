@@ -10,11 +10,8 @@ const treatAccessTokenInterceptor = store => async config => {
   let accessToken = store.getters.GET_ACCESS_TOKEN      //по-умолчанию равен ''.
   let isAuthAccess                                      //from LocalStorage, стигма о наличии (скрытой и недоступной для клиента) refresh-куки. Для перезагрузки в состоянии совершенного Login'a.
   // await store.dispatch('GET_AUTH_AT_LOCAL_STORAGE', 'authAccess').then(authAccess => isAuthAccess = authAccess)      //actions возвращают return, ОБЕРНУТЫЙ в промис(!). await-обязателен(!).
-  
-  console.log('front=interceptor, url = ', url)
-  console.log('front=interceptor, accessToken = ', accessToken)
-  console.log('front=interceptor, isAuthAccess = ', isAuthAccess)
-  
+
+
   //1. отправляем запрос без изменений, не добавляя header с accessToken'ом.
   //a) если запрос - не на "/auth".
   //b) если запрос на "/auth", но к СЕССИОННОЙ карзине, т.е. когда НЕ к "/auth/authentication", а accessToken и isAuthAccess - отсутствуют.
@@ -36,7 +33,6 @@ const treatAccessTokenInterceptor = store => async config => {
     (url.includes('auth/authentication') && !accessToken && !isAuthAccess) ||
     (url.includes('auth/authentication') && !accessToken && isAuthAccess)         //выражение можно упростить, но для наглядности оставляю его в развернутом виде
   ) {
-    console.log('config.url withOut_token_revision =====', config.url)
     return config
   }
   

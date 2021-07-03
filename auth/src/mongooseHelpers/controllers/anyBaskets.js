@@ -8,10 +8,7 @@ module.exports.getBasket = async (req, res) => {
   if (!req.session.i)            //сессию инициализируем данным запросом, т.к. он посылается уже при загрузке сайта.
     req.session.i = 0;
   ++req.session.i;
-  
-  console.log('===== getBasket // req.sessionID => ', req.sessionID)
-  console.log('===== getBasket // req.is_authorization =>', req.is_authorization)
-  
+
   let login = req.authorizedLogin
   //пользователь авторизован - используем аккаунтную корзину
   if(login) {
@@ -19,7 +16,8 @@ module.exports.getBasket = async (req, res) => {
       assert.equal(err, null);
       return account.userData.basket
     })
-      .then(basket => res.send(basket))
+      // .then(basket => res.send(basket))
+      .then(basket => basket == null ? res.send({basketPoints: []}) : res.send(basket))
     
   //пользователь НЕ авторизован - используем сессионную корзину.
   } else {

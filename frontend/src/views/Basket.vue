@@ -1,8 +1,7 @@
 <template>
   <div class="cover">
     <h2>В корзине: <span>{{ GET_BASKET_POINTS.length | productCounterDeclension }}</span></h2>
-    <div>{{GET_BASKET_PRODUCTS}}</div>
-    <div v-if="GET_BASKET_PRODUCTS[0] != null" class="basket">
+    <div v-if="GET_IS_BASKET_PRODUCTS" class="basket">
       <div class="basket__list">
         <basket-cart v-for="(product, ind) of GET_BASKET_PRODUCTS"
                      :key="ind"
@@ -37,9 +36,11 @@ export default Vue.extend({
       'GET_PRODUCT_BASKET_AMOUNT'
     ]),
     price(): number {
-      if (this.GET_BASKET_PRODUCTS && this.GET_PRODUCT_BASKET_AMOUNT) {
+      if ((this.GET_BASKET_PRODUCTS.length > 0) && this.GET_PRODUCT_BASKET_AMOUNT) {
         let sum: number = 0
         for (let product of this.GET_BASKET_PRODUCTS) {
+          console.log('price / product of this.GET_BASKET_PRODUCTS = ', product)
+
           sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
         }
         return sum
@@ -79,12 +80,15 @@ export default Vue.extend({
     }
   },
   async created() {
-    if (!this.GET_IS_BASKET_PRODUCTS)
-      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при первом посещении корзины.
+    console.log('this.GET_IS_BASKET_PRODUCTS ====', this.GET_IS_BASKET_PRODUCTS)
+    console.log('this.GET_IS_BASKET_POINTS ====', this.GET_IS_BASKET_POINTS)
 
-    if (!this.GET_IS_BASKET_POINTS) {  //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
-      // @ts-ignore
+    if (!this.GET_IS_BASKET_PRODUCTS)
+      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при ПЕРВОМ посещении корзины.
+
+    if (!this.GET_IS_BASKET_POINTS) {  //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно при перезагрузке броузера.
       await this.FETCH_BASKET_POINTS()
+      await this.FETCH_BASKET_PRODUCTS()
     }
   }
 })
