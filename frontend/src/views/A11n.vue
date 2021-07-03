@@ -120,7 +120,7 @@ export default Vue.extend({
       // @ts-ignore
       if (this.$v.forms.$dirty && !this.$v.forms.$anyError) {
         await this.TOUCH_ACCOUNT({login: this.forms.login.value, password: this.forms.password.value})
-            .then(async (isSuccess) => {
+            .then(isSuccess => {
               this.forms.password.value = ''           //предупреждаем утечку sensitive_data.
               this.forms.passwordConfirm.value = ''
 
@@ -128,15 +128,6 @@ export default Vue.extend({
                 this.$router.push('/person')         //when isSuccess is false we would go to another url or stay on a same place.
             })
       }
-
-
-
-      // if (!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
-      //     // @ts-ignore
-      //   await this.FETCH_BASKET_POINTS()
-
-
-
     },
     onSwitchToTheRegistrationInterface() {
       //обнуляем результаты предыдущей возможной попытки валидации (если были попытки заполнить форму на первом этапе login'a)

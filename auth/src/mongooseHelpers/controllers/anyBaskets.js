@@ -14,20 +14,26 @@ module.exports.getBasket = async (req, res) => {
   if(login) {
     await authModel.findOne({login}, function (err, account) {
       assert.equal(err, null);
+      console.log('getBasket / account ===========', account)
+
       return account.userData.basket
     })
-      // .then(basket => res.send(basket))
-      .then(basket => basket == null ? res.send({basketPoints: []}) : res.send(basket))
+      .then(basket => res.send(basket))
     
   //пользователь НЕ авторизован - используем сессионную корзину.
   } else {
-    await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {
+    await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, sessionData) {
       assert.equal(err, null);
-      return basket
+      console.log('getBasket / sessionData ===========', sessionData)
+
+      return sessionData
     })
-      .then(basket => basket == null ? res.send({basketPoints: []}) : res.send(basket))
+      .then(sessionData => sessionData == null ? res.send([]) : res.send(sessionData.basketPoints))
   }
 }
+
+
+
 
 module.exports.putProductToBasket = async (req, res) => {
   let login = req.authorizedLogin
@@ -48,14 +54,10 @@ module.exports.putProductToBasket = async (req, res) => {
         await authModel.updateOne({login}, {userData: {basket: account.userData.basket}}, function (err, res) {
           console.log(err)
         })
-        
         // await account.save(function (err, account) {     //  NO WORKING
         //   if (err) throw err;
         // })
       })
-  
-  
-    
     
   } else {
     await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, basket) {

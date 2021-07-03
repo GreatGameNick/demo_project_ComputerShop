@@ -42,7 +42,7 @@ app.use(async (req, res, next) => {
   let accessToken = req.headers.accesstoken
   let accessTokenBody = ''             //что бы узнать значение логина, { login: '(999) 999-99-99', exp: 1622543413881 }
   let isAccessTokenMatched = false    //accessToken идентичный И недеформированный. Просроченность здесь не обсуждается.
-  let isAccessTokenAlive = false      //accessToken НЕпросроченный - true/false.
+  let isAccessTokenAlive = false      //accessToken действенный, НЕпросроченный - true/false.
   let refreshToken = AuthService.separateCookie(req.headers.cookie, 'refreshToken')
   
   if (accessToken) {

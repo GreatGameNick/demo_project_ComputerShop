@@ -127,7 +127,7 @@ export default Vue.extend({
   async created() {
     if (!this.GET_IS_BASKET_POINTS)   //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
       // @ts-ignore
-      await this.FETCH_BASKET_POINTS()    //<<<< надо это выключить от срабатывания при 'перезагрузе с редиректом на 'a11n''
+      await this.FETCH_BASKET_POINTS()
 
     if (this.$route.path === '/' || this.$route.path === '/laptops')
       this.isShowDescription = true   //что бы, когда перезагружаем сайт,находясь на не '/laptops', а далее переходим на страницу '/laptops', - projectDescription - не появлялся бы.

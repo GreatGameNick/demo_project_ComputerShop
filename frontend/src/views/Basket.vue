@@ -8,8 +8,8 @@
                      :product="product"
         />
       </div>
-      <div class="basket__underline">
-        <div v-if="price" class="basket__outcome">
+      <div v-if="price" class="basket__underline">
+        <div class="basket__outcome">
           Итого: <span> {{ GET_BASKET_POINTS.length | productCounterDeclension }} на {{ price | splitPrice }} ₽</span>
         </div>
         <div @click="onAlertRun" class="basket__btn_orange">Купить</div>
@@ -51,6 +51,7 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions([
+      'FETCH_BASKET_POINTS',
       'FETCH_BASKET_PRODUCTS',
       'CLEAR_BASKET',
       'SHOW_CLARIFICATION'
@@ -80,15 +81,12 @@ export default Vue.extend({
     }
   },
   async created() {
-    console.log('this.GET_IS_BASKET_PRODUCTS ====', this.GET_IS_BASKET_PRODUCTS)
     console.log('this.GET_IS_BASKET_POINTS ====', this.GET_IS_BASKET_POINTS)
+    console.log('this.GET_IS_BASKET_PRODUCTS ====', this.GET_IS_BASKET_PRODUCTS)
 
-    if (!this.GET_IS_BASKET_PRODUCTS)
-      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при ПЕРВОМ посещении корзины.
-
-    if (!this.GET_IS_BASKET_POINTS) {  //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно при перезагрузке броузера.
+    if (!this.GET_IS_BASKET_PRODUCTS) {
       await this.FETCH_BASKET_POINTS()
-      await this.FETCH_BASKET_PRODUCTS()
+      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при ПЕРВОМ посещении корзины.}
     }
   }
 })

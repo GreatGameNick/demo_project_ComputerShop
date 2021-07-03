@@ -39,16 +39,10 @@ export default {
     async TOUCH_ACCOUNT({commit, dispatch, getters}, {login, password}: Authentication): Promise<boolean> {
       console.log('STORE/TOUCH_ACCOUNT, {login, password} = ', {login, password})
       return await axios.post('auth/authentication', {login, password})      //обращаемся к auth-сервису докера через Nginx (а не к auth-сервису напрямую).
-        .then(async (data) => {                                            //data = {login, accessToken, userData}
+        .then((data) => {                                            //data = {login, accessToken, userData}
           if(data) {                                      //на случай, когда запрос возвращает error_401 или 403, но сквозь интерсептор у axios сюда ответ с data, хотя и undefined(!), все равно проходит.
             commit('SET_AUTH', {accessToken: data.data.accessToken, userLogin: data.data.login})
             commit('SET_BASKET', data.data.userData.basket)
-
-            if (!getters.GET_IS_BASKET_PRODUCTS)   //восстанавливались ли во Vuex сноски на продукты после перезагрузки сайта, которые положены в корзину. Важно, для нормальной работы в асинхронности при перезагрузке броузера.
-                // @ts-ignore
-              await dispatch('FETCH_BASKET_PRODUCTS')
-
-
             return true
           } else {
             return false
