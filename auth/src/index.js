@@ -89,8 +89,7 @@ app.use(async (req, res, next) => {
 
   //в состоянии login + находимся в '/basket' (refreshToken - есть) и перезагружаем сайт (т.е. url у запроса будет '/basket', причем accessToken слетает) - будем перебрасываться на '/a11n'.
   if(!accessToken && req.headers.referer.includes('/basket') && refreshToken) {
-    return res.status(403).send({message: 'you WERE logged in and in this way you need to get authorisation again'})
-    // <<<<=== getBasket даже не проходит, и поэтому ответ получаем undefined.
+    return res.status(403).send({message: `you WERE logged in <br>and <br> in this way <br> you need to get authorisation again.`})
   }
 
 

@@ -69,7 +69,6 @@ const treatAccessTokenInterceptor = store => async config => {
       //ПОВТОРНО запрашиваем из Store ВОССТАНОВЛЕННЫЙ accessToken и прикрепляем его к хедеру запроса и далее
       //передаем в пролонгацию запроса config запроса с корректным AccessToken'ом в хедере.
       accessToken = store.getters.GET_ACCESS_TOKEN
-      console.log('treatAccessTokenInterceptor//ВОССТАНОВЛЕННЫЙ AccessToken в config"e =======', config)
       return AuthUtils.attachAccessTokenToHeader(accessToken, config)
       
     } else {                      //b) access-токен НЕ просрочен. Добавляем его в хедер запроса.
@@ -106,10 +105,7 @@ const updateTokensInterceptor = (store, http) => async error => {
   // }
   
   if(error.response.status === 401) {   //"для доступа требуется аутентификация".
-    
     //посылаем запрос для восстановления access-токена via refresh-токен.
-    console.log('updateTokensInterceptor - 401 ============')
-    
     tokenRecoveryPromise = store.dispatch('TOUCH_ACCOUNT', {login: '', password: ''})
     await tokenRecoveryPromise
     tokenRecoveryPromise = null
@@ -120,16 +116,17 @@ const updateTokensInterceptor = (store, http) => async error => {
     //заново повторяем неудавшийся запрос, но уже с восстановленным accessToken'ом.
     return http(accessConfig)
   }
-  
+
+
   //"есть ограничения в доступе":
   // - Неверный пароль при login'e.
   // - Невалидный access-токен и refresh-токен
   // - Невалидный refresh-токен при перезагрузке.
   if(error.response.status === 403) {
     //Описываем причину для алерта и предлагаем повторно пройти идентификацию.
-    console.log('ERROR_403 ========')
+    console.log('ERROR_403 ========', error.response.data.message)
     
-    let clarification = `Access was denied because of ${error.response.data.message}`
+    let clarification = `Access was denied <br>because of <br>${error.response.data.message}`
     store.dispatch('SHOW_CLARIFICATION', clarification)
       .then(() => {
         if(router.currentRoute.path !== '/a11n')   //For avoid redundant navigation to current location "/a11n".

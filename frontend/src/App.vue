@@ -113,8 +113,6 @@ export default Vue.extend({
       } else {        //for LOGOUT. Stigma - "password: ''".
         this.TOUCH_ACCOUNT({login: this.GET_USER_LOGIN, password: ''})
             .then(() => {
-              console.log('LOGOUT, this.$route.path ===============', this.$route.path)
-
               if (this.$route.path === '/person' || this.$route.path === '/basket')
                 this.$router.push('/')
             })

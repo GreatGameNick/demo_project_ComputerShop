@@ -39,8 +39,6 @@ export default Vue.extend({
       if ((this.GET_BASKET_PRODUCTS.length > 0) && this.GET_PRODUCT_BASKET_AMOUNT) {
         let sum: number = 0
         for (let product of this.GET_BASKET_PRODUCTS) {
-          console.log('price / product of this.GET_BASKET_PRODUCTS = ', product)
-
           sum += product.price * this.GET_PRODUCT_BASKET_AMOUNT({shelf: product.shelf, _id: product._id})
         }
         return sum
@@ -81,12 +79,9 @@ export default Vue.extend({
     }
   },
   async created() {
-    console.log('this.GET_IS_BASKET_POINTS ====', this.GET_IS_BASKET_POINTS)
-    console.log('this.GET_IS_BASKET_PRODUCTS ====', this.GET_IS_BASKET_PRODUCTS)
-
     if (!this.GET_IS_BASKET_PRODUCTS) {
-      await this.FETCH_BASKET_POINTS()
-      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при ПЕРВОМ посещении корзины.}
+      await this.FETCH_BASKET_POINTS()    //типо дублируем аналогичную команду, прописанную в App.vue. Однако created() у App.vue запускается ПОСЛЕ created() Basket.vue.
+      await this.FETCH_BASKET_PRODUCTS()  //происходит однократно - только при ПЕРВОМ посещении корзины.
     }
   }
 })

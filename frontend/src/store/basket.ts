@@ -43,13 +43,7 @@ const getters = {
 const mutations = {
   SET_BASKET: (state, recoveryBasket: ProductPoint[]) => state.clientBasket = recoveryBasket,
   SET_IS_BASKET_PRODUCTS: (state, status: boolean) => state.isBasketProductsInTheStore = status,
-
-  SET_IS_BASKET_POINTS: (state, status: boolean) => {
-    console.log('SET_IS_BASKET_POINTS, status ===', status)
-    state.isBasketPointsInTheStore = status
-  },
-
-
+  SET_IS_BASKET_POINTS: (state, status: boolean) => state.isBasketPointsInTheStore = status,
   ADD_PRODUCT_TO_BASKET: (state, {shelf, _id}: ProductPoint) => state.clientBasket.push({shelf, _id}),
   DELETE_PRODUCT_AT_BASKET: (state, {shelf, _id}: ProductPoint) => {
     let deletedProductIndex = state.clientBasket.findIndex(itemId => itemId._id === _id)
@@ -60,34 +54,19 @@ const mutations = {
 
 const actions = {
   async FETCH_BASKET_POINTS({commit}): Promise<void> {     //грузим при загрузе App
-    console.log(' > 00, FETCH_BASKET_POINTS')
-
     await axios.get(`/auth/basket`)
       .then(({data}) => {
-        console.log('> 01 FETCH_BASKET_POINTS, data ===', data)
-
         if (data.length > 0)
           commit('SET_BASKET', data)
         commit('SET_IS_BASKET_POINTS', true)
       })
   },
-
-
-
   async FETCH_BASKET_PRODUCTS({state, getters, commit}): Promise<void> {    //грузим при ПЕРВОМ посещении корзины. Восполняем товар, отсутствующий во Vuex.
-    // if (!state.isBasketPointsInTheStore)  //для состояния, когда, находясь на странице Корзина, мы перезагружаем броузер. Здесь требуется ждать обновления BasketPointsInTheStore.
-    //   await dispatch('FETCH_BASKET_POINTS')
-
-
-
     if (state.clientBasket.length > 0) {
       //отбираем тот товар, который обозначен в корзине, но отсутствует во Vuex, (после перезагрузки сайта),
       //одновременно сортируя его по принадлежности к полкам и устраняя повторы.
       let unredundantedBasket = getters.GET_BASKET_POINTS.filter((item: ProductPoint, ind: number, arr: ProductPoint[]) => ind == arr.findIndex(i => i._id === item._id))
       let upsetProducts = {} as any      //{'shelf': [productPoint, ...], }
-
-      console.log('> FETCH_BASKET_PRODUCTS / upsetProducts ===', upsetProducts)
-
       for (let productPoint of unredundantedBasket) {
         let isThere = getters.GET_PRODUCTS(productPoint.shelf).some((i: Product) => i._id === productPoint._id)  //присутствует ли корзиночный товар в shop'e.
         
@@ -112,20 +91,11 @@ const actions = {
         for (let {value} of responses) {
           responseData.push(value.data)
         }
-        console.log('> SET_полученный_PRODUCTS по каждой полке , {shelf, products: responseData} ===', {shelf, products: responseData})
         commit('SET_PRODUCTS', {shelf, products: responseData})
       }
     }
-    console.log('> SET_IS_BASKET_PRODUCTS ===')
     commit('SET_IS_BASKET_PRODUCTS', true)
   },
-
-
-
-
-
-
-
   //изменяем в корзине количество единиц выбранного товара
   async MOVE_THE_BASKET_PRODUCT({state, commit}, {shelf, _id, vector}: BasketMovement): Promise<void> {
     if (vector > 0) {

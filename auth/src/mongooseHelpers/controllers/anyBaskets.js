@@ -2,7 +2,7 @@ const assert = require('assert')
 const {SessionBasketModel} = require('../models/sessionBaskets')
 const {authModel} = require('../models/auth')
 
-//controllers for move products at session & account baskets
+//controllers for products moving in session & account baskets
 
 module.exports.getBasket = async (req, res) => {
   if (!req.session.i)            //сессию инициализируем данным запросом, т.к. он посылается уже при загрузке сайта.
@@ -14,25 +14,19 @@ module.exports.getBasket = async (req, res) => {
   if(login) {
     await authModel.findOne({login}, function (err, account) {
       assert.equal(err, null);
-      console.log('getBasket / account ===========', account)
-
-      return account.userData.basket
+      return account
     })
-      .then(basket => res.send(basket))
+      .then(account => account == null ? res.send([]) : res.send(account.userData.basket))
     
   //пользователь НЕ авторизован - используем сессионную корзину.
   } else {
     await SessionBasketModel.findOne({sessionID: req.sessionID}, function (err, sessionData) {
-      assert.equal(err, null);
-      console.log('getBasket / sessionData ===========', sessionData)
-
+      assert.equal(err, null)
       return sessionData
     })
       .then(sessionData => sessionData == null ? res.send([]) : res.send(sessionData.basketPoints))
   }
 }
-
-
 
 
 module.exports.putProductToBasket = async (req, res) => {

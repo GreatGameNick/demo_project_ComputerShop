@@ -2,10 +2,8 @@
   <div class="tooltip"
        @mouseenter="makeAlive(true)"
        @mouseleave="makeAlive(false)"
+       v-html="tooltip"
   >
-    <h1>
-      {{ tooltip }}
-    </h1>
   </div>
 </template>
 
